@@ -27,6 +27,21 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd /d/Blog/hexo &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexoen &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexo &amp;&amp; cp -r /d/Blog/hexoen/public/. /d/Blog/hexo/public/en/ &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
 
 <p>（8）恭喜，到现在配置就完成了！你可以看下检查自己的网站是否已经成功页面跳转了。唯一的缺点是点击会跳转到新页面而不是更新原页面。</p>
+<h2 id="常见报错"><a href="#常见报错" class="headerlink" title="常见报错"></a>常见报错</h2><p>正常编写md文件后用上述代码上传的时候，有时会莫名其妙报错：</p>
+<blockquote>
+<p>err : Error: Spawn Failed</p>
+</blockquote>
+<p>问题一般出现在.deploy_git文件夹，这是由hexo框架渲染生成的一个Git仓库,*<code>hexo d</code>*命令就是将其push到github上。问题大多是因为git进行push或者hexo d的时候改变了一些.deploy_git文件下的内容导致了报错。</p>
+<p>总而言之，删除这个文件就好。</p>
+<p>然后调用如下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global core.autocrlf false</span><br></pre></td></tr></table></figure>
+
+<p>再执行hexo的clean g d指令即可。</p>
+<p>但是要注意，这个报错还有两个原因：</p>
+<ul>
+<li>我们的提交到github代码采用的是绝对路径，如果你在hexoen打开git bash，那这个.deploy_git文件可能会保存在hexoen文件夹里，这个时候记得把它也删掉。</li>
+<li>网络波动，删了.deploy_git等一会它自己就好了</li>
+</ul>
 ]]></content>
       <categories>
         <category>前端</category>
