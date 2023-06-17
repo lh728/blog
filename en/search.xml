@@ -36,8 +36,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Project Record - Enterprise Requirement</title>
-    <url>/en/2023/06/12/Project%20Record%20-%20Enterprise%20Requirement/</url>
+    <title>Project Records - Enterprise Requirement</title>
+    <url>/en/2023/06/12/Project%20Records%20-%20Enterprise%20Requirement/</url>
     <content><![CDATA[<p>Here will record some of my project requirements in enterprise development.</p>
 <h2 id="Connection-Migration"><a href="#Connection-Migration" class="headerlink" title="Connection Migration"></a>Connection Migration</h2><p>Recently, I received my first requirement, to migrate an already prepared page so that it can be accessed and displayed externally. What does that mean? This requirement will be explained later.</p>
 <p>In short, as a new developer, I have to say that I am confused when faced with huge enterprise-level codes and hundreds of classes in the back-end and front-end, not to mention the need to directly face a requirement that I have never touched before. Of course, the product manager also understands that it is unrealistic for me to do difficult requirements. The actual implementation of this requirement is not difficult. Many key parts of the code have been completed by others, but it is still a huge challenge for me.</p>
