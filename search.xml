@@ -5,7 +5,7 @@
     <url>/2023/06/17/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</url>
     <content><![CDATA[<p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
 <h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p>Oracle SQL表设计问题 </p>
-<h3 id="bug描述"><a href="#bug描述" class="headerlink" title="bug描述"></a>bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
+<h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
 <h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p>很明显，这通常都是后端报错了，所以我按照流程复现了下该报错，然后直接看idea结果，idea报错：</p>
 <blockquote>
 <p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
@@ -25,7 +25,61 @@
 <li>要求上传excel的数据列对应内容不要太多</li>
 <li>针对该字段的字节上限进行扩容</li>
 </ul>
-<h2 id="Vue自动解析JSON"><a href="#Vue自动解析JSON" class="headerlink" title="Vue自动解析JSON"></a>Vue自动解析JSON</h2><h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
+<h2 id="Json默认解析方式"><a href="#Json默认解析方式" class="headerlink" title="Json默认解析方式"></a>Json默认解析方式</h2><h3 id="Bug描述-1"><a href="#Bug描述-1" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很正常的操作：我在后端调用方法，向前端返回一个List的结果集。我们知道这个结果集在前端是用很多个json数据放在一个List里面的。</p>
+<p>我将要返回的数据有这几个列：</p>
+<ul>
+<li>DESCR - 部门名</li>
+<li>userId - ID</li>
+<li>name - 姓名</li>
+<li>jobType - 工作类型</li>
+</ul>
+<p>其中 userId,name,jobType在前端展示都是正常的，获取到了数据，但是DESCR这个列没有数据：</p>
+<table>
+<thead>
+<tr>
+<th align="center">DESCR</th>
+<th align="center">userId</th>
+<th align="center">name</th>
+<th align="center">jobType</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center">1</td>
+<td align="center">a</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">2</td>
+<td align="center">b</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">3</td>
+<td align="center">c</td>
+<td align="center">C</td>
+</tr>
+</tbody></table>
+<p>看了下后端，打断点发现数据都是正常传过来的，DESCR这个列是有值的，但是不知道为什么在前端不显示</p>
+<h3 id="问题排查-1"><a href="#问题排查-1" class="headerlink" title="问题排查"></a>问题排查</h3><p>在前端打断点调试，发现传过来的Json数据长这个样子：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span>dESCR<span class="punctuation">:</span>...<span class="punctuation">,</span>userId<span class="punctuation">:</span>&#x27;<span class="number">1</span>&#x27;<span class="punctuation">,</span>name<span class="punctuation">:</span>&#x27;a&#x27;<span class="punctuation">,</span>jobType<span class="punctuation">:</span>&#x27;A&#x27;<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#123;</span>dESCR<span class="punctuation">:</span>...<span class="punctuation">,</span>userId<span class="punctuation">:</span>&#x27;<span class="number">2</span>&#x27;<span class="punctuation">,</span>name<span class="punctuation">:</span>&#x27;b&#x27;<span class="punctuation">,</span>jobType<span class="punctuation">:</span>&#x27;B&#x27;<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这就奇怪了，为啥DESCR这个列的首字母小写了呢？</p>
+<p>后来发现，不只是DESCR这个列首字母小写了，事实上每个首字母大写的列的首字母都会被小写，在这里因为它们在这里本来就是小写的所以看不出来。</p>
+<p>之所以会这样，探讨其背后原理是因为所有 JSON 的实现都离不开HttpMessageConverter，它是一个消息转换工具，主要实现两方面的功能：</p>
+<ul>
+<li>将服务端返回的对象序列化成 JSON 字符串</li>
+<li>将前端传来的 JSON 字符串反序列化成 Java 对象</li>
+</ul>
+<p>在SpringBoot生成的依赖包中已经自动为我们导入了相关依赖。SpringMVC 自动配置了 Jackson 和 Gson 的 HttpMessageConverter。</p>
+<p>我们公司项目默认使用的Jackson解析Json代码，jackson在序列化过程中会将大写开头的字段自动转成小写开头。</p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>给需要保留大小写的不变的属性增加*<code>@JsonFormat</code><em>或者</em><code>@JsonProperty</code>*注解</li>
+<li>给类加上 <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em> 注解</li>
+</ul>
+]]></content>
       <categories>
         <category>项目记录</category>
       </categories>
