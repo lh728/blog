@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Initialization of Java virtual machine class loading</title>
+    <url>/en/2023/06/03/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
+    <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
+<blockquote>
+<ul>
+<li>Encountered new (instantiated object), getstatic (read a class static field which is not modified by final or does not put the result into the constant pool at compile time), putstatic (set a class static field which is not modified by final or does not put the result into the constant pool at compile time) or invokestatic (calling a static method of a class) these four bytecode instructions, if the class has not been initialized, initialization needs to be triggered.</li>
+<li>Use the methods of the java.lang.reflect package to make reflective calls on types</li>
+<li>the parent class has not been initialized</li>
+<li>When the virtual machine starts, the user needs to specify a main class (main) to be executed</li>
+<li>When using the dynamic language support newly added by java7, if the final analysis result of a MthodHandle instance is REF_getStatic, REF_putstatic, REF_invokestatic, REF_newInvokeSpecial four types of method handles</li>
+<li>An interface defines the interface method modified by default, and the implementation class of the interface is initialized at the same time</li>
+</ul>
+</blockquote>
+<p>In addition, all reference types do not trigger initialization:</p>
+<h2 id="Subclass-references-parent-class"><a href="#Subclass-references-parent-class" class="headerlink" title="Subclass references parent class"></a>Subclass references parent class</h2><p>Referring to a static field of a superclass through a subclass does not cause the subclass to be initialized:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Super</span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;System.out.println(<span class="string">&quot;Super&quot;</span>);&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">value</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Sub</span> <span class="keyword">extends</span> <span class="title class_">Super</span>&#123;</span><br><span class="line">    <span class="keyword">static</span>&#123;System.out.println(<span class="string">&quot;Sub&quot;</span>);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SomeName</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        System.out.println(Sub.value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>What happens in the end? It will output “Super” first, and then the value of “value”.</p>
+<p>For static fields, only the class that directly defines this field will be initialized, so the static field of the parent class is referenced through the subclass, and only the parent class will be initialized.</p>
+<h2 id="Array-reference-class"><a href="#Array-reference-class" class="headerlink" title="Array reference class"></a>Array reference class</h2><p>Referencing a class through an array definition does not trigger initialization of this class</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SomeName</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        Sub[] sp = <span class="keyword">new</span> <span class="title class_">Sub</span>[<span class="number">5</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>What happens in the end?</p>
+<p>nothing.</p>
+<p>It can be seen that the Sub class has not been initialized. But this code triggers the initialization phase of another class named “[Lcom.example.demo.Sub”. This thing is automatically generated by the virtual machine and a subclass directly inherited from Object , and the creation action is triggered by the bytecode instruction anewarray (that is, creating a new reference array).</p>
+<p>The one-dimensional array represented by this class, users can only directly use the length property modified as public and the clone method. Of course, the properties and methods used in the array are all implemented in this class. This is because Java wraps the access to the array elements (it is the movement of the array pointer in C), which is why Java detects that the array is out of bounds and throws an ArrayIndexOutOfBoundsException instead of an illegal memory access like C.</p>
+<p>To be precise, Java’s out-of-bounds check is not encapsulated in the class for array element access, but encapsulated in xaload (array elements pushed onto the stack) and xastore (array operations) bytecode instructions for array access.</p>
+<h2 id="Constant-pool-reference"><a href="#Constant-pool-reference" class="headerlink" title="Constant pool reference"></a>Constant pool reference</h2><p>Constants will be stored in the constant pool of the calling class during the compilation phase, and essentially there is no direct reference to the class that defines the constant</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Super</span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;System.out.println(<span class="string">&quot;Super&quot;</span>);&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">HELLO</span> <span class="operator">=</span> <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SomeName</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        System.out.println(Super.HELLO);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The code here also does not output “Super” after running.</p>
+<p>The constant value of hello has actually been converted into a reference of the SomeName class to its own constant pool during the compilation phase, so the two of them have nothing to do with each other.</p>
+<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>Interfaces are a little different than classes. In fact, the interface also has an initialization process, but the interface cannot use static code blocks to output initialization information like a class. The compiler will generate a “<clinit>“ class constructor for the interface to initialize the member variables defined in the interface. and:</p>
+<p>The interface does not require all parent interfaces to be initialized, only when it is used will it be initialized.</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo switch language, suitable for any theme</title>
     <url>/en/2023/05/20/Hexo%20switch%20language,%20suitable%20for%20any%20theme/</url>
     <content><![CDATA[<p>This article mainly discusses how Hexo achieves internationalization in the simplest way, and this method is highly applicable. I personally think that there is no requirement for which theme to use.</p>
@@ -48,51 +93,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Initialization of Java virtual machine class loading</title>
-    <url>/en/2023/06/03/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
-    <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
-<blockquote>
-<ul>
-<li>Encountered new (instantiated object), getstatic (read a class static field which is not modified by final or does not put the result into the constant pool at compile time), putstatic (set a class static field which is not modified by final or does not put the result into the constant pool at compile time) or invokestatic (calling a static method of a class) these four bytecode instructions, if the class has not been initialized, initialization needs to be triggered.</li>
-<li>Use the methods of the java.lang.reflect package to make reflective calls on types</li>
-<li>the parent class has not been initialized</li>
-<li>When the virtual machine starts, the user needs to specify a main class (main) to be executed</li>
-<li>When using the dynamic language support newly added by java7, if the final analysis result of a MthodHandle instance is REF_getStatic, REF_putstatic, REF_invokestatic, REF_newInvokeSpecial four types of method handles</li>
-<li>An interface defines the interface method modified by default, and the implementation class of the interface is initialized at the same time</li>
-</ul>
-</blockquote>
-<p>In addition, all reference types do not trigger initialization:</p>
-<h2 id="Subclass-references-parent-class"><a href="#Subclass-references-parent-class" class="headerlink" title="Subclass references parent class"></a>Subclass references parent class</h2><p>Referring to a static field of a superclass through a subclass does not cause the subclass to be initialized:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Super</span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;System.out.println(<span class="string">&quot;Super&quot;</span>);&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">value</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Sub</span> <span class="keyword">extends</span> <span class="title class_">Super</span>&#123;</span><br><span class="line">    <span class="keyword">static</span>&#123;System.out.println(<span class="string">&quot;Sub&quot;</span>);&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SomeName</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        System.out.println(Sub.value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>What happens in the end? It will output “Super” first, and then the value of “value”.</p>
-<p>For static fields, only the class that directly defines this field will be initialized, so the static field of the parent class is referenced through the subclass, and only the parent class will be initialized.</p>
-<h2 id="Array-reference-class"><a href="#Array-reference-class" class="headerlink" title="Array reference class"></a>Array reference class</h2><p>Referencing a class through an array definition does not trigger initialization of this class</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SomeName</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        Sub[] sp = <span class="keyword">new</span> <span class="title class_">Sub</span>[<span class="number">5</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>What happens in the end?</p>
-<p>nothing.</p>
-<p>It can be seen that the Sub class has not been initialized. But this code triggers the initialization phase of another class named “[Lcom.example.demo.Sub”. This thing is automatically generated by the virtual machine and a subclass directly inherited from Object , and the creation action is triggered by the bytecode instruction anewarray (that is, creating a new reference array).</p>
-<p>The one-dimensional array represented by this class, users can only directly use the length property modified as public and the clone method. Of course, the properties and methods used in the array are all implemented in this class. This is because Java wraps the access to the array elements (it is the movement of the array pointer in C), which is why Java detects that the array is out of bounds and throws an ArrayIndexOutOfBoundsException instead of an illegal memory access like C.</p>
-<p>To be precise, Java’s out-of-bounds check is not encapsulated in the class for array element access, but encapsulated in xaload (array elements pushed onto the stack) and xastore (array operations) bytecode instructions for array access.</p>
-<h2 id="Constant-pool-reference"><a href="#Constant-pool-reference" class="headerlink" title="Constant pool reference"></a>Constant pool reference</h2><p>Constants will be stored in the constant pool of the calling class during the compilation phase, and essentially there is no direct reference to the class that defines the constant</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Super</span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;System.out.println(<span class="string">&quot;Super&quot;</span>);&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">HELLO</span> <span class="operator">=</span> <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SomeName</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        System.out.println(Super.HELLO);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>The code here also does not output “Super” after running.</p>
-<p>The constant value of hello has actually been converted into a reference of the SomeName class to its own constant pool during the compilation phase, so the two of them have nothing to do with each other.</p>
-<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>Interfaces are a little different than classes. In fact, the interface also has an initialization process, but the interface cannot use static code blocks to output initialization information like a class. The compiler will generate a “<clinit>“ class constructor for the interface to initialize the member variables defined in the interface. and:</p>
-<p>The interface does not require all parent interfaces to be initialized, only when it is used will it be initialized.</p>
-<hr>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
