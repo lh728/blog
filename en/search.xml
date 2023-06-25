@@ -104,7 +104,7 @@
 <li>What does the backend need to do?</li>
 <li>What have other colleagues already done?</li>
 </ul>
-<h3 id="Ideas"><a href="#Ideas" class="headerlink" title="Ideas"></a>Ideas</h3><h4 id="Front-end"><a href="#Front-end" class="headerlink" title="Front end"></a>Front end</h4><p>As a newcomer, I need to keep learning, but of course I can’t just study hard by myself.</p>
+<h3 id="Ideas-and-Implementation"><a href="#Ideas-and-Implementation" class="headerlink" title="Ideas and Implementation"></a>Ideas and Implementation</h3><h4 id="Front-end"><a href="#Front-end" class="headerlink" title="Front end"></a>Front end</h4><p>As a newcomer, I need to keep learning, but of course I can’t just study hard by myself.</p>
 <p>By consulting the seniors, I learned that the implementation of the connection migration function is implemented on a Vue page. It is also through this lesson that I learned the first idea of understanding the project and cracking the requirement:</p>
 <blockquote>
 <p><strong>Frontend Code Mapping Backend</strong> <strong>Code</strong></p>
