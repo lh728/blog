@@ -81,7 +81,7 @@
 <li>给类加上 <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em> 注解</li>
 </ul>
 <hr>
-<h2 id="EsayPoi解析Ecxcel图片空指针"><a href="#EsayPoi解析Ecxcel图片空指针" class="headerlink" title="EsayPoi解析Ecxcel图片空指针"></a>EsayPoi解析Ecxcel图片空指针</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
+<h2 id="EsayPoi解析Excel图片空指针"><a href="#EsayPoi解析Excel图片空指针" class="headerlink" title="EsayPoi解析Excel图片空指针"></a>EsayPoi解析Excel图片空指针</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
 <p>现在有两个几乎一模一样的Excel文件，当我进行导入并解析的时候，一个Excel文件会报空指针，一个文件会正常解析并且导入。</p>
 <p>这里的业务逻辑是：</p>
 <ul>
@@ -93,18 +93,18 @@
 <p>这个Bug就是业务方在这个流程中遇到的，业务方有两个几乎一模一样的Excel文件，它们的文本信息是完全一样的，唯一的区别就是图片不一样。</p>
 <p>而且，就算把可以正常解析导入的Excel文件中的图片粘贴到出问题的Excel文件，也还是会报空指针异常，很奇怪。</p>
 <h3 id="问题排查-2"><a href="#问题排查-2" class="headerlink" title="问题排查"></a>问题排查</h3><p>一开始我以为是图片可能覆盖了其他单元格，所以尝试拉伸了一下图片，发现没有作用。</p>
-<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
+<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi API的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi API的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
 <p>更准确的说，是在执行这个放里面如下所示的代码的时候报的错：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">	pic.getPreferredSize()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p>打断点，这里需要一个anchor的cell1属性和cell2属性。</p>
 <p>然后这里的cell2属性是空，于是报了空指针。</p>
 <p>知道错误的起源了，现在回头去找为什么cell2属性是null呢？这个属性是在哪里构造的呢？</p>
-<p>经过漫长的寻找，最后发现是在Poi 的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
+<p>经过漫长的寻找，最后发现是在Poi API的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
 <p>该方法如下所示：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> XSSFAnchor <span class="title function_">getAnchorFromParent</span><span class="params">(XmlObject obj)</span> &#123;</span><br><span class="line">  <span class="type">XSSFAnchor</span> <span class="variable">anchor</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">XmlObject</span> <span class="variable">parentXbean</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">XmlCursor</span> <span class="variable">cursor</span> <span class="operator">=</span> obj.newCursor();</span><br><span class="line">  <span class="keyword">if</span> (cursor.toParent()) &#123;</span><br><span class="line">    parentXbean = cursor.getObject();</span><br><span class="line">  &#125;</span><br><span class="line">  cursor.dispose();</span><br><span class="line">  <span class="keyword">if</span> (parentXbean != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTTwoCellAnchor) &#123;</span><br><span class="line">      <span class="type">CTTwoCellAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTTwoCellAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTOneCellAnchor) &#123;</span><br><span class="line">      <span class="type">CTOneCellAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTOneCellAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTAbsoluteAnchor) &#123;</span><br><span class="line">      <span class="type">CTAbsoluteAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTAbsoluteAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> anchor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>不用完全理解代码，只需要看中间这里，*<code>parentXbean</code>* 将会在这里创造出anchor和它的cell2属性。</p>
+<p>不用完全理解代码，只需要看中间这里，<code>parentXbean</code> 将会在这里创造出anchor和它的cell2属性。</p>
 <p>当我们使用断点调试，会发现，如果导入有问题的Excel，会走向这个判断：*<code>parentXbean instanceof CTOneCellAnchor</code>*</p>
 <p>而正常的Excel会走向这个判断：*<code>parentXbean instanceof CTTwoCellAnchor</code>*</p>
 <p>那么，问题就在CTTwoCellAnchor 和 CTOneCellAnchor上面了。</p>
@@ -114,7 +114,7 @@
 </blockquote>
 <p>所以，<strong>CTTwoCellAnchor是指图片的大小和位置随着单元格而变</strong>；<strong>CTOneCellAnchor是指大小固定，位置随着单元格而变</strong></p>
 <p>那么，这对应的就是Excel里面的图片属性：</p>
-<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="内网项目"></p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="项目记录"></p>
 <h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
 <li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
 </ul>
