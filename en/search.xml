@@ -114,7 +114,7 @@
 </blockquote>
 <p>Therefore, <strong>CTTwoCellAnchor means that Move and size with cells</strong>; <strong>CTOneCellAnchor means that Move but don’t size with cells</strong>.</p>
 <p>Then, this corresponds to the picture properties in Excel:</p>
-<p>![Project Records](&#x2F;images&#x2F;Projects_Records&#x2F;Project Records — Troubleshooting(1).png)</p>
+<p>![Project Records](&#x2F;images&#x2F;Projects_Records&#x2F;Project Records_Troubleshooting(1).png.png)</p>
 <h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h3><ul>
 <li>At this point, the problem is solved, you only need to modify the picture properties in Excel. So far, the problem has been solved. As for the deeper reason, due to the tight schedule of the project, there is no time to delve into it. Friends who understand are welcome to leave a message in the comment area</li>
 </ul>
