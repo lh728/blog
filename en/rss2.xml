@@ -9,8 +9,34 @@
     <atom:link href="http://lh728.github.io/en/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description></description>
-    <pubDate>Mon, 26 Jun 2023 13:01:25 GMT</pubDate>
+    <pubDate>Tue, 27 Jun 2023 13:21:49 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>How to debug spring boot scheduling tasks</title>
+      <link>http://lh728.github.io/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</link>
+      <guid>http://lh728.github.io/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</guid>
+      <pubDate>Tue, 27 Jun 2023 12:52:17 GMT</pubDate>
+      
+        
+        
+      <description>&lt;p&gt;When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending </description>
+        
+      
+      
+      
+      <content:encoded><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p><h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmailScheduled</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">emailSend</span><span class="params">()</span>&#123;</span><br><span class="line">        ...       </span><br><span class="line">        </span><br><span class="line">    &#125;        </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p><ul><li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li><li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li><li>Another idea is to call the method in the test code, but it is also very tricky</li></ul><p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p><p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmailScheduled</span> <span class="keyword">implements</span> <span class="title class_">InitializingBean</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">emailSend</span><span class="params">()</span>&#123;</span><br><span class="line">        ...             </span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        emailSend();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>]]></content:encoded>
+      
+      
+      <category domain="http://lh728.github.io/en/categories/back-end/">back-end</category>
+      
+      
+      <category domain="http://lh728.github.io/en/tags/Java/">Java</category>
+      
+      
+      <comments>http://lh728.github.io/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/#disqus_thread</comments>
+      
+    </item>
     
     <item>
       <title>Project Records — Troubleshooting</title>

@@ -118,6 +118,7 @@
 <h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
 <li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
 </ul>
+<hr>
 ]]></content>
       <categories>
         <category>项目记录</category>
@@ -351,6 +352,35 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何调试springboot定时调度任务</title>
+    <url>/2023/06/27/%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95springboot%E5%AE%9A%E6%97%B6%E8%B0%83%E5%BA%A6%E4%BB%BB%E5%8A%A1/</url>
+    <content><![CDATA[<p>最近在做企业开发的时候，有个需求需要我对发送邮件的定时调度任务做调整和优化。</p>
+<h2 id="Scheduled-定时调度任务"><a href="#Scheduled-定时调度任务" class="headerlink" title="@Scheduled 定时调度任务"></a>@Scheduled 定时调度任务</h2><p>已经完成的发送邮件定时调度任务大概长这样：</p>
+<p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
+<p>该class文件仅仅只保留了对外部类的引用。</p>
+<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmailScheduled</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">emailSend</span><span class="params">()</span>&#123;</span><br><span class="line">        ...       </span><br><span class="line">        </span><br><span class="line">    &#125;        </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>优化调整的困难点在于debug麻烦：</p>
+<ul>
+<li>目前的开发环境的代码并没有设置统一接口来通过前端调试后端定时任务</li>
+<li>如果通过修改cron来调试，需要重启项目，更重要的是会发很多骚扰邮件出去</li>
+<li>还有一个思路是在测试代码里面调用方法，但是也很麻烦</li>
+</ul>
+<p>实际上还有一个比较简洁的思路，重写*<code>InitialzingBean</code><em>类的</em><code>afterPropertiesSet</code>*方法。</p>
+<p>spring初始化bean的时候，如果bean实现了*<code>InitializingBean</code><em>接口，会自动调用</em><code>afterPropertiesSet</code>*方法，所以可以想到，通过这样的方式，就可以通过重启打断点进行调试了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmailScheduled</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">emailSend</span><span class="params">()</span>&#123;</span><br><span class="line">        ...             </span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        emailSend();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>是不是很简单？当然，这可能不是最优解，但是如果只在项目中短暂使用，也是问题不大的。</p>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
