@@ -270,8 +270,6 @@
 </li>
 <li><p>原数据已经有了，我应该怎么获取？在哪里获取？</p>
 </li>
-<li><p>新页面分页功能怎么实现？</p>
-</li>
 <li><p>前后端分别需要什么参数？</p>
 </li>
 </ul>
@@ -279,7 +277,9 @@
 <blockquote>
 <p><strong>通过思考问题解决需求</strong></p>
 </blockquote>
-<h4 id="前端-1"><a href="#前端-1" class="headerlink" title="前端"></a>前端</h4><p>第一个问题：<strong>怎么添加前端的点击事件</strong></p>
+<h4 id="前端-1"><a href="#前端-1" class="headerlink" title="前端"></a>前端</h4><ul>
+<li>第一个问题：<strong>怎么添加前端的点击事件</strong></li>
+</ul>
 <p>这里原本功能的实现者使用的element-ui的el-table实现表格功能，但是我们知道Vue表格的数据不是写死的，而是通过:data动态绑定的，el-table组件也没有列绑定事件，那应该怎么才能给对应的列添加点击事件呢？</p>
 <p>这里困扰了我很久，网上相关的模棱两可的说法有太多了，也没有找到很合适的。最后我决定查看已经实现的其他页面，寻找可能的解决方案。这诞生了一个新的解决企业项目的思路：</p>
 <blockquote>
@@ -290,11 +290,46 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;template #value = <span class="string">&quot;scope&quot;</span>&gt;</span><br><span class="line">	<span class="language-xml"><span class="tag">&lt;<span class="name">span</span> @<span class="attr">click</span>=<span class="string">&quot;employeeDetail(scope.row)&quot;</span>&gt;</span>&#123;&#123;scope.row.value&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span>    </span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>通过#号绑定data里面带有slot属性的列，再调用click方法，Vue就能找到对应的方法了。这里的方法需要能够跳转新页面。</p>
-<p>那么，第二个问题：<strong>前端怎么实现跳转新页面？</strong></p>
+<ul>
+<li>那么，第二个问题：<strong>前端怎么实现跳转新页面？</strong></li>
+</ul>
 <p>这里需要使用push方法，即：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">methods</span>:&#123;</span><br><span class="line">    <span class="title function_">employeeDetail</span>(<span class="params">row</span>)&#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">$route</span>.<span class="title function_">push</span>(&#123;</span><br><span class="line">            <span class="attr">name</span>: ...,</span><br><span class="line">            <span class="attr">params</span>:&#123;</span><br><span class="line">                ...</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>很显然，找到公司代码山里面的router.vue，添加你要跳转的页面名字和链接，同时指向一个新的你要创建的Vue组件——你即将创建的Vue组件就是新的页面，现在只需要create一个new file即可！</p>
+<ul>
+<li>现在第三个问题：<strong>新页面需要实现哪些功能？</strong></li>
+</ul>
+<p>很显然，我需要一个 el-table 表格存放后端传来的数据，我还需要一个pagination标签对表格进行分页。</p>
+<p>至此，前端的基本框架和内容已经基本架构完毕了，现在看看后端</p>
+<h3 id="后端-1"><a href="#后端-1" class="headerlink" title="后端"></a>后端</h3><ul>
+<li>第四个问题：<strong>原数据已经有了，我应该怎么获取？在哪里获取？</strong></li>
+<li>第五个问题：<strong>前后端分别需要什么参数？</strong></li>
+</ul>
+<p>这两个问题都可以通过分析后端解决。</p>
+<p>通过分析后端方法，能了解到后端这里获取员工数量是通过这样的逻辑：</p>
+<blockquote>
+<p>Controller -&gt; Service -&gt; Mapper -&gt; SQL</p>
+</blockquote>
+<p>最后通过SQL的count函数获取的人数，大致如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(employeeId) <span class="keyword">as</span> A</span><br><span class="line"><span class="keyword">from</span> ... <span class="keyword">inner</span> <span class="keyword">join</span> ...</span><br><span class="line"><span class="keyword">where</span> deptId <span class="operator">=</span> #&#123;deptId&#125; </span><br><span class="line"><span class="keyword">and</span> jobType <span class="operator">=</span> #&#123;jobType&#125;</span><br><span class="line"><span class="keyword">and</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>这里吐槽一下公司用的BeetlSQL + Oracle SQL这种梦幻组合，有很多不同于之前了解的Mysql语法，而且还能添加 if函数，可以说非常奇特，让我大开眼界。</p>
+<p>那这个逻辑稍微修改一下就可以获得员工的详细信息了：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> jobType,Name,employeeId,dept,position,sex</span><br><span class="line"><span class="keyword">from</span> ... <span class="keyword">inner</span> <span class="keyword">join</span> ...</span><br><span class="line"><span class="keyword">where</span> deptId <span class="operator">=</span> #&#123;deptId&#125; </span><br><span class="line"><span class="keyword">and</span> jobType <span class="operator">=</span> #&#123;jobType&#125;</span><br><span class="line"><span class="keyword">and</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>参数什么的都不需要改，可以说很方便了。而且也可以猜到，需要的参数应该就是部门ID（deptId）和工作类型（jobType）了。另外分页可能也需要参数 page 和limit。</p>
+<p>只需要新建一个VO类，存放返回的 jobType,Name,employeeId,dept,position,sex 信息即可，略过Controller类和Service类代码，直接看Service层的实现类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> PageResult&lt;BaseVO&gt; <span class="title function_">findEmployeeDetail</span><span class="params">(BaseDTO query)</span>&#123;</span><br><span class="line">    <span class="comment">// If deptId is null, set a default id by its login session</span></span><br><span class="line">    <span class="keyword">if</span> (StringUtils.isEmpty(query.getDeptId()))&#123;</span><br><span class="line">        query.setDeptId(getDefaultDeptId());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Extract parameters except pagination parameters</span></span><br><span class="line">    Map&lt;String,Object&gt; pageParam = query.getPageParam();</span><br><span class="line">    </span><br><span class="line">    PageResult&lt;BaseVO&gt; BaseVOs = mapper.findEmployeeDetail(query,pageParam);</span><br><span class="line">    <span class="keyword">return</span> BaseVOs;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里防止了一个空指针，然后还完成了分页逻辑，只需要向前端索要上一个页面传递的参数即可。</p>
+<p>至此，后端需要做的事情也基本清楚了，需求的整体已经很清晰了。</p>
+<h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>最后，在新页面，前端可以通过api的方法传递参数（接收上一个页面push过来的<code>this.$router.params.deptId</code>等等），再多传入几个分页参数，例如<code>page:1</code> 和 <code>limit:10</code> 。最后调用Controller方法，返回的数据，前端通过<code>.then(res =&gt; ...)</code> 来接收即可。</p>
+<p>这个需求相比上一个已经有了一点难度，更重要的是又有了两个解决项目需求的思路：</p>
+<ol>
+<li><strong>通过思考问题解决需求</strong></li>
+<li><strong>举一反三</strong></li>
+</ol>
 ]]></content>
       <categories>
         <category>项目记录</category>
