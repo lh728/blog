@@ -193,7 +193,7 @@
 <h2 id="Click-to-drill-down-to-a-new-page"><a href="#Click-to-drill-down-to-a-new-page" class="headerlink" title="Click to drill down to  a new page"></a>Click to drill down to  a new page</h2><p>Indie project started</p>
 <h3 id="Requirement-Description-1"><a href="#Requirement-Description-1" class="headerlink" title="Requirement Description"></a>Requirement Description</h3><p>In a word, add a click method to the table data in the Vue table, click the data to a new page, and the new page has detailed information about the click data.</p>
 <p>Suppose I now have a pie chart that has been implemented, showing the percentages of the four positions of ABCD. At the same time, there is a table below the pie chart, showing the position name, number of people and percentage, roughly as follows:</p>
-<p>​                                    <strong>【pie chart】</strong></p>
+<p>​                                    <strong>【pie chart】</strong> &lt;- pie chat is here ,put it on top of the form</p>
 <table>
 <thead>
 <tr>
@@ -327,8 +327,8 @@
 <h4 id="Summarize-1"><a href="#Summarize-1" class="headerlink" title="Summarize"></a>Summarize</h4><p>Finally, on the new page, the front end can pass parameters through the api method (receive <code>this.$router.params.deptId</code> from the previous page push, etc.), and then pass in a few more paging parameters, such as <code>page:1 </code> and <code>limit:10</code>. Finally, the Controller method is called, and the returned data can be received by the front end through <code>.then(res =&gt; ...)</code>.</p>
 <p>This requirement is a bit more difficult than the previous one, and more importantly, there are two ideas for solving project requirements:</p>
 <ol>
-<li><strong>Solve needs by thinking about problems</strong></li>
-<li><strong>Inferences from one example</strong></li>
+<li><strong>Solve requirements by thinking about problems</strong></li>
+<li><strong>learn by analogy</strong></li>
 </ol>
 <hr>
 ]]></content>
