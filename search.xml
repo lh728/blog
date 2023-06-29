@@ -302,7 +302,7 @@
 </ul>
 <p>很显然，我需要一个 el-table 表格存放后端传来的数据，我还需要一个pagination标签对表格进行分页。</p>
 <p>至此，前端的基本框架和内容已经基本架构完毕了，现在看看后端</p>
-<h3 id="后端-1"><a href="#后端-1" class="headerlink" title="后端"></a>后端</h3><ul>
+<h4 id="后端-1"><a href="#后端-1" class="headerlink" title="后端"></a>后端</h4><ul>
 <li>第四个问题：<strong>原数据已经有了，我应该怎么获取？在哪里获取？</strong></li>
 <li>第五个问题：<strong>前后端分别需要什么参数？</strong></li>
 </ul>
@@ -324,12 +324,49 @@
 
 <p>这里防止了一个空指针，然后还完成了分页逻辑，只需要向前端索要上一个页面传递的参数即可。</p>
 <p>至此，后端需要做的事情也基本清楚了，需求的整体已经很清晰了。</p>
-<h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>最后，在新页面，前端可以通过api的方法传递参数（接收上一个页面push过来的<code>this.$router.params.deptId</code>等等），再多传入几个分页参数，例如<code>page:1</code> 和 <code>limit:10</code> 。最后调用Controller方法，返回的数据，前端通过<code>.then(res =&gt; ...)</code> 来接收即可。</p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>最后，在新页面，前端可以通过api的方法传递参数（接收上一个页面push过来的<code>this.$router.params.deptId</code>等等），再多传入几个分页参数，例如<code>page:1</code> 和 <code>limit:10</code> 。最后调用Controller方法，返回的数据，前端通过<code>.then(res =&gt; ...)</code> 来接收即可。</p>
 <p>这个需求相比上一个已经有了一点难度，更重要的是又有了两个解决项目需求的思路：</p>
 <ol>
 <li><strong>通过思考问题解决需求</strong></li>
 <li><strong>举一反三</strong></li>
 </ol>
+<hr>
+<h2 id="定时调度邮件任务优化"><a href="#定时调度邮件任务优化" class="headerlink" title="定时调度邮件任务优化"></a>定时调度邮件任务优化</h2><h3 id="需求描述-2"><a href="#需求描述-2" class="headerlink" title="需求描述"></a>需求描述</h3><p>上一任设计定时调度任务的员工为图省事，在接收到调度任务的数据后，直接以toString的方式返回了数据，导致每次邮件内容都长这样：</p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%881%EF%BC%89.png" alt="项目记录——企业需求"></p>
+<p>很显然，这不是利于人类阅读的模式，因此这个需求要求我更改这个需求的样式，把这些数据按照表格的形式展示出来，同时附件带有EXCEL文件。合理的样式应该如下所示：</p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%882%EF%BC%89.png" alt="项目记录——企业需求（2）"></p>
+<h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><p>看到需求，接下来需要解决的问题是：</p>
+<ul>
+<li><p>定时任务怎么调试？</p>
+</li>
+<li><p>获取的数据长什么样子？</p>
+</li>
+<li><p>应该怎么实现EXCEL作为附件写入邮件？</p>
+</li>
+<li><p>怎么让邮件按照需要的样子进行展示？</p>
+</li>
+</ul>
+<h3 id="思路与实现-2"><a href="#思路与实现-2" class="headerlink" title="思路与实现"></a>思路与实现</h3><p>这个项目更多的是拓展了我的见识，了解了如何使用定时调度任务，如何导出EXCEL，以及了解了EasyPoi的邮件发送等功能。</p>
+<p>另外，这是一个纯后端项目：</p>
+<h4 id="后端-2"><a href="#后端-2" class="headerlink" title="后端"></a>后端</h4><p>首先，这个代码已经完成的阶段大概是这样：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Scheduled(cron = &quot;0 0 23 * * ?&quot;)</span></span><br><span class="line"><span class="meta">@Transactional(rollbackFor = Exception.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">removeEmployee</span><span class="params">()</span> <span class="keyword">throw</span> Exception&#123;</span><br><span class="line">    ... get data by SQL ...</span><br><span class="line">        </span><br><span class="line">    List&lt;sysUserEntity&gt; userList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    List&lt;businessUserEntity&gt; arrList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    ... put data into these two arraylist ...</span><br><span class="line">        </span><br><span class="line">    MailUtil.send(<span class="string">&quot;...@...&quot;</span>,userList.toString,...);</span><br><span class="line">    MailUtil.send(<span class="string">&quot;...@...&quot;</span>,arrList.toString,...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在，根据我们之前提到的解决项目需求的方法思考：</p>
+<blockquote>
+<p><strong>通过思考问题解决需求</strong></p>
+</blockquote>
+<p>针对第一个问题，<strong>定时任务怎么调试？</strong></p>
+<p>调试定时任务的方法可以参考之前我发的<a href="https://thellu.com/2023/06/08/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/">另一个帖子</a> 。</p>
+<p>第二个问题，<strong>获取的数据长什么样子？</strong></p>
+<p>之前的代码中，发送任务执行了两次，并且发送的是userList和arrList两个数组，这两个数组包装了sysUserEntity和businessUserEntity 两个实体类，所以我们可以想到发送的就是这两个实体类的数据。</p>
+<p>而要同时发送两次，它们可能有大同小异的操作，所以我想到可能这里需要写一个泛型方法去接收这两个实体类。</p>
+<p>第三个问题，<strong>应该怎么实现EXCEL作为附件写入邮件？</strong></p>
+<p>这里可能就应该用到一些API了，例如 EasyPoi MailUtil.send方法发送邮件。</p>
+<p>这个方法接收邮箱名等参数，更重要的是它还接收一个html模板参数，所以在这里我们可以写一个btl模板配置文件用于优化原本的邮件格式。</p>
+<p>到此，基本的思路就已经有了。</p>
+<p>第四个问题，<strong>怎么让邮件按照需要的样子进行展示？</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">sendDeletedEmployeeAuto</span><span class="params">(List&lt;T&gt; operateMaintains, String templateKeyPath,String subjectTitle,</span></span><br><span class="line"><span class="params">                                       String title)</span> <span class="keyword">throws</span> IOException&#123;</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isNotEmpty(operateMaintains) &amp;&amp; operateMaintains.size() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">// Get the generic type</span></span><br><span class="line">        <span class="type">Type</span> <span class="variable">genericSuperclass</span> <span class="operator">=</span> operateMaintains.getClass().getGenericSuperclass();</span><br><span class="line">        Class&lt;?&gt; entityClass = (Class&lt;?&gt;)((ParameterizedType) genericSuperclass).getActualTypeArguments()[<span class="number">0</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Copy arraylist</span></span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>项目记录</category>
