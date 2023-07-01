@@ -164,26 +164,6 @@
       </tags>
   </entry>
   <entry>
-    <title>构造器内部初始化实际过程</title>
-    <url>/2023/05/18/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="类初始化顺序"><a href="#类初始化顺序" class="headerlink" title="类初始化顺序"></a>类初始化顺序</h2><p>类的初始化遵循的顺序很多人都知道是这样：<br>（1）调用基类构造器，不断重复这个过程直到最底层<br>（2）再按照声明的顺序调用成员的初始化方法<br>（3）调用类构造器的主体  </p>
-<h2 id="类初始化的实际过程"><a href="#类初始化的实际过程" class="headerlink" title="类初始化的实际过程"></a>类初始化的实际过程</h2><p>但是，考虑这样一个例子： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">walk</span><span class="params">()</span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Animal.walk()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	Animal()&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Animal() before walk()&quot;</span>);</span><br><span class="line">		walk();</span><br><span class="line">		System.out.println(<span class="string">&quot;Animal() after walk()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span> <span class="keyword">extends</span> <span class="title class_">Animal</span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="type">int</span> <span class="variable">step</span> <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">walk</span><span class="params">()</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Cat.walk(), step = &quot;</span> + step);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	Cat(<span class="type">int</span> step)&#123;</span><br><span class="line">		<span class="built_in">this</span>.step = step;</span><br><span class="line">		System.out.println(<span class="string">&quot;Cat.Cat(), step = &quot;</span> + step);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">new</span> <span class="title class_">Cat</span>(<span class="number">500</span>);</span><br><span class="line">	</span><br><span class="line">&#125;  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>Animal类的walk方法被设计为在Cat类中被重写，但是Animal的构造器会调用这个walk方法，这导致了对Cat.walk()的调用。<br>上述代码的生成结果是：</p>
-<blockquote>
-<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
-</blockquote>
-<p>我们会发现当Animal的构造器调用walk()方法的时候，step不是默认的初始值100，而是0。<br>因此前面讲的类初始化的顺序并不完整，实际上类的初始化顺序应该是这样的：<br>（1）<strong>在所有事情发生之前先分配空间，将分配给对象的存储空间初始化成二进制的零（或者某些特殊数据类型中与零等价的值）</strong><br>（2）如前所述的调用基类构造器，这个时候在调用cat构造器之前就要调用walk方法，因此此时的step值是0<br>（3）按照声明的顺序调用成员的初始化方法<br>（4）调用类构造器的主体<br>当然，这种错误并不容易发现，因此推荐大家如果可以的话，构造器中尽可能避免调用其他方法，在构造器内唯一能够安全调用的那些方法是基类的final方法（因为他们不会被重写，也就不会有上述的问题）。</p>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何调试springboot定时调度任务</title>
     <url>/2023/06/27/%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95springboot%E5%AE%9A%E6%97%B6%E8%B0%83%E5%BA%A6%E4%BB%BB%E5%8A%A1/</url>
     <content><![CDATA[<p>最近在做企业开发的时候，有个需求需要我对发送邮件的定时调度任务做调整和优化。</p>
@@ -213,132 +193,23 @@
       </tags>
   </entry>
   <entry>
-    <title>项目记录——故障排查</title>
-    <url>/2023/06/17/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</url>
-    <content><![CDATA[<p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
-<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p>Oracle SQL表设计问题 </p>
-<h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
-<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p>很明显，这通常都是后端报错了，所以我按照流程复现了下该报错，然后直接看idea结果，idea报错：</p>
+    <title>构造器内部初始化实际过程</title>
+    <url>/2023/05/18/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="类初始化顺序"><a href="#类初始化顺序" class="headerlink" title="类初始化顺序"></a>类初始化顺序</h2><p>类的初始化遵循的顺序很多人都知道是这样：<br>（1）调用基类构造器，不断重复这个过程直到最底层<br>（2）再按照声明的顺序调用成员的初始化方法<br>（3）调用类构造器的主体  </p>
+<h2 id="类初始化的实际过程"><a href="#类初始化的实际过程" class="headerlink" title="类初始化的实际过程"></a>类初始化的实际过程</h2><p>但是，考虑这样一个例子： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">walk</span><span class="params">()</span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Animal.walk()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	Animal()&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Animal() before walk()&quot;</span>);</span><br><span class="line">		walk();</span><br><span class="line">		System.out.println(<span class="string">&quot;Animal() after walk()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span> <span class="keyword">extends</span> <span class="title class_">Animal</span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="type">int</span> <span class="variable">step</span> <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">walk</span><span class="params">()</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;Cat.walk(), step = &quot;</span> + step);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	Cat(<span class="type">int</span> step)&#123;</span><br><span class="line">		<span class="built_in">this</span>.step = step;</span><br><span class="line">		System.out.println(<span class="string">&quot;Cat.Cat(), step = &quot;</span> + step);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">new</span> <span class="title class_">Cat</span>(<span class="number">500</span>);</span><br><span class="line">	</span><br><span class="line">&#125;  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Animal类的walk方法被设计为在Cat类中被重写，但是Animal的构造器会调用这个walk方法，这导致了对Cat.walk()的调用。<br>上述代码的生成结果是：</p>
 <blockquote>
-<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
+<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
 </blockquote>
-<p>这样的报错根据字面意思，似乎是数据超了sql某个字段的字节限制，那么通过我们在 <a href="https://thellu.com/2023/06/08/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/">项目记录——企业需求</a> 中的连接迁移提到的前端代码反推后端代码的方法，找到对应的后端代码，再找到对应的实体类，看它链接的是哪个数据表，这有助于我们在公司庞大的数据库中直接定位问题表。</p>
-<p>定位到问题表table之后，在Navicat点击“设计表”，我可以直接看到每个字段的字节限制，再对应报错的excel文件里面的内容，我可以很简单的找到对应的限制了200个字节的出问题的列。但是奇怪的是，如果一个中文编码占据2个字节，我个人感觉这个excel文件中这个列的数据的字节数并没有达到208这个标准。</p>
-<p>查询：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> userenv(<span class="string">&#x27;language&#x27;</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
-
-<p>结果是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
-<p>这说明我们Oracle数据库采用的是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> 作为字符编码集，这个UTF-8编码集一个中文占据三个字节，为了验证我们的猜想，查询：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> lengthb(<span class="string">&#x27;xx&#x27;</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
-
-<p>xx就是超过字节限制的数据内容，得到208个字节的答案，这证明我们的猜想没错。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
-<li>更换oracle sql中字符编码集为 *<code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code>*，这样一个中文只占据两个字节。但是显然该方法可能影响到其他表</li>
-<li>要求上传excel的数据列对应内容不要太多</li>
-<li>针对该字段的字节上限进行扩容</li>
-</ul>
-<hr>
-<h2 id="Json默认解析方式"><a href="#Json默认解析方式" class="headerlink" title="Json默认解析方式"></a>Json默认解析方式</h2><h3 id="Bug描述-1"><a href="#Bug描述-1" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很正常的操作：我在后端调用方法，向前端返回一个List的结果集。我们知道这个结果集在前端是用很多个json数据放在一个List里面的。</p>
-<p>我将要返回的数据有这几个列：</p>
-<ul>
-<li>DESCR - 部门名</li>
-<li>userId - ID</li>
-<li>name - 姓名</li>
-<li>jobType - 工作类型</li>
-</ul>
-<p>其中 userId,name,jobType在前端展示都是正常的，获取到了数据，但是DESCR这个列没有数据：</p>
-<table>
-<thead>
-<tr>
-<th align="center">DESCR</th>
-<th align="center">userId</th>
-<th align="center">name</th>
-<th align="center">jobType</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center">1</td>
-<td align="center">a</td>
-<td align="center">A</td>
-</tr>
-<tr>
-<td align="center"></td>
-<td align="center">2</td>
-<td align="center">b</td>
-<td align="center">B</td>
-</tr>
-<tr>
-<td align="center"></td>
-<td align="center">3</td>
-<td align="center">c</td>
-<td align="center">C</td>
-</tr>
-</tbody></table>
-<p>看了下后端，打断点发现数据都是正常传过来的，DESCR这个列是有值的，但是不知道为什么在前端不显示</p>
-<h3 id="问题排查-1"><a href="#问题排查-1" class="headerlink" title="问题排查"></a>问题排查</h3><p>在前端打断点调试，发现传过来的Json数据长这个样子：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span>dESCR<span class="punctuation">:</span>...<span class="punctuation">,</span>userId<span class="punctuation">:</span>&#x27;<span class="number">1</span>&#x27;<span class="punctuation">,</span>name<span class="punctuation">:</span>&#x27;a&#x27;<span class="punctuation">,</span>jobType<span class="punctuation">:</span>&#x27;A&#x27;<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#123;</span>dESCR<span class="punctuation">:</span>...<span class="punctuation">,</span>userId<span class="punctuation">:</span>&#x27;<span class="number">2</span>&#x27;<span class="punctuation">,</span>name<span class="punctuation">:</span>&#x27;b&#x27;<span class="punctuation">,</span>jobType<span class="punctuation">:</span>&#x27;B&#x27;<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>这就奇怪了，为啥DESCR这个列的首字母小写了呢？</p>
-<p>后来发现，不只是DESCR这个列首字母小写了，事实上每个首字母大写的列的首字母都会被小写，在这里因为它们在这里本来就是小写的所以看不出来。</p>
-<p>之所以会这样，探讨其背后原理是因为所有 JSON 的实现都离不开HttpMessageConverter，它是一个消息转换工具，主要实现两方面的功能：</p>
-<ul>
-<li>将服务端返回的对象序列化成 JSON 字符串</li>
-<li>将前端传来的 JSON 字符串反序列化成 Java 对象</li>
-</ul>
-<p>在SpringBoot生成的依赖包中已经自动为我们导入了相关依赖。SpringMVC 自动配置了 Jackson 和 Gson 的 HttpMessageConverter。</p>
-<p>我们公司项目默认使用的Jackson解析Json代码，jackson在序列化过程中会将大写开头的字段自动转成小写开头。</p>
-<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
-<li>给需要保留大小写的不变的属性增加*<code>@JsonFormat</code><em>或者</em><code>@JsonProperty</code>*注解</li>
-<li>给类加上 <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em> 注解</li>
-</ul>
-<hr>
-<h2 id="EsayPoi解析Excel图片空指针"><a href="#EsayPoi解析Excel图片空指针" class="headerlink" title="EsayPoi解析Excel图片空指针"></a>EsayPoi解析Excel图片空指针</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
-<p>现在有两个几乎一模一样的Excel文件，当我进行导入并解析的时候，一个Excel文件会报空指针，一个文件会正常解析并且导入。</p>
-<p>这里的业务逻辑是：</p>
-<ul>
-<li>业务方先下载Excel模板</li>
-<li>业务方根据模板输入自己想要导入的信息，其中有一列是图片信息</li>
-<li>图片信息是业务方自己粘贴进Excel的</li>
-<li>最后业务方点击导入，把Excel解析，把其中的信息导入数据库</li>
-</ul>
-<p>这个Bug就是业务方在这个流程中遇到的，业务方有两个几乎一模一样的Excel文件，它们的文本信息是完全一样的，唯一的区别就是图片不一样。</p>
-<p>而且，就算把可以正常解析导入的Excel文件中的图片粘贴到出问题的Excel文件，也还是会报空指针异常，很奇怪。</p>
-<h3 id="问题排查-2"><a href="#问题排查-2" class="headerlink" title="问题排查"></a>问题排查</h3><p>一开始我以为是图片可能覆盖了其他单元格，所以尝试拉伸了一下图片，发现没有作用。</p>
-<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi API的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi API的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
-<p>更准确的说，是在执行这个放里面如下所示的代码的时候报的错：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">	pic.getPreferredSize()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>打断点，这里需要一个anchor的cell1属性和cell2属性。</p>
-<p>然后这里的cell2属性是空，于是报了空指针。</p>
-<p>知道错误的起源了，现在回头去找为什么cell2属性是null呢？这个属性是在哪里构造的呢？</p>
-<p>经过漫长的寻找，最后发现是在Poi API的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
-<p>该方法如下所示：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> XSSFAnchor <span class="title function_">getAnchorFromParent</span><span class="params">(XmlObject obj)</span> &#123;</span><br><span class="line">  <span class="type">XSSFAnchor</span> <span class="variable">anchor</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">XmlObject</span> <span class="variable">parentXbean</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">XmlCursor</span> <span class="variable">cursor</span> <span class="operator">=</span> obj.newCursor();</span><br><span class="line">  <span class="keyword">if</span> (cursor.toParent()) &#123;</span><br><span class="line">    parentXbean = cursor.getObject();</span><br><span class="line">  &#125;</span><br><span class="line">  cursor.dispose();</span><br><span class="line">  <span class="keyword">if</span> (parentXbean != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTTwoCellAnchor) &#123;</span><br><span class="line">      <span class="type">CTTwoCellAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTTwoCellAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTOneCellAnchor) &#123;</span><br><span class="line">      <span class="type">CTOneCellAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTOneCellAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTAbsoluteAnchor) &#123;</span><br><span class="line">      <span class="type">CTAbsoluteAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTAbsoluteAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> anchor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>不用完全理解代码，只需要看中间这里，<code>parentXbean</code> 将会在这里创造出anchor和它的cell2属性。</p>
-<p>当我们使用断点调试，会发现，如果导入有问题的Excel，会走向这个判断：*<code>parentXbean instanceof CTOneCellAnchor</code>*</p>
-<p>而正常的Excel会走向这个判断：*<code>parentXbean instanceof CTTwoCellAnchor</code>*</p>
-<p>那么，问题就在CTTwoCellAnchor 和 CTOneCellAnchor上面了。</p>
-<p>这两个类是什么呢？显然是和图片相关的东西——在这里感谢Greg Woolsey 的解释一下子点醒了我。参考：</p>
-<blockquote>
-<p><a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
-</blockquote>
-<p>所以，<strong>CTTwoCellAnchor是指图片的大小和位置随着单元格而变</strong>；<strong>CTOneCellAnchor是指大小固定，位置随着单元格而变</strong></p>
-<p>那么，这对应的就是Excel里面的图片属性：</p>
-<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="项目记录"></p>
-<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
-<li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
-</ul>
-<hr>
+<p>我们会发现当Animal的构造器调用walk()方法的时候，step不是默认的初始值100，而是0。<br>因此前面讲的类初始化的顺序并不完整，实际上类的初始化顺序应该是这样的：<br>（1）<strong>在所有事情发生之前先分配空间，将分配给对象的存储空间初始化成二进制的零（或者某些特殊数据类型中与零等价的值）</strong><br>（2）如前所述的调用基类构造器，这个时候在调用cat构造器之前就要调用walk方法，因此此时的step值是0<br>（3）按照声明的顺序调用成员的初始化方法<br>（4）调用类构造器的主体<br>当然，这种错误并不容易发现，因此推荐大家如果可以的话，构造器中尽可能避免调用其他方法，在构造器内唯一能够安全调用的那些方法是基类的final方法（因为他们不会被重写，也就不会有上述的问题）。</p>
 ]]></content>
       <categories>
-        <category>项目记录</category>
+        <category>后端</category>
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Vue</tag>
-        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -358,7 +229,7 @@
 <li>后端需要做什么？</li>
 <li>其他同事已经做了哪些事情？</li>
 </ul>
-<h3 id="思路与实现-—————————————————————————————————–"><a href="#思路与实现-—————————————————————————————————–" class="headerlink" title="思路与实现 —————————————————————————————————–"></a>思路与实现 —————————————————————————————————–</h3><h4 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h4><p>作为一个新人，需要不断学习，但是当然不能是闷头学习。</p>
+<h3 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h3><h4 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h4><p>作为一个新人，需要不断学习，但是当然不能是闷头学习。</p>
 <p>通过请教前辈，了解到这个连接迁移功能的实现是在一个Vue页面实现的，也是通过这一节课，我学到了了解项目，破解需求的第一个思路：</p>
 <blockquote>
 <p><strong>前端代码反推后端</strong></p>
@@ -488,7 +359,7 @@
 <li><p>前后端分别需要什么参数？</p>
 </li>
 </ul>
-<h3 id="思路与实现-—————————————————————————————————–-1"><a href="#思路与实现-—————————————————————————————————–-1" class="headerlink" title="思路与实现 —————————————————————————————————–"></a>思路与实现 —————————————————————————————————–</h3><p>在这里，与上一个项目不同，这里不仅需要前端代码反推后端，新的解决企业项目的思路是：</p>
+<h3 id="思路与实现-1"><a href="#思路与实现-1" class="headerlink" title="思路与实现"></a>思路与实现</h3><p>在这里，与上一个项目不同，这里不仅需要前端代码反推后端，新的解决企业项目的思路是：</p>
 <blockquote>
 <p><strong>通过思考问题解决需求</strong></p>
 </blockquote>
@@ -539,7 +410,7 @@
 
 <p>这里防止了一个空指针，然后还完成了分页逻辑，只需要向前端索要上一个页面传递的参数即可。</p>
 <p>至此，后端需要做的事情也基本清楚了，需求的整体已经很清晰了。</p>
-<h3 id="总结-—————————————————————————————————–"><a href="#总结-—————————————————————————————————–" class="headerlink" title="总结 —————————————————————————————————–"></a>总结 —————————————————————————————————–</h3><p>最后，在新页面，前端可以通过api的方法传递参数（接收上一个页面push过来的<code>this.$router.params.deptId</code>等等），再多传入几个分页参数，例如<code>page:1</code> 和 <code>limit:10</code> 。最后调用Controller方法，返回的数据，前端通过<code>.then(res =&gt; ...)</code> 来接收即可。</p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>最后，在新页面，前端可以通过api的方法传递参数（接收上一个页面push过来的<code>this.$router.params.deptId</code>等等），再多传入几个分页参数，例如<code>page:1</code> 和 <code>limit:10</code> 。最后调用Controller方法，返回的数据，前端通过<code>.then(res =&gt; ...)</code> 来接收即可。</p>
 <p>这个需求相比上一个已经有了一点难度，更重要的是又有了两个解决项目需求的思路：</p>
 <ol>
 <li><strong>通过思考问题解决需求</strong></li>
@@ -547,7 +418,7 @@
 </ol>
 <hr>
 <h2 id="定时调度邮件任务优化"><a href="#定时调度邮件任务优化" class="headerlink" title="定时调度邮件任务优化"></a>定时调度邮件任务优化</h2><hr>
-<h3 id="需求描述-—————————————————————————————————–"><a href="#需求描述-—————————————————————————————————–" class="headerlink" title="需求描述 —————————————————————————————————–"></a>需求描述 —————————————————————————————————–</h3><p>上一任设计定时调度任务的员工为图省事，在接收到调度任务的数据后，直接以toString的方式返回了数据，导致每次邮件内容都长这样：</p>
+<h3 id="需求描述-2"><a href="#需求描述-2" class="headerlink" title="需求描述"></a>需求描述</h3><p>上一任设计定时调度任务的员工为图省事，在接收到调度任务的数据后，直接以toString的方式返回了数据，导致每次邮件内容都长这样：</p>
 <p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%881%EF%BC%89.png" alt="项目记录——企业需求"></p>
 <p>很显然，这不是利于人类阅读的模式，因此这个需求要求我更改这个需求的样式，把这些数据按照表格的形式展示出来，同时附件带有EXCEL文件。合理的样式应该如下所示：</p>
 <p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%882%EF%BC%89.png" alt="项目记录——企业需求（2）"></p>
@@ -562,7 +433,7 @@
 <li><p>怎么让邮件按照需要的样子进行展示？</p>
 </li>
 </ul>
-<h3 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h3><p>这个项目更多的是拓展了我的见识，了解了如何使用定时调度任务，如何导出EXCEL，以及了解了EasyPoi的导出excel等功能。</p>
+<h3 id="思路与实现-2"><a href="#思路与实现-2" class="headerlink" title="思路与实现"></a>思路与实现</h3><p>这个项目更多的是拓展了我的见识，了解了如何使用定时调度任务，如何导出EXCEL，以及了解了EasyPoi的导出excel等功能。</p>
 <p>另外，这是一个纯后端项目：</p>
 <h4 id="后端-2"><a href="#后端-2" class="headerlink" title="后端"></a>后端</h4><p>首先，这个代码已经完成的阶段大概是这样：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Scheduled(cron = &quot;0 0 23 * * ?&quot;)</span></span><br><span class="line"><span class="meta">@Transactional(rollbackFor = Exception.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">removeEmployee</span><span class="params">()</span> <span class="keyword">throw</span> Exception&#123;</span><br><span class="line">    ... get data by SQL ...</span><br><span class="line">        </span><br><span class="line">    List&lt;sysUserEntity&gt; userList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    List&lt;businessUserEntity&gt; arrList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    ... put data into these two arraylist ...</span><br><span class="line">        </span><br><span class="line">    MailUtil.send(<span class="string">&quot;...@...&quot;</span>,userList.toString,...);</span><br><span class="line">    MailUtil.send(<span class="string">&quot;...@...&quot;</span>,arrList.toString,...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -665,13 +536,13 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#97;&#x61;&#x61;&#x40;&#98;&#98;&#x62;&#x62;&#98;&#46;&#x63;&#111;&#109;">&#97;&#x61;&#97;&#x61;&#x61;&#x40;&#98;&#98;&#x62;&#x62;&#98;&#46;&#x63;&#111;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#x61;&#97;&#x61;&#64;&#98;&#98;&#x62;&#x62;&#x62;&#x2e;&#99;&#111;&#x6d;">&#97;&#x61;&#x61;&#97;&#x61;&#64;&#98;&#98;&#x62;&#x62;&#x62;&#x2e;&#99;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span></span><br><span class="line"><span class="keyword">private</span> String email;</span><br></pre></td></tr></table></figure>
 
 <p>然后在 <code>MailUtil.send</code> 的参数里面写 <code>this.email</code> 即可。</p>
-<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>完全的代码大致如此：</p>
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>完全的代码大致如此：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span></span><br><span class="line"><span class="keyword">private</span> String email;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">sendDeletedEmployeeAuto</span><span class="params">(List&lt;T&gt; lists, String templateKeyPath,String subjectTitle,</span></span><br><span class="line"><span class="params">                                       String title)</span> <span class="keyword">throws</span> IOException&#123;</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isNotEmpty(lists) &amp;&amp; lists.size() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">// Get the generic type</span></span><br><span class="line">        <span class="type">Type</span> <span class="variable">genericSuperclass</span> <span class="operator">=</span> lists.getClass().getGenericSuperclass();</span><br><span class="line">        Class&lt;?&gt; entityClass = (Class&lt;?&gt;)((ParameterizedType) genericSuperclass).getActualTypeArguments()[<span class="number">0</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Copy arraylist to help template read</span></span><br><span class="line">        List&lt;T&gt; listsCopy = <span class="keyword">new</span> <span class="title class_">ArrrayList</span>&lt;&gt;();</span><br><span class="line">        listsCopy = ListUtil.toCopyOnWriteArrayList(lists);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// template</span></span><br><span class="line">        <span class="type">GroupTemplate</span> <span class="variable">gt</span> <span class="operator">=</span> BeelUtil.getGt();</span><br><span class="line">        <span class="type">Template</span> <span class="variable">template</span> <span class="operator">=</span> gt.getTemplate(templateKeyPath);</span><br><span class="line">        Map&lt;String,Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        map.put(<span class="string">&quot;lists&quot;</span>,listsCopy);</span><br><span class="line">        template.binding(map)</span><br><span class="line">            </span><br><span class="line">        <span class="comment">// set title in excel    </span></span><br><span class="line">        <span class="type">ExportParams</span> <span class="variable">export</span> <span class="operator">=</span> <span class="built_in">this</span>.getExportParams(title);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// export Excel</span></span><br><span class="line">        <span class="type">Workbook</span> <span class="variable">workbook</span> <span class="operator">=</span> ExcelExportUtil.exportExcel(export,entityClass,lists);</span><br><span class="line">        ...</span><br><span class="line">        com.spire.xls.<span class="type">Workbook</span> <span class="variable">_workbook</span> <span class="operator">=</span> poiUtils.convertToSpireWorkbook(workbook);</span><br><span class="line">        <span class="comment">// encapsulation file outputStream method</span></span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="built_in">this</span>.getFileAttach(_workbook);</span><br><span class="line">        <span class="comment">// send email</span></span><br><span class="line">        MailUtil.send(<span class="built_in">this</span>.email,subjectTitle,template.render(),<span class="literal">true</span>,file);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>发送邮件后就可以按需求的样子展示了，具体的样式看自己写的html文件了。</p>
@@ -690,6 +561,135 @@
       <tags>
         <tag>Java</tag>
         <tag>Vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>项目记录——故障排查</title>
+    <url>/2023/06/17/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</url>
+    <content><![CDATA[<p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
+<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p>Oracle SQL表设计问题 </p>
+<h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
+<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p>很明显，这通常都是后端报错了，所以我按照流程复现了下该报错，然后直接看idea结果，idea报错：</p>
+<blockquote>
+<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
+</blockquote>
+<p>这样的报错根据字面意思，似乎是数据超了sql某个字段的字节限制，那么通过我们在 <a href="https://thellu.com/2023/06/08/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/">项目记录——企业需求</a> 中的连接迁移提到的前端代码反推后端代码的方法，找到对应的后端代码，再找到对应的实体类，看它链接的是哪个数据表，这有助于我们在公司庞大的数据库中直接定位问题表。</p>
+<p>定位到问题表table之后，在Navicat点击“设计表”，我可以直接看到每个字段的字节限制，再对应报错的excel文件里面的内容，我可以很简单的找到对应的限制了200个字节的出问题的列。但是奇怪的是，如果一个中文编码占据2个字节，我个人感觉这个excel文件中这个列的数据的字节数并没有达到208这个标准。</p>
+<p>查询：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> userenv(<span class="string">&#x27;language&#x27;</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
+
+<p>结果是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
+<p>这说明我们Oracle数据库采用的是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> 作为字符编码集，这个UTF-8编码集一个中文占据三个字节，为了验证我们的猜想，查询：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> lengthb(<span class="string">&#x27;xx&#x27;</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
+
+<p>xx就是超过字节限制的数据内容，得到208个字节的答案，这证明我们的猜想没错。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>更换oracle sql中字符编码集为 *<code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code>*，这样一个中文只占据两个字节。但是显然该方法可能影响到其他表</li>
+<li>要求上传excel的数据列对应内容不要太多</li>
+<li>针对该字段的字节上限进行扩容</li>
+</ul>
+<hr>
+<h2 id="Json默认解析方式"><a href="#Json默认解析方式" class="headerlink" title="Json默认解析方式"></a>Json默认解析方式</h2><h3 id="Bug描述-1"><a href="#Bug描述-1" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很正常的操作：我在后端调用方法，向前端返回一个List的结果集。我们知道这个结果集在前端是用很多个json数据放在一个List里面的。</p>
+<p>我将要返回的数据有这几个列：</p>
+<ul>
+<li>DESCR - 部门名</li>
+<li>userId - ID</li>
+<li>name - 姓名</li>
+<li>jobType - 工作类型</li>
+</ul>
+<p>其中 userId,name,jobType在前端展示都是正常的，获取到了数据，但是DESCR这个列没有数据：</p>
+<table>
+<thead>
+<tr>
+<th align="center">DESCR</th>
+<th align="center">userId</th>
+<th align="center">name</th>
+<th align="center">jobType</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center">1</td>
+<td align="center">a</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">2</td>
+<td align="center">b</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">3</td>
+<td align="center">c</td>
+<td align="center">C</td>
+</tr>
+</tbody></table>
+<p>看了下后端，打断点发现数据都是正常传过来的，DESCR这个列是有值的，但是不知道为什么在前端不显示</p>
+<h3 id="问题排查-1"><a href="#问题排查-1" class="headerlink" title="问题排查"></a>问题排查</h3><p>在前端打断点调试，发现传过来的Json数据长这个样子：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span>dESCR<span class="punctuation">:</span>...<span class="punctuation">,</span>userId<span class="punctuation">:</span>&#x27;<span class="number">1</span>&#x27;<span class="punctuation">,</span>name<span class="punctuation">:</span>&#x27;a&#x27;<span class="punctuation">,</span>jobType<span class="punctuation">:</span>&#x27;A&#x27;<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#123;</span>dESCR<span class="punctuation">:</span>...<span class="punctuation">,</span>userId<span class="punctuation">:</span>&#x27;<span class="number">2</span>&#x27;<span class="punctuation">,</span>name<span class="punctuation">:</span>&#x27;b&#x27;<span class="punctuation">,</span>jobType<span class="punctuation">:</span>&#x27;B&#x27;<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这就奇怪了，为啥DESCR这个列的首字母小写了呢？</p>
+<p>后来发现，不只是DESCR这个列首字母小写了，事实上每个首字母大写的列的首字母都会被小写，在这里因为它们在这里本来就是小写的所以看不出来。</p>
+<p>之所以会这样，探讨其背后原理是因为所有 JSON 的实现都离不开HttpMessageConverter，它是一个消息转换工具，主要实现两方面的功能：</p>
+<ul>
+<li>将服务端返回的对象序列化成 JSON 字符串</li>
+<li>将前端传来的 JSON 字符串反序列化成 Java 对象</li>
+</ul>
+<p>在SpringBoot生成的依赖包中已经自动为我们导入了相关依赖。SpringMVC 自动配置了 Jackson 和 Gson 的 HttpMessageConverter。</p>
+<p>我们公司项目默认使用的Jackson解析Json代码，jackson在序列化过程中会将大写开头的字段自动转成小写开头。</p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>给需要保留大小写的不变的属性增加*<code>@JsonFormat</code><em>或者</em><code>@JsonProperty</code>*注解</li>
+<li>给类加上 <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em> 注解</li>
+</ul>
+<hr>
+<h2 id="EsayPoi解析Excel图片空指针"><a href="#EsayPoi解析Excel图片空指针" class="headerlink" title="EsayPoi解析Excel图片空指针"></a>EsayPoi解析Excel图片空指针</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
+<p>现在有两个几乎一模一样的Excel文件，当我进行导入并解析的时候，一个Excel文件会报空指针，一个文件会正常解析并且导入。</p>
+<p>这里的业务逻辑是：</p>
+<ul>
+<li>业务方先下载Excel模板</li>
+<li>业务方根据模板输入自己想要导入的信息，其中有一列是图片信息</li>
+<li>图片信息是业务方自己粘贴进Excel的</li>
+<li>最后业务方点击导入，把Excel解析，把其中的信息导入数据库</li>
+</ul>
+<p>这个Bug就是业务方在这个流程中遇到的，业务方有两个几乎一模一样的Excel文件，它们的文本信息是完全一样的，唯一的区别就是图片不一样。</p>
+<p>而且，就算把可以正常解析导入的Excel文件中的图片粘贴到出问题的Excel文件，也还是会报空指针异常，很奇怪。</p>
+<h3 id="问题排查-2"><a href="#问题排查-2" class="headerlink" title="问题排查"></a>问题排查</h3><p>一开始我以为是图片可能覆盖了其他单元格，所以尝试拉伸了一下图片，发现没有作用。</p>
+<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi API的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi API的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
+<p>更准确的说，是在执行这个放里面如下所示的代码的时候报的错：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">	pic.getPreferredSize()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>打断点，这里需要一个anchor的cell1属性和cell2属性。</p>
+<p>然后这里的cell2属性是空，于是报了空指针。</p>
+<p>知道错误的起源了，现在回头去找为什么cell2属性是null呢？这个属性是在哪里构造的呢？</p>
+<p>经过漫长的寻找，最后发现是在Poi API的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
+<p>该方法如下所示：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> XSSFAnchor <span class="title function_">getAnchorFromParent</span><span class="params">(XmlObject obj)</span> &#123;</span><br><span class="line">  <span class="type">XSSFAnchor</span> <span class="variable">anchor</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">XmlObject</span> <span class="variable">parentXbean</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  <span class="type">XmlCursor</span> <span class="variable">cursor</span> <span class="operator">=</span> obj.newCursor();</span><br><span class="line">  <span class="keyword">if</span> (cursor.toParent()) &#123;</span><br><span class="line">    parentXbean = cursor.getObject();</span><br><span class="line">  &#125;</span><br><span class="line">  cursor.dispose();</span><br><span class="line">  <span class="keyword">if</span> (parentXbean != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTTwoCellAnchor) &#123;</span><br><span class="line">      <span class="type">CTTwoCellAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTTwoCellAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTOneCellAnchor) &#123;</span><br><span class="line">      <span class="type">CTOneCellAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTOneCellAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parentXbean <span class="keyword">instanceof</span> CTAbsoluteAnchor) &#123;</span><br><span class="line">      <span class="type">CTAbsoluteAnchor</span> <span class="variable">ct</span> <span class="operator">=</span> (CTAbsoluteAnchor) parentXbean;</span><br><span class="line">      anchor = <span class="keyword">new</span> <span class="title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> anchor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>不用完全理解代码，只需要看中间这里，<code>parentXbean</code> 将会在这里创造出anchor和它的cell2属性。</p>
+<p>当我们使用断点调试，会发现，如果导入有问题的Excel，会走向这个判断：*<code>parentXbean instanceof CTOneCellAnchor</code>*</p>
+<p>而正常的Excel会走向这个判断：*<code>parentXbean instanceof CTTwoCellAnchor</code>*</p>
+<p>那么，问题就在CTTwoCellAnchor 和 CTOneCellAnchor上面了。</p>
+<p>这两个类是什么呢？显然是和图片相关的东西——在这里感谢Greg Woolsey 的解释一下子点醒了我。参考：</p>
+<blockquote>
+<p><a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
+</blockquote>
+<p>所以，<strong>CTTwoCellAnchor是指图片的大小和位置随着单元格而变</strong>；<strong>CTOneCellAnchor是指大小固定，位置随着单元格而变</strong></p>
+<p>那么，这对应的就是Excel里面的图片属性：</p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="项目记录"></p>
+<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
+</ul>
+<hr>
+]]></content>
+      <categories>
+        <category>项目记录</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Vue</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
 </search>
