@@ -331,6 +331,144 @@
 <li><strong>learn by analogy</strong></li>
 </ol>
 <hr>
+<h2 id="Scheduling-email-task-optimization-Outlook-mailbox"><a href="#Scheduling-email-task-optimization-Outlook-mailbox" class="headerlink" title="Scheduling email task optimization (Outlook mailbox)"></a>Scheduling email task optimization (Outlook mailbox)</h2><hr>
+<h3 id="Requirement-Description-2"><a href="#Requirement-Description-2" class="headerlink" title="Requirement  Description"></a>Requirement  Description</h3><p>The previous employee who designed the scheduling task directly returned the data in the form of <code>toString</code> after receiving the scheduling task data, resulting in the content of each email looking like this:</p>
+<p><img src="/en/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%881%EF%BC%89.png" alt="Project Records"></p>
+<p>Obviously, this is not a mode that is conducive to human reading, so this requirement requires me to change the style of this requirement, display the data in the form of a table, and attach an EXCEL file. A reasonable style should look like this:</p>
+<p><img src="/en/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%882%EF%BC%89.png" alt="Project Records"></p>
+<h3 id="Question-2"><a href="#Question-2" class="headerlink" title="Question"></a>Question</h3><p>Seeing the requirement, the next problem to be solved is:</p>
+<ul>
+<li><p>How to debug the scheduled task?</p>
+</li>
+<li><p>What does the acquired data look like?</p>
+</li>
+<li><p>How should EXCEL be written as an attachment to an email?</p>
+</li>
+<li><p>How to make the mail display as required?</p>
+</li>
+</ul>
+<h3 id="Idea-and-Implementation-1"><a href="#Idea-and-Implementation-1" class="headerlink" title="Idea and Implementation"></a>Idea and Implementation</h3><p>This project is more to expand my knowledge, understand how to use timed scheduling tasks, and understand EasyPoi’s export excel and other functions.</p>
+<p>Also, here’s a backend project:</p>
+<h4 id="Back-end-2"><a href="#Back-end-2" class="headerlink" title="Back end"></a>Back end</h4><p>First of all, the stage where this code has been completed looks like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Scheduled(cron = &quot;0 0 23 * * ?&quot;)</span></span><br><span class="line"><span class="meta">@Transactional(rollbackFor = Exception.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">removeEmployee</span><span class="params">()</span> <span class="keyword">throw</span> Exception&#123;</span><br><span class="line">    ... get data by SQL ...</span><br><span class="line">        </span><br><span class="line">    List&lt;sysUserEntity&gt; userList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    List&lt;businessUserEntity&gt; arrList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    ... put data into these two arraylist ...</span><br><span class="line">        </span><br><span class="line">    MailUtil.send(<span class="string">&quot;...@...&quot;</span>,userList.toString,...);</span><br><span class="line">    MailUtil.send(<span class="string">&quot;...@...&quot;</span>,arrList.toString,...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Now, think in terms of the approach we mentioned earlier to address project requirements:</p>
+<blockquote>
+<p><strong>Solve requirements by thinking about problems</strong></p>
+</blockquote>
+<p>For the first question, **how to debug the scheduled task? **</p>
+<p>For the method of debugging scheduled tasks, please refer to <a href="https://thellu.com/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/">my another post</a> 。</p>
+<p>The second question, **What does the acquired data look like? **</p>
+<p>In the previous code, the sending task was executed twice, and two arrays of userList and arrList were sent. These two arrays wrapped the two entity classes sysUserEntity and businessUserEntity, so we can think that what was sent was the two entity classes data.</p>
+<p>And to send it twice at the same time, they may have similar operations, so I thought that I might need to write a generic method to receive these two entity classes.</p>
+<p>The third question, **how should EXCEL be written as an attachment to an email? **</p>
+<p>Maybe some APIs should be used here, such as Hutool API’s <code> MailUtil.send</code> method to send emails.</p>
+<p>This method receives parameters such as the mailbox name, and more importantly, it also receives an html template parameter, so here we can write a html template configuration file to optimize the original email format.</p>
+<p>At this point, the basic idea is already there.</p>
+<p>The fourth question, **How to make the mail display as required? **</p>
+<p>This problem needs to be analyzed step by step, and it can be expanded into many small problems.</p>
+<p>First of all, we are going to use the Hutool API’s <code>MailUtil.send</code> method to send emails, what parameters does this method receive?</p>
+<h5 id="MailUtil-send"><a href="#MailUtil-send" class="headerlink" title="MailUtil. send"></a>MailUtil. send</h5><p>Because this method is overloaded, I will directly introduce the parameters of the method we are going to use:</p>
+<p>The <strong>source code</strong> of this method of Hutool is as follows:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Send mail to multiple people</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> tos recipient list</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> subject title</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> content text</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> isHtml Whether it is in HTML format</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> files list of attachments</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">( Collection&lt;String&gt; tos, String subject, String content, <span class="type">boolean</span> isHtml, File... files)</span> &#123;</span><br><span class="line">  Mail.setTos(tos.toArray(<span class="keyword">new</span> <span class="title class_">String</span>[tos.size()]))<span class="comment">//</span></span><br><span class="line">      .setTitle(subject)<span class="comment">//</span></span><br><span class="line">      .setContent(content)<span class="comment">//</span></span><br><span class="line">      .setHtml(isHtml)<span class="comment">//</span></span><br><span class="line">      .setFiles(files)<span class="comment">//</span></span><br><span class="line">      .send();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>To summarize, it needs these parameters:</p>
+<ul>
+<li>tos recipient, normally you can set more than one recipient, here is only one recipient</li>
+<li>subject email subject</li>
+<li>content The body of the email, which can be text or HTML content</li>
+<li>isHtml is HTML, if yes, parameter 3 is identified as HTML content</li>
+<li>File optional: attachment, can be multiple or none, just add the File object to the last variable parameter</li>
+</ul>
+<p>Therefore, it can be seen that if we want to modify the format of the email, we need to add an html page in the parameters. Moreover, this html page also needs to pass in the data and display it in the mail. So, here I used <code>template</code> of <code>BeelUtil</code>, which requires a <code>btl</code> file.</p>
+<p>This file is added at the beginning of the email in html format</p>
+<p>“Dear Manager: Employee who resigned … “ In this passage, a table is generated with html tags such as td at the same time, and the data is dynamically generated using <code>jsp</code>, so I won’t show it in detail here. Just follow the format of the front-end jsp page and create it with your own ideas.</p>
+<p>Here the code to import templates using BeelUtil is as follows:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">GroupTemplate</span> <span class="variable">gt</span> <span class="operator">=</span> BeelUtil.getGt();</span><br><span class="line"><span class="type">Template</span> <span class="variable">template</span> <span class="operator">=</span> gt.getTemplate(templateKeyPath);</span><br><span class="line">Map&lt;String,Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">map.put(<span class="string">&quot;lists&quot;</span>,listsCopy);</span><br><span class="line">template.binding(map)</span><br></pre></td></tr></table></figure>
+
+<p>templateKeyPath is the path of the btl file, and listsCopy is the data of the copied arraylist. The reason to make a copy is because if the original data is not copied, the data will disappear after the template is bound, and finally an empty email will be sent to the template that cannot find the required data.</p>
+<h5 id="Excel-Export"><a href="#Excel-Export" class="headerlink" title="Excel Export"></a>Excel Export</h5><p>The template is done, now we need to add an excel attachment to the email, so we need to export the data to an excel first, and then put the excel file in the parameters of <code>MailUtil.send</code>.</p>
+<p>For the export of Excel files, the <code>ExcelExportUtil.exportExcel</code> method of <code>EasyPoi</code> is used here</p>
+<p>This method also has many overloads, choose the one we want to use, <strong>source code</strong> is shown below:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Create corresponding Excel based on Entity</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> entity</span></span><br><span class="line"><span class="comment">* Table title attribute</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> pojoClass</span></span><br><span class="line"><span class="comment">* Excel object Class</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> dataSet</span></span><br><span class="line"><span class="comment">* Excel object data List</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Workbook <span class="title function_">exportExcel</span><span class="params">(ExportParams entity, Class&lt;?&gt; pojoClass, Collection&lt;?&gt; dataSet)</span> &#123;</span><br><span class="line">	Workbook workbook;</span><br><span class="line">	<span class="keyword">if</span> (ExcelType.HSSF.equals(entity.getType())) &#123;</span><br><span class="line">		workbook = <span class="keyword">new</span> <span class="title class_">HSSFWorkbook</span>();</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (dataSet.size() &lt; <span class="number">1000</span>) &#123;</span><br><span class="line">		workbook = <span class="keyword">new</span> <span class="title class_">XSSFWorkbook</span>();</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		workbook = <span class="keyword">new</span> <span class="title class_">SXSSFWorkbook</span>();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">new</span> <span class="title class_">ExcelExportServer</span>().createSheet(workbook, entity, pojoClass, dataSet,<span class="literal">null</span>);</span><br><span class="line">	<span class="keyword">return</span> workbook;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>It can be seen that the parameters required by the <code>exportExcel</code> method are:</p>
+<ul>
+<li>entity exportParams class, which contains various attributes of the excel file, such as title, title line content, etc.</li>
+<li>pojoClass The entity class that needs to be transformed, in this example it is <code>sysUserEntity.class</code> and <code>businessUserEntity.class</code></li>
+<li>dataSet incoming data</li>
+</ul>
+<p>From the perspective of privacy, I will not introduce the exportParams I want to set here in detail, but encapsulate it in the <code>getExportParams</code> method. Finally, read the exported excel as the parameter of <code>MailUtil.send</code>. Specifically as follows:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// set title and other attributes in excel    </span></span><br><span class="line"><span class="type">ExportParams</span> <span class="variable">export</span> <span class="operator">=</span> <span class="built_in">this</span>.getExportParams(title);</span><br><span class="line">        </span><br><span class="line"><span class="comment">// export Excel</span></span><br><span class="line"><span class="type">Workbook</span> <span class="variable">workbook</span> <span class="operator">=</span> ExcelExportUtil.exportExcel(export,entityClass,lists);</span><br><span class="line">...</span><br><span class="line">com.spire.xls.<span class="type">Workbook</span> <span class="variable">_workbook</span> <span class="operator">=</span> poiUtils.convertToSpireWorkbook(workbook);</span><br><span class="line"><span class="comment">// encapsulation file outputStream method</span></span><br><span class="line"><span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="built_in">this</span>.getFileAttach(_workbook);</span><br><span class="line"><span class="comment">// send email</span></span><br><span class="line">MailUtil.send(<span class="string">&quot;....@...&quot;</span>,subjectTitle,template.render(),<span class="literal">true</span>,file);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>title</code> is the title string to be passed in manually, and is set as the internal title of excel through getExportParams.</p>
+</li>
+<li><p><code>subjectTitle</code> is the subject string to be passed in manually.</p>
+</li>
+<li><p><code>template.render()</code> is to render the template template obtained above</p>
+</li>
+</ul>
+<p>But there is a problem here, this entityClass is the required class, and for this example, we know that it refers to <code>sysUserEntity.class</code> and <code>businessUserEntity.class</code>, but this is a generic method! You cannot access <code>T.class</code> directly because of type erasure.</p>
+<p>So, here comes the question - how to get the generic type?</p>
+<h5 id="Reflection-to-get-the-generic-Class-object"><a href="#Reflection-to-get-the-generic-Class-object" class="headerlink" title="Reflection to get the generic Class object"></a>Reflection to get the generic Class object</h5><p>Trying to write <code>T.class</code> in the idea fails even to compile, so what should I do?</p>
+<p>Although generics will be erased during bytecode compilation, <code>Class</code> objects will record their implemented interfaces and inherited parent class information through <code>java.lang.reflect.Type</code>. Let’s take <code>ArrayList&lt;E&gt;</code> as an example:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ArrayList&lt;String&gt; strings = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"><span class="type">Type</span> <span class="variable">genericSuperclass</span> <span class="operator">=</span> strings.getClass().getGenericSuperclass();</span><br><span class="line"><span class="comment">// genericInterfaces = java.util.AbstractList&lt;E&gt;</span></span><br><span class="line">System.out.println(<span class="string">&quot;genericSuperclass = &quot;</span> + genericSuperclass);</span><br></pre></td></tr></table></figure>
+
+<p>The result is the placeholder E.</p>
+<p>But obviously, what we want is String instead of that E.</p>
+<p>genericSuperclass is <code>Type</code> type, and <code>Type</code> has four types:</p>
+<ul>
+<li><code>GenericArrayType</code> is used to describe a generic array of parameters.</li>
+<li><code>WildcardType</code> is used to describe the generic type related to the wildcard <code>?</code>, including <code>?</code>, the lower bound wildcard <code>? super E</code>, and the upper bound wildcard <code>? extend E</code>.</li>
+<li><code>Class&lt;T&gt;</code> is used to describe the <code>Class</code> object of the class.</li>
+<li><code>ParameterizedType</code> is used to describe parameterized types.</li>
+</ul>
+<p>Take a look at instanceof and what will they output?</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ArrayList&lt;String&gt; strings = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"> </span><br><span class="line"><span class="type">Type</span> <span class="variable">genericSuperclass</span> <span class="operator">=</span> strings.getClass().getGenericSuperclass();</span><br><span class="line"> </span><br><span class="line">System.out.println( genericSuperclass <span class="keyword">instanceof</span> ParameterizedType); <span class="comment">// true</span></span><br><span class="line">System.out.println( genericSuperclass <span class="keyword">instanceof</span> Class); <span class="comment">// false</span></span><br><span class="line">System.out.println( genericSuperclass <span class="keyword">instanceof</span> WildcardType); <span class="comment">// false</span></span><br><span class="line">System.out.println( genericSuperclass <span class="keyword">instanceof</span> GenericArrayType); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>So, what do I gain by choosing a parameterized type approach?</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">ParameterizedType</span> <span class="variable">parameterizedType</span> <span class="operator">=</span> (ParameterizedType) genericSuperclass;</span><br><span class="line">Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();</span><br><span class="line">System.out.println(<span class="string">&quot;actualTypeArguments = &quot;</span> + Arrays.toString(actualTypeArguments));</span><br></pre></td></tr></table></figure>
+
+<p>There is only one [E] in the returned Type[] array, and it seems that the result is still E, which seems to have failed.</p>
+<p>But why?</p>
+<p>The reason is actually on ArrayList, look at the source code of ArrayList:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ArrayList</span>&lt;E&gt; <span class="keyword">extends</span> <span class="title class_">AbstractList</span>&lt;E&gt;</span><br><span class="line">        <span class="keyword">implements</span> <span class="title class_">List</span>&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</span><br><span class="line">&#123;</span><br><span class="line">... </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>When ArrayList is instantiated, it only specifies its own generic type and does not specify the specific generic type of the parent class <code>AbstractList</code>, so the placeholder <code>E</code> is still obtained.</p>
+<p>So here, in actual operation, what should I do if I just want the String type in arrayList<String>?</p>
+<p>In fact, there is a simple method: (build anonymous subclass implementation)</p>
+<blockquote>
+<p>&#x2F;&#x2F; Look at the curly braces added at the end</p>
+<p>ArrayList<String> strings &#x3D; new ArrayList<String>(){}; </p>
+</blockquote>
+<p>We can rewrite the method of implementing the parent class and specify the generic concrete type of the parent class through braces <code>&#123;&#125;</code>. why? Because adding a brace is equivalent to defining an anonymous inner class, and the type can be determined to be String at compile time.</p>
+<p>Here we can write the project like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Type</span> <span class="variable">genericSuperclass</span> <span class="operator">=</span> lists.getClass().getGenericSuperclass();</span><br><span class="line">Class&lt;?&gt; entityClass = (Class&lt;?&gt;)((ParameterizedType) genericSuperclass).getActualTypeArguments()[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+<p>lists is the ArrayList<T> we want to pass in.</p>
+<h5 id="Set-the-recipient-in-the-configuration-file"><a href="#Set-the-recipient-in-the-configuration-file" class="headerlink" title="Set the recipient in the configuration file"></a>Set the recipient in the configuration file</h5><p>At this point, the code has basically been completed, but the recipient’s email address is fixed, which is fixed in the first parameter of <code>MailUtil.send</code>.</p>
+<p>What if I still want to change the recipient email address in the configuration file?</p>
+<p>Very simple, set key-value pairs in application.properties:</p>
+<blockquote>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#x61;&#x61;&#x61;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#x2e;&#x63;&#111;&#109;">&#97;&#x61;&#x61;&#x61;&#x61;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#x2e;&#x63;&#111;&#109;</a>“</p>
+</blockquote>
+<p>Inject in Java Bean:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span></span><br><span class="line"><span class="keyword">private</span> String email;</span><br></pre></td></tr></table></figure>
+
+<p>Then write <code>this.email</code> in the parameter of <code>MailUtil.send</code>.</p>
+<h3 id="Summarize-2"><a href="#Summarize-2" class="headerlink" title="Summarize"></a>Summarize</h3><p>The complete code is roughly like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span></span><br><span class="line"><span class="keyword">private</span> String email;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">sendDeletedEmployeeAuto</span><span class="params">(List&lt;T&gt; lists, String templateKeyPath,String subjectTitle,</span></span><br><span class="line"><span class="params">                                       String title)</span> <span class="keyword">throws</span> IOException&#123;</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isNotEmpty(lists) &amp;&amp; lists.size() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">// Get the generic type</span></span><br><span class="line">        <span class="type">Type</span> <span class="variable">genericSuperclass</span> <span class="operator">=</span> lists.getClass().getGenericSuperclass();</span><br><span class="line">        Class&lt;?&gt; entityClass = (Class&lt;?&gt;)((ParameterizedType) genericSuperclass).getActualTypeArguments()[<span class="number">0</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Copy arraylist to help template read</span></span><br><span class="line">        List&lt;T&gt; listsCopy = <span class="keyword">new</span> <span class="title class_">ArrrayList</span>&lt;&gt;();</span><br><span class="line">        listsCopy = ListUtil.toCopyOnWriteArrayList(lists);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// template</span></span><br><span class="line">        <span class="type">GroupTemplate</span> <span class="variable">gt</span> <span class="operator">=</span> BeelUtil.getGt();</span><br><span class="line">        <span class="type">Template</span> <span class="variable">template</span> <span class="operator">=</span> gt.getTemplate(templateKeyPath);</span><br><span class="line">        Map&lt;String,Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        map.put(<span class="string">&quot;lists&quot;</span>,listsCopy);</span><br><span class="line">        template.binding(map)</span><br><span class="line">            </span><br><span class="line">        <span class="comment">// set title in excel    </span></span><br><span class="line">        <span class="type">ExportParams</span> <span class="variable">export</span> <span class="operator">=</span> <span class="built_in">this</span>.getExportParams(title);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// export Excel</span></span><br><span class="line">        <span class="type">Workbook</span> <span class="variable">workbook</span> <span class="operator">=</span> ExcelExportUtil.exportExcel(export,entityClass,lists);</span><br><span class="line">        ...</span><br><span class="line">        com.spire.xls.<span class="type">Workbook</span> <span class="variable">_workbook</span> <span class="operator">=</span> poiUtils.convertToSpireWorkbook(workbook);</span><br><span class="line">        <span class="comment">// encapsulation file outputStream method</span></span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="built_in">this</span>.getFileAttach(_workbook);</span><br><span class="line">        <span class="comment">// send email</span></span><br><span class="line">        MailUtil.send(<span class="built_in">this</span>.email,subjectTitle,template.render(),<span class="literal">true</span>,file);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>After sending the email, it can be displayed according to the requirements. The specific style depends on the html file written by yourself.</p>
+<p>This requirement is a brand-new project that I haven’t touched before, and I also tried to write a generic method by myself, which can be said to be very interesting. Mainly learned:</p>
+<ol>
+<li><strong>Use of <code>MailUtil.send</code> method of <code>Hutool</code></strong></li>
+<li><strong><code>EasyPoi</code>‘s <code>ExcelExportUtil.exportExcel</code> method uses</strong></li>
+<li><strong>How to get the generic type through reflection</strong></li>
+<li><strong>How to inject configuration file attributes into classes</strong></li>
+</ol>
+<hr>
 ]]></content>
       <categories>
         <category>Project Records</category>
