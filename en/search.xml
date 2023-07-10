@@ -1,162 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hexo switch language, suitable for any theme</title>
-    <url>/en/2023/05/20/Hexo%20switch%20language,%20suitable%20for%20any%20theme/</url>
-    <content><![CDATA[<p>This article mainly discusses how Hexo achieves internationalization in the simplest way, and this method is highly applicable. I personally think that there is no requirement for which theme to use.</p>
-<h1 id="Ideal-Solution"><a href="#Ideal-Solution" class="headerlink" title="Ideal Solution"></a>Ideal Solution</h1><p>There is a button on the home page, by clicking this button, you can switch the language page with one click (the example of this blog will be Chinese and English). At the same time, the realization of this method does not need to buy a new domain name.</p>
-<p>It is worth noting that this method is not a direct translation, so you need to maintain N blog files of the post at the same time (N is the number of your languages), so if you need to update the blog, you need to update N files at the same time.</p>
-<p>The following implementation process will use Chinese and English as examples. For more languages, please refer to this tutorial:</p>
-<h2 id="Implementation-Process"><a href="#Implementation-Process" class="headerlink" title="Implementation Process"></a>Implementation Process</h2><p>（1）Divide the page folder, assuming that your original files are stored in a folder called hexo, which mainly stores Chinese files. Now create a new folder called hexo-en to store the English folder. Note: they are siblings!</p>
-<p>The built folder should be as follows:</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(1).png" alt="文件夹位置展示"></p>
-<p>(2) Copy all files except node_modules from hexo to hexoen, separate the site</p>
-<p>(3) Next, modify the contents of the <strong>_config.yml</strong> files of the two hexo files. The first one in the figure below is hexo, and the second one is hexo-en: (this step is to modify the main language of website)</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(2).png" alt="hexo"></p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(3).png" alt="hexo-en"></p>
-<p>(4) Continue to modify the root directory url and root of <strong>_config.yml</strong>, the first one in the figure below is hexo, and the second one is hexo-en:</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(4).png" alt="hexo"></p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(5).png" alt="hexo-en"></p>
-<p>(5) Modify the jump link of your own menu corresponding to the theme. Note that there is a hint here—**You can jump to the link of your own github.io&#x2F;en, and you can also jump to the link of your own domain name&#x2F;en . I don’t know why the jump to github.io failed here, and 404 was displayed, but the jump to the domain name thellu.com&#x2F;en succeeded. **You can choose the jump address according to your actual situation.</p>
-<p>In addition, note that if you have a Chinese homepage, the menu should be set to English; if you are an English homepage, the menu should be set to Chinese.</p>
-<p>The first picture below is hexo, and the second one is hexo-en:</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(6).png" alt="hexo"></p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(7).png" alt="hexo-en"></p>
-<p>(6) Congratulations, the basic configuration is now complete! Now execute <strong>npm install</strong> in the hexoen folder to install the required plugins.</p>
-<p>(7) Finally, modify the command that you submit files to github every time, you need to use cp to merge and submit files every time. I am using an absolute path here, so it is convenient to modify the address when cd path:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">cd /d/Blog/hexo &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexoen &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexo &amp;&amp; cp -r /d/Blog/hexoen/public/. /d/Blog/hexo/public/en/ &amp;&amp; hexo d<br></code></pre></td></tr></table></figure>
-
-<p>(8) Congratulations, the configuration is now complete! You can check to see if your website has successfully redirected the page. The only downside is that clicking will jump to a new page instead of updating the old one.</p>
-<h2 id="Common-Error"><a href="#Common-Error" class="headerlink" title="Common Error"></a>Common Error</h2><p>When uploading with the above code after writing the md file normally, sometimes an error will be reported inexplicably:</p>
+    <title>Project Records — Troubleshooting</title>
+    <url>/en/2023/06/17/Project%20Records%20-%20Troubleshooting/</url>
+    <content><![CDATA[<p>Here I will record some insightful bugs I encountered in enterprise development, as well as troubleshooting for code</p>
+<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p><strong>Oracle SQL table design problem</strong></p>
+<h3 id="Bug-Description"><a href="#Bug-Description" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>The product manager asked me to check for a bug that occurred in an unknown environment (I didn’t ask whether it was a development, test, or formal environment). The front-end failed to upload excel to update data, and it prompted “Database exception, please contact the administrator”.</p>
+<h3 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>Obviously, this is usually an error reported by the backend, so I reproduced the error according to the process, and then directly looked at the result of the idea, and the idea reported an error:</p>
 <blockquote>
-<p>err : Error: Spawn Failed</p>
+<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
 </blockquote>
-<p>The problem usually occurs in the .deploy_git folder, which is a Git repository generated by the hexo framework rendering. The <em><code>hexo d</code></em> command is to push it to github. Most of the problems are caused by git changing the contents of some .deploy_git files when pushing or hexo d, resulting in an error.</p>
-<p>All in all, just delete this file.</p>
-<p>Then call the following command:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs hexo">git config --global core.autocrlf false<br></code></pre></td></tr></table></figure>
+<p>According to the literal meaning of such an error, it seems that the data exceeds the byte limit of a certain field in sql, so through our <a href="https://thellu.com/en/2023/06/12/Project%20Records%20-%20Enterprise%20Requirement/">Project Record-Enterprise Requirements</a> blog, “<strong>Frontend Code Mapping Backend</strong> <strong>Code</strong>“ method, finds the corresponding back-end code, and then finds the corresponding entity class to see which data table it links to. This helps us directly locate the problem table in the company’s huge database.</p>
+<p>After locating the problem table, click “Design Table” in Navicat, I can directly see the byte limit of each field, and then correspond to the content in the excel file that reported the error, I can easily find the corresponding limit of 200 bytes offending column. But the strange thing is that if a Chinese code occupies 2 bytes, I personally feel that the number of bytes of data in this column in this excel file does not reach the standard of 208.</p>
+<p>Then query:</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> userenv(<span class="hljs-string">&#x27;language&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
 
-<p>Then execute the clean g d command of hexo.</p>
-<p>But note that there are two other reasons for this error:</p>
-<ul>
-<li>Our submission to github code uses absolute path. If you open git bash in hexoen, the .deploy_git file may be saved in the hexoen folder. Remember to delete it at this time.</li>
-<li>Network fluctuations, delete .deploy_git and wait for a while for it to be fine</li>
+<p>The result is <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
+<p>This shows that our Oracle database uses <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> as the character encoding set. This UTF-8 encoding set occupies three bytes for a Chinese character. In order to verify our guess, query:</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> lengthb(<span class="hljs-string">&#x27;xx&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
+
+<p>xx is the data content that exceeds the byte limit, and the answer is 208 bytes, which proves that I am correct.</p>
+<h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>Change the character encoding set in oracle sql to <em><code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code></em>, such a Chinese only occupies two bytes. But obviously this method may affect other tables</li>
+<li>It is not required to upload too much content corresponding to the data column of excel</li>
+<li>Expand the byte limit of the field</li>
 </ul>
-]]></content>
-      <categories>
-        <category>front-end</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>How to debug spring boot scheduling tasks</title>
-    <url>/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</url>
-    <content><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p>
-<h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p>
+<hr>
+<h2 id="Json-default-parsing-method"><a href="#Json-default-parsing-method" class="headerlink" title="Json default parsing method"></a>Json default parsing method</h2><h3 id="Bug-Description-1"><a href="#Bug-Description-1" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>A very normal operation: I call a method on the backend and return a List result set to the frontend. We know that this result set is placed in a List with a lot of json data at the front end.</p>
+<p>The data I’m going to return has these columns:</p>
 <ul>
-<li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li>
-<li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li>
-<li>Another idea is to call the method in the test code, but it is also very tricky</li>
+<li>DESCR - Department name</li>
+<li>userId - ID</li>
+<li>name - name</li>
+<li>jobType - job type</li>
 </ul>
-<p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p>
-<p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Among them, userId, name, and jobType are displayed normally on the front end, and the data is obtained, but there is no data show in the column DESCR:</p>
+<table>
+<thead>
+<tr>
+<th align="center">DESCR</th>
+<th align="center">userId</th>
+<th align="center">name</th>
+<th align="center">jobType</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center">1</td>
+<td align="center">a</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">2</td>
+<td align="center">b</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">3</td>
+<td align="center">c</td>
+<td align="center">C</td>
+</tr>
+</tbody></table>
+<p>After looking at the backend, debug at the breakpoint found that the data was passed normally. The column DESCR has a value, but I don’t know why it is not displayed on the frontend.</p>
+<h3 id="Troubleshooting-1"><a href="#Troubleshooting-1" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>Debug at the break point on the front end, and find that the Json data passed looks like this:</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>&#x27;<span class="hljs-number">1</span>&#x27;<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>&#x27;a&#x27;<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>&#x27;A&#x27;<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br><span class="hljs-punctuation">&#123;</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>&#x27;<span class="hljs-number">2</span>&#x27;<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>&#x27;b&#x27;<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>&#x27;B&#x27;<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>...<br></code></pre></td></tr></table></figure>
 
-<p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Intranet projects avoid pitfall</title>
-    <url>/en/2023/06/06/Intranet%20projects%20avoid%20pitfall/</url>
-    <content><![CDATA[<p>As we all know, some projects are completely established in the offline mode of the intranet. The first time I came into contact with this offline mode project recently, record the problems encountered:</p>
-<h2 id="Maven-offline-model"><a href="#Maven-offline-model" class="headerlink" title="Maven offline model"></a>Maven offline model</h2><p>Due to the requirements of the intranet, the project is running on a virtual machine, and the development environment cannot be connected to the Internet on the virtual machine, so all projects need to be downloaded again. There was a problem when configuring pom.xml, and idea kept reporting a strange error:</p>
-<blockquote>
-<p>Cannot access maven-default-http-blocker (<a href="http://0.0.0.0/">http://0.0.0.0/</a>) in offline mode</p>
-</blockquote>
-<p>At first, according to the instructions on the Internet, I turned on the offline mode of maven, but it still couldn’t solve the problem. Later, I found out that it was a Maven version problem.</p>
-<p>This is because the default Bundled (Maven3) of the idea I use, the maven version here is too high above 3.8, and there is a mirror text in the setting.xml file of the high version maven:</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br>     <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>maven-default-http-blockerid&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>external:http:*mirrorOf&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Pseudo repository to mirror external repositories initially using HTTP.name&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://0.0.0.0/url&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">blocked</span>&gt;</span>trueblocked&gt;<br>   <span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>This is strange, why is the first letter of the DESCR column lowercase?</p>
+<p>It was later discovered that not only the first letter of the DESCR column is lowercased, but in fact the first letter of each column with a capitalized first letter will be lowercased, because they are originally lowercased here, so they cannot be seen here.</p>
+<p>The reason for this is to discuss the principle behind it because all JSON implementations are inseparable from HttpMessageConverter, which is a message conversion tool that mainly implements two functions:</p>
+<ul>
+<li>Serialize the object returned by the server into a JSON string</li>
+<li>Deserialize the JSON string sent from the front end into a Java object</li>
+</ul>
+<p>Relevant dependencies have been automatically imported for us in the dependency package generated by SpringBoot. SpringMVC automatically configures <strong>Jackson</strong> and Gson’s HttpMessageConverter.</p>
+<p>By default, our company’s project uses Jackson to parse the Json code. During the serialization process, Jackson will automatically convert fields’ first letter beginning with uppercase to lowercase.</p>
+<h3 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>Add <em><code>@JsonFormat</code></em> or <em><code>@JsonProperty</code></em> annotations to unchanging properties that need to preserve case</li>
+<li>Annotate the class with <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em></li>
+</ul>
+<hr>
+<h2 id="EsayPoi-parsing-Excel-picture-null-pointer"><a href="#EsayPoi-parsing-Excel-picture-null-pointer" class="headerlink" title="EsayPoi parsing Excel picture null pointer"></a>EsayPoi parsing Excel picture null pointer</h2><h3 id="Bug-Description-2"><a href="#Bug-Description-2" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>A very interesting bug, I have been troubled here for a day.</p>
+<p>Now there are two Excel files that are almost exactly the same. When I import and parse, one Excel file will report a null pointer, and the other file will be parsed and imported normally.</p>
+<p>The business logic here is:</p>
+<ul>
+<li>The business downloads the Excel template first</li>
+<li>The business enters the information they want to import according to the template, one of which is image information column</li>
+<li>The picture information is pasted into Excel by the business</li>
+<li>Finally, the business clicks Import, parses Excel, and imports the information into the database</li>
+</ul>
+<p>This bug is encountered by the business in this process. The business has two almost identical Excel files, and their text information is exactly the same. The only difference is that the pictures are different.</p>
+<p>Moreover, even if the picture in the Excel file that can be parsed and imported normally is pasted into the Excel file with problems, a null pointer exception will still be reported, which is very strange.</p>
+<h3 id="Troubleshooting-2"><a href="#Troubleshooting-2" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>At first I thought that the picture might cover other cells, so I tried to stretch the picture, but it didn’t work.</p>
+<p>Then carefully study the back-end code and find that this piece is parsed by calling the <em><code>importExcelMore</code></em> method of the <em><code>ExcelImportUtil</code></em> class of EasyPoi API. So I continued to drill down and found that more precisely, the problem occurred when calling the <em><code>getSheetPictures07</code></em> method of EasyPoi API’s <em><code>PoiPublicUtil</code></em> class.</p>
+<p>To be more precise, it is an error reported when executing the code shown below in this placement:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">...<br>	pic.getPreferredSize()<br>...<br></code></pre></td></tr></table></figure>
 
-<p>This thing is that maven blocks external HTTP repositories by default, and the simple solution is to comment it out. </p>
-<p>If the user does not take the initiative to comment out the maven-default-http-blocker configuration, this will cause persistence problems when IDEA uses the bundled maven.</p>
-<p>This is actually a bit inconvenient. The main reason for setting this is to use the HTTP protocol to download dependencies, which may lead to man-in-the-middle attacks. So Maven 3.8.1 prohibits all Maven repositories of the HTTP protocol.</p>
-<p>So, there are mainly two solutions:</p>
-<ol>
-<li><strong>Downgrade the version</strong></li>
-<li>When idea loads the external configuration file, it will first load the settings.xml in the \plugins\maven\lib\maven3\conf folder in the installation directory, and <strong>comment the maven-default-http-blocker configuration in this file</strong></li>
-</ol>
-<h2 id="idea-SVN-import-project"><a href="#idea-SVN-import-project" class="headerlink" title="idea SVN import project"></a>idea SVN import project</h2><p>The project runs on the amazing SVN instead of git. When trying to import a project from SVN, similar to git, we open the interface from idea File -&gt; new -&gt; project from version control:</p>
-<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95.png" alt="内网项目踩坑记录"></p>
-<p>You can see that there is a version control option on the top, and the drop-down menu here can choose subversion (ie SVN).</p>
-<p>After selecting, enter the url of the company’s SVN project, and the corresponding folder will be automatically generated, which contains project code, test code, packages and so on. However, problems often occur now, and an error will be reported here:</p>
+<p>Break point debug , here needs an anchor’s cell1 attribute and cell2 attribute.</p>
+<p>Then the cell2 attribute here is empty, so a null pointer is reported.</p>
+<p>Knowing the origin of the error, now go back and find out why the cell2 attribute is null? Where is this attribute constructed?</p>
+<p>After a long search, I finally found that it was constructed in the <em><code>getAchorFromParent</code></em> method of Poi API’s <em><code>XSSFDrawing</code></em> class.</p>
+<p>The method looks like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> XSSFAnchor <span class="hljs-title function_">getAnchorFromParent</span><span class="hljs-params">(XmlObject obj)</span> &#123;<br>  <span class="hljs-type">XSSFAnchor</span> <span class="hljs-variable">anchor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlObject</span> <span class="hljs-variable">parentXbean</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlCursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> obj.newCursor();<br>  <span class="hljs-keyword">if</span> (cursor.toParent()) &#123;<br>    parentXbean = cursor.getObject();<br>  &#125;<br>  cursor.dispose();<br>  <span class="hljs-keyword">if</span> (parentXbean != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTTwoCellAnchor) &#123;<br>      <span class="hljs-type">CTTwoCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTTwoCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTOneCellAnchor) &#123;<br>      <span class="hljs-type">CTOneCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTOneCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTAbsoluteAnchor) &#123;<br>      <span class="hljs-type">CTAbsoluteAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTAbsoluteAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> anchor;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>Don’t fully understand the code, just look at the middle here, where the <code>parentXbean</code> will create the anchor and its cell2 properties.</p>
+<p>When we use breakpoint debugging, we will find that if we import a problematic Excel, we will go to this judgment: <em><code>parentXbean instanceof CTOneCellAnchor</code></em></p>
+<p>And normal Excel will go to this judgment: <em><code>parentXbean instanceof CTTtwoCellAnchor</code></em></p>
+<p>Then, the problem lies in CTTwoCellAnchor and CTOneCellAnchor. </p>
+<p>What are these two classes? Apparently something to do with pictures - thanks to Greg Woolsey for explaining it right here. refer to:</p>
 <blockquote>
-<p>Cannot run program “svn”: CreateProcess error&#x3D;2</p>
+<p><a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
 </blockquote>
-<p>The reason is that SVN needs to use command-line tools. If there is no SVN command-line tool locally, an error will result.</p>
-<p>So reopen the msi file where you installed SVN, select modify (click the picture on the left instead of the text), install the command line client tools and it will be OK.</p>
-<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95(2).png" alt="内网项目"></p>
+<p>Therefore, <strong>CTTwoCellAnchor means that Move and size with cells</strong>; <strong>CTOneCellAnchor means that Move but don’t size with cells</strong>.</p>
+<p>Then, this corresponds to the picture properties in Excel:</p>
+<p><img src="/en/images/Projects_Records/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="Project Records"></p>
+<h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>At this point, the problem is solved, you only need to modify the picture properties in Excel. So far, the problem has been solved. As for the deeper reason, due to the tight schedule of the project, there is no time to delve into it. Friends who understand are welcome to leave a message in the comment area</li>
+</ul>
 ]]></content>
       <categories>
         <category>Project Records</category>
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Initialization of Java virtual machine class loading</title>
-    <url>/en/2023/06/03/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
-    <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
-<blockquote>
-<ul>
-<li>Encountered new (instantiated object), getstatic (read a class static field which is not modified by final or does not put the result into the constant pool at compile time), putstatic (set a class static field which is not modified by final or does not put the result into the constant pool at compile time) or invokestatic (calling a static method of a class) these four bytecode instructions, if the class has not been initialized, initialization needs to be triggered.</li>
-<li>Use the methods of the java.lang.reflect package to make reflective calls on types</li>
-<li>the parent class has not been initialized</li>
-<li>When the virtual machine starts, the user needs to specify a main class (main) to be executed</li>
-<li>When using the dynamic language support newly added by java7, if the final analysis result of a MthodHandle instance is REF_getStatic, REF_putstatic, REF_invokestatic, REF_newInvokeSpecial four types of method handles</li>
-<li>An interface defines the interface method modified by default, and the implementation class of the interface is initialized at the same time</li>
-</ul>
-</blockquote>
-<p>In addition, all reference types do not trigger initialization:</p>
-<h2 id="Subclass-references-parent-class"><a href="#Subclass-references-parent-class" class="headerlink" title="Subclass references parent class"></a>Subclass references parent class</h2><p>Referring to a static field of a superclass through a subclass does not cause the subclass to be initialized:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">package</span> com.example.demo;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sub</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span>&#123;System.out.println(<span class="hljs-string">&quot;Sub&quot;</span>);&#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Sub.value);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>What happens in the end? It will output “Super” first, and then the value of “value”.</p>
-<p>For static fields, only the class that directly defines this field will be initialized, so the static field of the parent class is referenced through the subclass, and only the parent class will be initialized.</p>
-<h2 id="Array-reference-class"><a href="#Array-reference-class" class="headerlink" title="Array reference class"></a>Array reference class</h2><p>Referencing a class through an array definition does not trigger initialization of this class</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        Sub[] sp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sub</span>[<span class="hljs-number">5</span>];<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>What happens in the end?</p>
-<p>nothing.</p>
-<p>It can be seen that the Sub class has not been initialized. But this code triggers the initialization phase of another class named “[Lcom.example.demo.Sub”. This thing is automatically generated by the virtual machine and a subclass directly inherited from Object , and the creation action is triggered by the bytecode instruction anewarray (that is, creating a new reference array).</p>
-<p>The one-dimensional array represented by this class, users can only directly use the length property modified as public and the clone method. Of course, the properties and methods used in the array are all implemented in this class. This is because Java wraps the access to the array elements (it is the movement of the array pointer in C), which is why Java detects that the array is out of bounds and throws an ArrayIndexOutOfBoundsException instead of an illegal memory access like C.</p>
-<p>To be precise, Java’s out-of-bounds check is not encapsulated in the class for array element access, but encapsulated in xaload (array elements pushed onto the stack) and xastore (array operations) bytecode instructions for array access.</p>
-<h2 id="Constant-pool-reference"><a href="#Constant-pool-reference" class="headerlink" title="Constant pool reference"></a>Constant pool reference</h2><p>Constants will be stored in the constant pool of the calling class during the compilation phase, and essentially there is no direct reference to the class that defines the constant</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">HELLO</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Hello&quot;</span>;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Super.HELLO);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>The code here also does not output “Super” after running.</p>
-<p>The constant value of hello has actually been converted into a reference of the SomeName class to its own constant pool during the compilation phase, so the two of them have nothing to do with each other.</p>
-<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>Interfaces are a little different than classes. In fact, the interface also has an initialization process, but the interface cannot use static code blocks to output initialization information like a class. The compiler will generate a “<clinit>“ class constructor for the interface to initialize the member variables defined in the interface. and:</p>
-<p>The interface does not require all parent interfaces to be initialized, only when it is used will it be initialized.</p>
-<hr>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
+        <tag>Vue</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -482,7 +451,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#x61;&#97;&#x61;&#64;&#98;&#x62;&#x62;&#x62;&#98;&#46;&#99;&#111;&#109;">&#97;&#97;&#x61;&#97;&#x61;&#64;&#98;&#x62;&#x62;&#x62;&#98;&#46;&#99;&#111;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#98;&#x62;&#98;&#x62;&#98;&#x2e;&#x63;&#x6f;&#x6d;">&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#98;&#x62;&#98;&#x62;&#98;&#x2e;&#x63;&#x6f;&#x6d;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -511,145 +480,156 @@
       </tags>
   </entry>
   <entry>
-    <title>Project Records — Troubleshooting</title>
-    <url>/en/2023/06/17/Project%20Records%20-%20Troubleshooting/</url>
-    <content><![CDATA[<p>Here I will record some insightful bugs I encountered in enterprise development, as well as troubleshooting for code</p>
-<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p><strong>Oracle SQL table design problem</strong></p>
-<h3 id="Bug-Description"><a href="#Bug-Description" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>The product manager asked me to check for a bug that occurred in an unknown environment (I didn’t ask whether it was a development, test, or formal environment). The front-end failed to upload excel to update data, and it prompted “Database exception, please contact the administrator”.</p>
-<h3 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>Obviously, this is usually an error reported by the backend, so I reproduced the error according to the process, and then directly looked at the result of the idea, and the idea reported an error:</p>
+    <title>Hexo switch language, suitable for any theme</title>
+    <url>/en/2023/05/20/Hexo%20switch%20language,%20suitable%20for%20any%20theme/</url>
+    <content><![CDATA[<p>This article mainly discusses how Hexo achieves internationalization in the simplest way, and this method is highly applicable. I personally think that there is no requirement for which theme to use.</p>
+<h1 id="Ideal-Solution"><a href="#Ideal-Solution" class="headerlink" title="Ideal Solution"></a>Ideal Solution</h1><p>There is a button on the home page, by clicking this button, you can switch the language page with one click (the example of this blog will be Chinese and English). At the same time, the realization of this method does not need to buy a new domain name.</p>
+<p>It is worth noting that this method is not a direct translation, so you need to maintain N blog files of the post at the same time (N is the number of your languages), so if you need to update the blog, you need to update N files at the same time.</p>
+<p>The following implementation process will use Chinese and English as examples. For more languages, please refer to this tutorial:</p>
+<h2 id="Implementation-Process"><a href="#Implementation-Process" class="headerlink" title="Implementation Process"></a>Implementation Process</h2><p>（1）Divide the page folder, assuming that your original files are stored in a folder called hexo, which mainly stores Chinese files. Now create a new folder called hexo-en to store the English folder. Note: they are siblings!</p>
+<p>The built folder should be as follows:</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(1).png" alt="文件夹位置展示"></p>
+<p>(2) Copy all files except node_modules from hexo to hexoen, separate the site</p>
+<p>(3) Next, modify the contents of the <strong>_config.yml</strong> files of the two hexo files. The first one in the figure below is hexo, and the second one is hexo-en: (this step is to modify the main language of website)</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(2).png" alt="hexo"></p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(3).png" alt="hexo-en"></p>
+<p>(4) Continue to modify the root directory url and root of <strong>_config.yml</strong>, the first one in the figure below is hexo, and the second one is hexo-en:</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(4).png" alt="hexo"></p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(5).png" alt="hexo-en"></p>
+<p>(5) Modify the jump link of your own menu corresponding to the theme. Note that there is a hint here—**You can jump to the link of your own github.io&#x2F;en, and you can also jump to the link of your own domain name&#x2F;en . I don’t know why the jump to github.io failed here, and 404 was displayed, but the jump to the domain name thellu.com&#x2F;en succeeded. **You can choose the jump address according to your actual situation.</p>
+<p>In addition, note that if you have a Chinese homepage, the menu should be set to English; if you are an English homepage, the menu should be set to Chinese.</p>
+<p>The first picture below is hexo, and the second one is hexo-en:</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(6).png" alt="hexo"></p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(7).png" alt="hexo-en"></p>
+<p>(6) Congratulations, the basic configuration is now complete! Now execute <strong>npm install</strong> in the hexoen folder to install the required plugins.</p>
+<p>(7) Finally, modify the command that you submit files to github every time, you need to use cp to merge and submit files every time. I am using an absolute path here, so it is convenient to modify the address when cd path:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">cd /d/Blog/hexo &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexoen &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexo &amp;&amp; cp -r /d/Blog/hexoen/public/. /d/Blog/hexo/public/en/ &amp;&amp; hexo d<br></code></pre></td></tr></table></figure>
+
+<p>(8) Congratulations, the configuration is now complete! You can check to see if your website has successfully redirected the page. The only downside is that clicking will jump to a new page instead of updating the old one.</p>
+<h2 id="Common-Error"><a href="#Common-Error" class="headerlink" title="Common Error"></a>Common Error</h2><p>When uploading with the above code after writing the md file normally, sometimes an error will be reported inexplicably:</p>
 <blockquote>
-<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
+<p>err : Error: Spawn Failed</p>
 </blockquote>
-<p>According to the literal meaning of such an error, it seems that the data exceeds the byte limit of a certain field in sql, so through our <a href="https://thellu.com/en/2023/06/12/Project%20Records%20-%20Enterprise%20Requirement/">Project Record-Enterprise Requirements</a> blog, “<strong>Frontend Code Mapping Backend</strong> <strong>Code</strong>“ method, finds the corresponding back-end code, and then finds the corresponding entity class to see which data table it links to. This helps us directly locate the problem table in the company’s huge database.</p>
-<p>After locating the problem table, click “Design Table” in Navicat, I can directly see the byte limit of each field, and then correspond to the content in the excel file that reported the error, I can easily find the corresponding limit of 200 bytes offending column. But the strange thing is that if a Chinese code occupies 2 bytes, I personally feel that the number of bytes of data in this column in this excel file does not reach the standard of 208.</p>
-<p>Then query:</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> userenv(<span class="hljs-string">&#x27;language&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
+<p>The problem usually occurs in the .deploy_git folder, which is a Git repository generated by the hexo framework rendering. The <em><code>hexo d</code></em> command is to push it to github. Most of the problems are caused by git changing the contents of some .deploy_git files when pushing or hexo d, resulting in an error.</p>
+<p>All in all, just delete this file.</p>
+<p>Then call the following command:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs hexo">git config --global core.autocrlf false<br></code></pre></td></tr></table></figure>
 
-<p>The result is <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
-<p>This shows that our Oracle database uses <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> as the character encoding set. This UTF-8 encoding set occupies three bytes for a Chinese character. In order to verify our guess, query:</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> lengthb(<span class="hljs-string">&#x27;xx&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
-
-<p>xx is the data content that exceeds the byte limit, and the answer is 208 bytes, which proves that I am correct.</p>
-<h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><ul>
-<li>Change the character encoding set in oracle sql to <em><code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code></em>, such a Chinese only occupies two bytes. But obviously this method may affect other tables</li>
-<li>It is not required to upload too much content corresponding to the data column of excel</li>
-<li>Expand the byte limit of the field</li>
-</ul>
-<hr>
-<h2 id="Json-default-parsing-method"><a href="#Json-default-parsing-method" class="headerlink" title="Json default parsing method"></a>Json default parsing method</h2><h3 id="Bug-Description-1"><a href="#Bug-Description-1" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>A very normal operation: I call a method on the backend and return a List result set to the frontend. We know that this result set is placed in a List with a lot of json data at the front end.</p>
-<p>The data I’m going to return has these columns:</p>
+<p>Then execute the clean g d command of hexo.</p>
+<p>But note that there are two other reasons for this error:</p>
 <ul>
-<li>DESCR - Department name</li>
-<li>userId - ID</li>
-<li>name - name</li>
-<li>jobType - job type</li>
+<li>Our submission to github code uses absolute path. If you open git bash in hexoen, the .deploy_git file may be saved in the hexoen folder. Remember to delete it at this time.</li>
+<li>Network fluctuations, delete .deploy_git and wait for a while for it to be fine</li>
 </ul>
-<p>Among them, userId, name, and jobType are displayed normally on the front end, and the data is obtained, but there is no data show in the column DESCR:</p>
-<table>
-<thead>
-<tr>
-<th align="center">DESCR</th>
-<th align="center">userId</th>
-<th align="center">name</th>
-<th align="center">jobType</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center">1</td>
-<td align="center">a</td>
-<td align="center">A</td>
-</tr>
-<tr>
-<td align="center"></td>
-<td align="center">2</td>
-<td align="center">b</td>
-<td align="center">B</td>
-</tr>
-<tr>
-<td align="center"></td>
-<td align="center">3</td>
-<td align="center">c</td>
-<td align="center">C</td>
-</tr>
-</tbody></table>
-<p>After looking at the backend, debug at the breakpoint found that the data was passed normally. The column DESCR has a value, but I don’t know why it is not displayed on the frontend.</p>
-<h3 id="Troubleshooting-1"><a href="#Troubleshooting-1" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>Debug at the break point on the front end, and find that the Json data passed looks like this:</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>&#x27;<span class="hljs-number">1</span>&#x27;<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>&#x27;a&#x27;<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>&#x27;A&#x27;<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br><span class="hljs-punctuation">&#123;</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>&#x27;<span class="hljs-number">2</span>&#x27;<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>&#x27;b&#x27;<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>&#x27;B&#x27;<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>...<br></code></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>front-end</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>How to debug spring boot scheduling tasks</title>
+    <url>/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</url>
+    <content><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p>
+<h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
 
-<p>This is strange, why is the first letter of the DESCR column lowercase?</p>
-<p>It was later discovered that not only the first letter of the DESCR column is lowercased, but in fact the first letter of each column with a capitalized first letter will be lowercased, because they are originally lowercased here, so they cannot be seen here.</p>
-<p>The reason for this is to discuss the principle behind it because all JSON implementations are inseparable from HttpMessageConverter, which is a message conversion tool that mainly implements two functions:</p>
+<p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p>
 <ul>
-<li>Serialize the object returned by the server into a JSON string</li>
-<li>Deserialize the JSON string sent from the front end into a Java object</li>
+<li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li>
+<li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li>
+<li>Another idea is to call the method in the test code, but it is also very tricky</li>
 </ul>
-<p>Relevant dependencies have been automatically imported for us in the dependency package generated by SpringBoot. SpringMVC automatically configures <strong>Jackson</strong> and Gson’s HttpMessageConverter.</p>
-<p>By default, our company’s project uses Jackson to parse the Json code. During the serialization process, Jackson will automatically convert fields’ first letter beginning with uppercase to lowercase.</p>
-<h3 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h3><ul>
-<li>Add <em><code>@JsonFormat</code></em> or <em><code>@JsonProperty</code></em> annotations to unchanging properties that need to preserve case</li>
-<li>Annotate the class with <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em></li>
-</ul>
-<hr>
-<h2 id="EsayPoi-parsing-Excel-picture-null-pointer"><a href="#EsayPoi-parsing-Excel-picture-null-pointer" class="headerlink" title="EsayPoi parsing Excel picture null pointer"></a>EsayPoi parsing Excel picture null pointer</h2><h3 id="Bug-Description-2"><a href="#Bug-Description-2" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>A very interesting bug, I have been troubled here for a day.</p>
-<p>Now there are two Excel files that are almost exactly the same. When I import and parse, one Excel file will report a null pointer, and the other file will be parsed and imported normally.</p>
-<p>The business logic here is:</p>
-<ul>
-<li>The business downloads the Excel template first</li>
-<li>The business enters the information they want to import according to the template, one of which is image information column</li>
-<li>The picture information is pasted into Excel by the business</li>
-<li>Finally, the business clicks Import, parses Excel, and imports the information into the database</li>
-</ul>
-<p>This bug is encountered by the business in this process. The business has two almost identical Excel files, and their text information is exactly the same. The only difference is that the pictures are different.</p>
-<p>Moreover, even if the picture in the Excel file that can be parsed and imported normally is pasted into the Excel file with problems, a null pointer exception will still be reported, which is very strange.</p>
-<h3 id="Troubleshooting-2"><a href="#Troubleshooting-2" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>At first I thought that the picture might cover other cells, so I tried to stretch the picture, but it didn’t work.</p>
-<p>Then carefully study the back-end code and find that this piece is parsed by calling the <em><code>importExcelMore</code></em> method of the <em><code>ExcelImportUtil</code></em> class of EasyPoi API. So I continued to drill down and found that more precisely, the problem occurred when calling the <em><code>getSheetPictures07</code></em> method of EasyPoi API’s <em><code>PoiPublicUtil</code></em> class.</p>
-<p>To be more precise, it is an error reported when executing the code shown below in this placement:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">...<br>	pic.getPreferredSize()<br>...<br></code></pre></td></tr></table></figure>
+<p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p>
+<p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>Break point debug , here needs an anchor’s cell1 attribute and cell2 attribute.</p>
-<p>Then the cell2 attribute here is empty, so a null pointer is reported.</p>
-<p>Knowing the origin of the error, now go back and find out why the cell2 attribute is null? Where is this attribute constructed?</p>
-<p>After a long search, I finally found that it was constructed in the <em><code>getAchorFromParent</code></em> method of Poi API’s <em><code>XSSFDrawing</code></em> class.</p>
-<p>The method looks like this:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> XSSFAnchor <span class="hljs-title function_">getAnchorFromParent</span><span class="hljs-params">(XmlObject obj)</span> &#123;<br>  <span class="hljs-type">XSSFAnchor</span> <span class="hljs-variable">anchor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlObject</span> <span class="hljs-variable">parentXbean</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlCursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> obj.newCursor();<br>  <span class="hljs-keyword">if</span> (cursor.toParent()) &#123;<br>    parentXbean = cursor.getObject();<br>  &#125;<br>  cursor.dispose();<br>  <span class="hljs-keyword">if</span> (parentXbean != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTTwoCellAnchor) &#123;<br>      <span class="hljs-type">CTTwoCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTTwoCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTOneCellAnchor) &#123;<br>      <span class="hljs-type">CTOneCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTOneCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTAbsoluteAnchor) &#123;<br>      <span class="hljs-type">CTAbsoluteAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTAbsoluteAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> anchor;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>Don’t fully understand the code, just look at the middle here, where the <code>parentXbean</code> will create the anchor and its cell2 properties.</p>
-<p>When we use breakpoint debugging, we will find that if we import a problematic Excel, we will go to this judgment: <em><code>parentXbean instanceof CTOneCellAnchor</code></em></p>
-<p>And normal Excel will go to this judgment: <em><code>parentXbean instanceof CTTtwoCellAnchor</code></em></p>
-<p>Then, the problem lies in CTTwoCellAnchor and CTOneCellAnchor. </p>
-<p>What are these two classes? Apparently something to do with pictures - thanks to Greg Woolsey for explaining it right here. refer to:</p>
+<p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Intranet projects avoid pitfall</title>
+    <url>/en/2023/06/06/Intranet%20projects%20avoid%20pitfall/</url>
+    <content><![CDATA[<p>As we all know, some projects are completely established in the offline mode of the intranet. The first time I came into contact with this offline mode project recently, record the problems encountered:</p>
+<h2 id="Maven-offline-model"><a href="#Maven-offline-model" class="headerlink" title="Maven offline model"></a>Maven offline model</h2><p>Due to the requirements of the intranet, the project is running on a virtual machine, and the development environment cannot be connected to the Internet on the virtual machine, so all projects need to be downloaded again. There was a problem when configuring pom.xml, and idea kept reporting a strange error:</p>
 <blockquote>
-<p><a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
+<p>Cannot access maven-default-http-blocker (<a href="http://0.0.0.0/">http://0.0.0.0/</a>) in offline mode</p>
 </blockquote>
-<p>Therefore, <strong>CTTwoCellAnchor means that Move and size with cells</strong>; <strong>CTOneCellAnchor means that Move but don’t size with cells</strong>.</p>
-<p>Then, this corresponds to the picture properties in Excel:</p>
-<p><img src="/en/images/Projects_Records/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="Project Records"></p>
-<h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h3><ul>
-<li>At this point, the problem is solved, you only need to modify the picture properties in Excel. So far, the problem has been solved. As for the deeper reason, due to the tight schedule of the project, there is no time to delve into it. Friends who understand are welcome to leave a message in the comment area</li>
-</ul>
+<p>At first, according to the instructions on the Internet, I turned on the offline mode of maven, but it still couldn’t solve the problem. Later, I found out that it was a Maven version problem.</p>
+<p>This is because the default Bundled (Maven3) of the idea I use, the maven version here is too high above 3.8, and there is a mirror text in the setting.xml file of the high version maven:</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br>     <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>maven-default-http-blockerid&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>external:http:*mirrorOf&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Pseudo repository to mirror external repositories initially using HTTP.name&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://0.0.0.0/url&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">blocked</span>&gt;</span>trueblocked&gt;<br>   <span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>This thing is that maven blocks external HTTP repositories by default, and the simple solution is to comment it out. </p>
+<p>If the user does not take the initiative to comment out the maven-default-http-blocker configuration, this will cause persistence problems when IDEA uses the bundled maven.</p>
+<p>This is actually a bit inconvenient. The main reason for setting this is to use the HTTP protocol to download dependencies, which may lead to man-in-the-middle attacks. So Maven 3.8.1 prohibits all Maven repositories of the HTTP protocol.</p>
+<p>So, there are mainly two solutions:</p>
+<ol>
+<li><strong>Downgrade the version</strong></li>
+<li>When idea loads the external configuration file, it will first load the settings.xml in the \plugins\maven\lib\maven3\conf folder in the installation directory, and <strong>comment the maven-default-http-blocker configuration in this file</strong></li>
+</ol>
+<h2 id="idea-SVN-import-project"><a href="#idea-SVN-import-project" class="headerlink" title="idea SVN import project"></a>idea SVN import project</h2><p>The project runs on the amazing SVN instead of git. When trying to import a project from SVN, similar to git, we open the interface from idea File -&gt; new -&gt; project from version control:</p>
+<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95.png" alt="内网项目踩坑记录"></p>
+<p>You can see that there is a version control option on the top, and the drop-down menu here can choose subversion (ie SVN).</p>
+<p>After selecting, enter the url of the company’s SVN project, and the corresponding folder will be automatically generated, which contains project code, test code, packages and so on. However, problems often occur now, and an error will be reported here:</p>
+<blockquote>
+<p>Cannot run program “svn”: CreateProcess error&#x3D;2</p>
+</blockquote>
+<p>The reason is that SVN needs to use command-line tools. If there is no SVN command-line tool locally, an error will result.</p>
+<p>So reopen the msi file where you installed SVN, select modify (click the picture on the left instead of the text), install the command line client tools and it will be OK.</p>
+<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95(2).png" alt="内网项目"></p>
 ]]></content>
       <categories>
         <category>Project Records</category>
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Vue</tag>
-        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
-    <title>The actual process of class initialization</title>
-    <url>/en/2023/05/19/The%20actual%20process%20of%20class%20initialization/</url>
-    <content><![CDATA[<h2 id="Class-initialization-order"><a href="#Class-initialization-order" class="headerlink" title="Class initialization order"></a>Class initialization order</h2><p>Many people know that the order of class initialization is as follows:<br>(1) Call the base class constructor and repeat this process until the bottom layer<br>(2) Then call the initialization methods of the members in the order of declaration<br>(3) Call the body of the class constructor</p>
-<h2 id="The-actual-process-of-class-initialization"><a href="#The-actual-process-of-class-initialization" class="headerlink" title="The actual process of class initialization"></a>The actual process of class initialization</h2><p>However, consider this example:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
-
-<p>The walk method of the Animal class is designed to be overridden in the Cat class, but Animal’s constructor calls the walk method, which results in a call to Cat.walk().<br>The generated result of the above code is:</p>
+    <title>Initialization of Java virtual machine class loading</title>
+    <url>/en/2023/06/03/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
+    <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
 <blockquote>
-<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+<ul>
+<li>Encountered new (instantiated object), getstatic (read a class static field which is not modified by final or does not put the result into the constant pool at compile time), putstatic (set a class static field which is not modified by final or does not put the result into the constant pool at compile time) or invokestatic (calling a static method of a class) these four bytecode instructions, if the class has not been initialized, initialization needs to be triggered.</li>
+<li>Use the methods of the java.lang.reflect package to make reflective calls on types</li>
+<li>the parent class has not been initialized</li>
+<li>When the virtual machine starts, the user needs to specify a main class (main) to be executed</li>
+<li>When using the dynamic language support newly added by java7, if the final analysis result of a MthodHandle instance is REF_getStatic, REF_putstatic, REF_invokestatic, REF_newInvokeSpecial four types of method handles</li>
+<li>An interface defines the interface method modified by default, and the implementation class of the interface is initialized at the same time</li>
+</ul>
 </blockquote>
-<p>We will find that when the Animal constructor calls the walk() method, the step is not the default initial value of 100, but 0.<br>Therefore, the order of class initialization mentioned earlier is not complete. In fact, the order of class initialization should be like this:<br>(1) <strong>Allocate space before everything happens, and initialize the storage space allocated to the object to binary zero (or a value equivalent to zero in some special data types)</strong><br>(2) Call the base class constructor as mentioned above. At this time, the walk method must be called before calling the cat constructor, so the step value at this time is 0<br>(3) Call the initialization methods of the members in the order of declaration<br>(4) Call the body of the class constructor<br>Of course, this kind of error is not easy to find, so it is recommended that you try to avoid calling other methods in the constructor if possible. The only methods that can be safely called in the constructor are the final methods of the base class (because they will not be overrided, there will be no above-mentioned problems)。</p>
+<p>In addition, all reference types do not trigger initialization:</p>
+<h2 id="Subclass-references-parent-class"><a href="#Subclass-references-parent-class" class="headerlink" title="Subclass references parent class"></a>Subclass references parent class</h2><p>Referring to a static field of a superclass through a subclass does not cause the subclass to be initialized:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">package</span> com.example.demo;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sub</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span>&#123;System.out.println(<span class="hljs-string">&quot;Sub&quot;</span>);&#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Sub.value);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>What happens in the end? It will output “Super” first, and then the value of “value”.</p>
+<p>For static fields, only the class that directly defines this field will be initialized, so the static field of the parent class is referenced through the subclass, and only the parent class will be initialized.</p>
+<h2 id="Array-reference-class"><a href="#Array-reference-class" class="headerlink" title="Array reference class"></a>Array reference class</h2><p>Referencing a class through an array definition does not trigger initialization of this class</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        Sub[] sp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sub</span>[<span class="hljs-number">5</span>];<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>What happens in the end?</p>
+<p>nothing.</p>
+<p>It can be seen that the Sub class has not been initialized. But this code triggers the initialization phase of another class named “[Lcom.example.demo.Sub”. This thing is automatically generated by the virtual machine and a subclass directly inherited from Object , and the creation action is triggered by the bytecode instruction anewarray (that is, creating a new reference array).</p>
+<p>The one-dimensional array represented by this class, users can only directly use the length property modified as public and the clone method. Of course, the properties and methods used in the array are all implemented in this class. This is because Java wraps the access to the array elements (it is the movement of the array pointer in C), which is why Java detects that the array is out of bounds and throws an ArrayIndexOutOfBoundsException instead of an illegal memory access like C.</p>
+<p>To be precise, Java’s out-of-bounds check is not encapsulated in the class for array element access, but encapsulated in xaload (array elements pushed onto the stack) and xastore (array operations) bytecode instructions for array access.</p>
+<h2 id="Constant-pool-reference"><a href="#Constant-pool-reference" class="headerlink" title="Constant pool reference"></a>Constant pool reference</h2><p>Constants will be stored in the constant pool of the calling class during the compilation phase, and essentially there is no direct reference to the class that defines the constant</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">HELLO</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Hello&quot;</span>;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Super.HELLO);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>The code here also does not output “Super” after running.</p>
+<p>The constant value of hello has actually been converted into a reference of the SomeName class to its own constant pool during the compilation phase, so the two of them have nothing to do with each other.</p>
+<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>Interfaces are a little different than classes. In fact, the interface also has an initialization process, but the interface cannot use static code blocks to output initialization information like a class. The compiler will generate a “<clinit>“ class constructor for the interface to initialize the member variables defined in the interface. and:</p>
+<p>The interface does not require all parent interfaces to be initialized, only when it is used will it be initialized.</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
 ]]></content>
       <categories>
         <category>back-end</category>
@@ -681,6 +661,26 @@
 <p>Look, here the parameter of the getInner method is final, the reason is the same as the reason for adding final to the inner class part before. </p>
 <h2 id="Sometimes-you-can-also-not-add-final"><a href="#Sometimes-you-can-also-not-add-final" class="headerlink" title="Sometimes you can also not add final"></a>Sometimes you can also not add final</h2><p>When can you not add final? If the inner class does not use it, you can not add final, which is easy to understand:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>The actual process of class initialization</title>
+    <url>/en/2023/05/19/The%20actual%20process%20of%20class%20initialization/</url>
+    <content><![CDATA[<h2 id="Class-initialization-order"><a href="#Class-initialization-order" class="headerlink" title="Class initialization order"></a>Class initialization order</h2><p>Many people know that the order of class initialization is as follows:<br>(1) Call the base class constructor and repeat this process until the bottom layer<br>(2) Then call the initialization methods of the members in the order of declaration<br>(3) Call the body of the class constructor</p>
+<h2 id="The-actual-process-of-class-initialization"><a href="#The-actual-process-of-class-initialization" class="headerlink" title="The actual process of class initialization"></a>The actual process of class initialization</h2><p>However, consider this example:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
+
+<p>The walk method of the Animal class is designed to be overridden in the Cat class, but Animal’s constructor calls the walk method, which results in a call to Cat.walk().<br>The generated result of the above code is:</p>
+<blockquote>
+<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+</blockquote>
+<p>We will find that when the Animal constructor calls the walk() method, the step is not the default initial value of 100, but 0.<br>Therefore, the order of class initialization mentioned earlier is not complete. In fact, the order of class initialization should be like this:<br>(1) <strong>Allocate space before everything happens, and initialize the storage space allocated to the object to binary zero (or a value equivalent to zero in some special data types)</strong><br>(2) Call the base class constructor as mentioned above. At this time, the walk method must be called before calling the cat constructor, so the step value at this time is 0<br>(3) Call the initialization methods of the members in the order of declaration<br>(4) Call the body of the class constructor<br>Of course, this kind of error is not easy to find, so it is recommended that you try to avoid calling other methods in the constructor if possible. The only methods that can be safely called in the constructor are the final methods of the base class (because they will not be overrided, there will be no above-mentioned problems)。</p>
+]]></content>
       <categories>
         <category>back-end</category>
       </categories>
