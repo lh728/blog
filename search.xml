@@ -453,7 +453,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#97;&#x61;&#97;&#64;&#x62;&#98;&#98;&#98;&#98;&#x2e;&#x63;&#111;&#x6d;">&#x61;&#x61;&#97;&#x61;&#97;&#64;&#x62;&#98;&#98;&#98;&#98;&#x2e;&#x63;&#111;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#x61;&#97;&#x61;&#x40;&#98;&#98;&#x62;&#98;&#98;&#x2e;&#x63;&#x6f;&#x6d;">&#97;&#x61;&#x61;&#97;&#x61;&#x40;&#98;&#98;&#x62;&#98;&#98;&#x2e;&#x63;&#x6f;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -471,6 +471,27 @@
 <li><strong>如何把配置文件属性注入类中使用</strong></li>
 </ol>
 <hr>
+<hr>
+<h2 id="下拉框-x2F-直方图"><a href="#下拉框-x2F-直方图" class="headerlink" title="下拉框&#x2F;直方图"></a>下拉框&#x2F;直方图</h2><hr>
+<p>这是一个新的特别完整的页面需求，包含有下拉框设计以及对应的数据收集和限制，以及数据直方图在Vue的显示等。</p>
+<h3 id="需求描述-3"><a href="#需求描述-3" class="headerlink" title="需求描述"></a>需求描述</h3><p>需要构建如下的画面，包含的基本功能需求有：</p>
+<h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><p>看到需求，我思考了一下，觉得需要解决的问题是：</p>
+<ul>
+<li><p>怎么添加前端的点击事件？</p>
+</li>
+<li></li>
+</ul>
+<h3 id="思路与实现-3"><a href="#思路与实现-3" class="headerlink" title="思路与实现"></a>思路与实现</h3><h4 id="前端-2"><a href="#前端-2" class="headerlink" title="前端"></a>前端</h4><ul>
+<li>第一个问题：<strong>怎么添加前端的点击事件</strong></li>
+</ul>
+<h4 id="后端-3"><a href="#后端-3" class="headerlink" title="后端"></a>后端</h4><ul>
+<li>第四个问题：<strong>原数据已经有了，我应该怎么获取？在哪里获取？</strong></li>
+<li></li>
+</ul>
+<h3 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h3><ol>
+<li><strong>通过思考问题解决需求</strong></li>
+<li><strong>举一反三</strong></li>
+</ol>
 ]]></content>
       <categories>
         <category>项目记录</category>
@@ -478,6 +499,7 @@
       <tags>
         <tag>Java</tag>
         <tag>Vue</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
