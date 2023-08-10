@@ -124,8 +124,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>SQL</tag>
         <tag>Java</tag>
+        <tag>SQL</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
@@ -456,7 +456,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#x61;&#x61;&#97;&#x40;&#98;&#98;&#98;&#98;&#x62;&#x2e;&#x63;&#x6f;&#x6d;">&#x61;&#97;&#x61;&#x61;&#97;&#x40;&#98;&#98;&#98;&#98;&#x62;&#x2e;&#x63;&#x6f;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#97;&#97;&#x61;&#64;&#98;&#x62;&#98;&#98;&#x62;&#x2e;&#99;&#x6f;&#109;">&#97;&#97;&#97;&#97;&#x61;&#64;&#98;&#x62;&#98;&#98;&#x62;&#x2e;&#99;&#x6f;&#109;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -748,8 +748,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>SQL</tag>
         <tag>Java</tag>
+        <tag>SQL</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
@@ -827,12 +827,44 @@
 <p>对象<code>human</code>的实际类型是可变的，编译期你不可能知道它究竟是<code>Man</code>还是<code>Woman</code>，需要等到运行期才知道。而<code>human</code>的静态类型<code>Human</code>可以在使用时通过强制类型转换临时改变，但这个改变在编译期可知——两次调用<code>sayhello</code>方法，编译期可以知道转型的是<code>Man</code>还是<code>Woman</code>。</p>
 <p>因此，对于之前的重载，对于<code>sayHello</code>方法，方法接收者已经确定是对象“sr”的前提下，使用哪个重载版本就完全取决于传入参数的数量和数据类型。<strong>编译期在重载时是通过参数的静态类型而不是实际类型做判断的</strong>。由于静态类型在编译期可知，所以在编译阶段，Javac编译期就根据参数的静态类型决定了会使用哪个重载版本，因此选择了<code>sayHello(Human)</code>作为调用目标，并把这个方法的符号引用写到<code>main()</code>方法里面的两条<code>invokevirtual</code>指令的参数中。</p>
 <p>另外，Javac编译期虽然能确定方法的重载版本，但是这个重载版本并不是唯一的，往往只能确定一个更合适的版本。因此有了重载方法匹配优先级的说法：（这种情况的出现主要是因为字面量天生的语义模糊）</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(Object arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;object&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">int</span> arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;int&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">long</span> arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;long&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(Character arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;Character&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">char</span> arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;char&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">char</span>... arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;char...&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(Serializable arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;Serializable&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>		sayHi(<span class="hljs-string">&#x27;a&#x27;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
-
-
-
-
+<p>上述代码运行结束后会生成 “<code>char</code>”</p>
+<p>这很好理解，因为<code>&#39;a&#39;</code>就是一个char类型数据。但是如果把<code>sayHi(char arg)</code> 方法注释掉，输出会变成：</p>
+<blockquote>
+<p>int</p>
+</blockquote>
+<p>这是因为发生了自动类型转换，<code>&#39;a&#39;</code> 不仅代表一个字符，还代表数字97（Unicode）。现在再把 <code>sayHi(int arg)</code> 注释掉，结果就变成了：</p>
+<blockquote>
+<p>long</p>
+</blockquote>
+<p>这是因为发生了两次自动类型转换，<code>&#39;a&#39;</code>从字符转型成整数97，然后转型为长整数 97L，自动类型转换可能还可以继续进行，即 </p>
+<blockquote>
+<p>char -&gt; int -&gt; long -&gt; float -&gt; double的顺序</p>
+</blockquote>
+<p>注意没有short和byte的转型，因为它们的转型是不安全的。</p>
+<p>接下来如果继续注释掉 <code>sayHi(long arg)</code> 方法，结果就会变成：</p>
+<blockquote>
+<p>Character</p>
+</blockquote>
+<p>这是因为发生了自动装箱，如果继续注释   <code>sayHi(Character arg)</code>，则输出会变为：</p>
+<blockquote>
+<p>Serializable</p>
+</blockquote>
+<p>之所以会出现 Serializable 这样的结果，是因为 <code>java.lang.Serializable</code> 是 <code>java.lang.Character</code> 类所实现的一个接口，当自动装箱还是找不到装箱类，但是找到了装箱类所实现的接口类型，所以会再做一次自动装箱。</p>
+<p>char可以转型为 int，但是<code>Character</code>不会转型为<code>Integer</code>的，只能安全地转型为它实现的接口或者父类。</p>
+<p>这里有个小细节， <code>Character</code> 还实现了另一个接口 <code>Comparable&lt;Character&gt;</code> ，如果有两个参数分别为 <code>Serializable</code> 和 <code>Comparable&lt;Character&gt;</code>，它们此时的优先级是一样的，编译器会提示类型模糊并拒绝编译。此时需要显式调用。</p>
+<p>如果继续注释掉 <code>sayHi(Serializable arg)</code>方法，结果就会变成：</p>
+<blockquote>
+<p>Object</p>
+</blockquote>
+<p>很明显这是char装箱后转型为父类了，如果有多个父类会从下往上搜索，Object是优先级最低的。</p>
+<p>最后，把 <code>sayHi(Object arg)</code> 方法注释掉，还有一个输出结果：</p>
+<blockquote>
+<p>char…</p>
+</blockquote>
+<p>可见变长参数的优先级是最低的，这时候字符’a’被当做了一个char[] 数组的元素。</p>
+<p>以上例子属于比较极端的例子，除了面试时用作难为求职者外实际工作中很难有所用途，但是有所了解相信也对java的进一步认知有帮助。</p>
 ]]></content>
       <categories>
         <category>后端</category>
