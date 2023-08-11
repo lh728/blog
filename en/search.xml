@@ -454,7 +454,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#x61;&#97;&#97;&#x40;&#98;&#98;&#98;&#x62;&#x62;&#x2e;&#x63;&#x6f;&#x6d;">&#x61;&#97;&#x61;&#97;&#97;&#x40;&#98;&#98;&#98;&#x62;&#x62;&#x2e;&#x63;&#x6f;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#97;&#x61;&#x61;&#64;&#98;&#98;&#98;&#x62;&#98;&#46;&#99;&#111;&#x6d;">&#x61;&#97;&#97;&#x61;&#x61;&#64;&#98;&#98;&#98;&#x62;&#98;&#46;&#99;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -801,6 +801,78 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Method Static Dispatch</title>
+    <url>/en/2023/08/11/Method%20Static%20Dispatch/</url>
+    <content><![CDATA[<p>This example is referencing the book “Understanding the Java Virtual Machine”.</p>
+<p>Firstly, contemplate the expected output of the following code:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StaticDisptach</span>&#123;<br>    <br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Human</span>&#123;&#125;<br>    <br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Man</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Human</span>&#123;&#125;<br>    <br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Woman</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Human</span>&#123;&#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHello</span><span class="hljs-params">(Human people)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;hello,people&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHello</span><span class="hljs-params">(Man man)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;hello,man&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHello</span><span class="hljs-params">(Woman woman)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;hello,woman&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        <span class="hljs-type">Human</span> <span class="hljs-variable">max</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Man</span>();<br>        <span class="hljs-type">Human</span> <span class="hljs-variable">woman</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">woman</span>();<br>        <span class="hljs-type">StaticDisptach</span> <span class="hljs-variable">sr</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StaticDisptach</span>();<br>        sr.sayHello(man);<br>        sr.sayHello(woman);<br>    &#125;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>The execution result is:</p>
+<blockquote>
+<p>hello,people</p>
+<p>hello,people</p>
+</blockquote>
+<p>Understanding the reason the virtual machine executes the overloaded version with the parameter type “Human” involves an understanding of method overloading.</p>
+<p>Let’s start by defining two key concepts for the following code:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">Human</span> <span class="hljs-variable">man</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Man</span>(); <br></code></pre></td></tr></table></figure>
+
+<p>The <code>Human</code> in the above code is called the “<strong>static type</strong>“ of the variable, or “<strong>appearance type</strong>“, and the following <code>Man</code> is called the “<strong>actual type</strong>“ or “<strong>runtime type</strong>“.</p>
+<p>Static and actual types can both change within a program, but the distinction lies in how they change. Changes in static type only occur when used, and the variable’s static type itself remains unchanged. Additionally, the static type is known at compile time. Changes in actual type only become apparent at runtime, and the compiler isn’t aware of an object’s actual type during the compilation phase.</p>
+<p>So, what does this sentence mean?</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-type">Human</span> <span class="hljs-variable">human</span> <span class="hljs-operator">=</span> (<span class="hljs-keyword">new</span> <span class="hljs-title class_">Random</span>()).nextBoolean()?<span class="hljs-keyword">new</span> <span class="hljs-title class_">Man</span>():<span class="hljs-keyword">new</span> <span class="hljs-title class_">Woman</span>;<br><br>sr.sayHello((Man) human);<br>sr.sayHello((Woman) human);<br></code></pre></td></tr></table></figure>
+
+<p>The actual type of the object <code>human</code> is variable, you cannot know whether it is <code>Man</code> or <code>Woman</code> at compile time, you need to wait until run time to know. However, the static type <code>Human</code> of <code>human</code> can be temporarily changed through mandatory type conversion during use, but this change can be known at the compile time—call the <code>sayhello</code> method twice, and the compile time can know whether it is <code>Man</code> or <code> Woman</code>.</p>
+<p>Therefore, for the previous overload, for the <code>sayHello</code> method, under the premise that the method receiver has been determined to be the object “sr”, which overloaded version to use depends entirely on the number and data type of the incoming parameters. <strong>Compilation is judged by the static type of the parameter instead of the actual type when overloading</strong>. Since the static type is known at compile time, Javac compile time determines which overloaded version will be used according to the static type of the parameter during compilation, so <code>sayHello(Human)</code> is selected as the call target, and the symbol of this method is The references are written to the parameters of the two <code>invokevirtual</code> instructions in the <code>main()</code> method.</p>
+<p>Furthermore, during the Java compiler’s compilation phase, although it can determine the overloaded version of a method, this version isn’t always unique. More often, the compiler can only determine the most appropriate version. This leads to the concept of overload method resolution priority: (such cases arise primarily due to inherent ambiguity in the semantics of literals.)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(Object arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;object&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">int</span> arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;int&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">long</span> arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;long&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(Character arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;Character&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">char</span> arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;char&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(<span class="hljs-type">char</span>... arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;char...&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayHi</span><span class="hljs-params">(Serializable arg)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;Serializable&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>		sayHi(<span class="hljs-string">&#x27;a&#x27;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>After the above code runs, it will generate “<code>char</code>“</p>
+<p>This is easy to understand, because <code>&#39;a&#39;</code> is a char type data. But if the <code>sayHi(char arg)</code> method is commented out, the output becomes:</p>
+<blockquote>
+<p>int</p>
+</blockquote>
+<p>This is because an automatic type conversion occurs, <code>&#39;a&#39;</code> not only represents a character, but also the number 97 (Unicode). Now comment out <code>sayHi(int arg)</code>, the result becomes:</p>
+<blockquote>
+<p>long</p>
+</blockquote>
+<p>This is because two automatic type conversions have occurred, <code>&#39;a&#39;</code> is converted from a character to an integer 97, and then converted to a long integer 97L. The automatic type conversion may still continue, that is</p>
+<blockquote>
+<p>char -&gt; int -&gt; long -&gt; float -&gt; double </p>
+</blockquote>
+<p>Please note that there is no casting involving <code>short</code> and <code>byte</code>, as their casting is considered unsafe.</p>
+<p>If you proceed by commenting out the <code>sayHi(long arg)</code> method, the result will become:</p>
+<blockquote>
+<p>Character</p>
+</blockquote>
+<p>This is due to autoboxing taking place. If you continue by commenting out the <code>sayHi(Character arg)</code> method, the output will change to:</p>
+<blockquote>
+<p>Serializable</p>
+</blockquote>
+<p>The reason why the result appears as “Serializable” is because <code>java.lang.Serializable</code> is an interface implemented by the <code>java.lang.Character</code> class. When autoboxing cannot find a boxing class but can identify an interface implemented by the boxing class, it performs another round of autoboxing.</p>
+<p>A <code>char</code> can be cast to an <code>int</code>, but a <code>Character</code> will not be cast to an <code>Integer</code>. It can safely be cast only to an interface or superclass it implements or extends.</p>
+<p>Here’s a subtle detail: <code>Character</code> also implements another interface, <code>Comparable&lt;Character&gt;</code>. If there are two methods, one with a parameter of type <code>Serializable</code> and the other with a parameter of type <code>Comparable&lt;Character&gt;</code>, their priorities will be equal. The compiler will show a type ambiguity error and refuse to compile. In such a case, explicit invocation is required.</p>
+<p>If you continue by commenting out the <code>sayHi(Serializable arg)</code> method, the result will become:	</p>
+<blockquote>
+<p>Object</p>
+</blockquote>
+<p>Clearly, this is the result of a <code>char</code> being boxed and then cast to its superclass. If there are multiple superclasses, the search is performed from bottom to top, with <code>Object</code> having the lowest priority.</p>
+<p>Finally, if you comment out the <code>sayHi(Object arg)</code> method, there will be one last output result:</p>
+<blockquote>
+<p>char…</p>
+</blockquote>
+<p>As can be observed, variable-length arguments have the lowest priority. In this case, the character <code>&#39;a&#39;</code> is treated as an element of a <code>char[]</code> array.</p>
+<p>The above example is somewhat extreme and is rarely encountered in practical work outside of using it to challenge job applicants in interviews. Nevertheless, gaining an understanding of such concepts can be helpful for a deeper comprehension of Java.</p>
+<p>If you have any more questions or need further clarification, feel free to ask!</p>
+<hr>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
