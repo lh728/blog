@@ -1,46 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>IDEA如何快速添加JavaDoc文档注释</title>
-    <url>/2023/08/19/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
-    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
-<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
-<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
-<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
-<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
-<li>在模板上加入文档注释模板：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
-<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
-<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
-<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
-<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
-<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
-<li>选择右侧的Edit variables按钮，进行如下配置：</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
-<ol start="7">
-<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
-<p>至此，配置完成</p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>项目记录——故障排查</title>
     <url>/2023/06/17/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</url>
     <content><![CDATA[<p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
@@ -496,7 +456,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#x62;&#98;&#98;&#98;&#x62;&#46;&#99;&#111;&#x6d;">&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#x62;&#98;&#98;&#98;&#x62;&#46;&#99;&#111;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#x61;&#97;&#x61;&#64;&#98;&#x62;&#x62;&#x62;&#98;&#x2e;&#99;&#111;&#x6d;">&#97;&#x61;&#x61;&#97;&#x61;&#64;&#98;&#x62;&#x62;&#x62;&#98;&#x2e;&#99;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -841,6 +801,46 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IDEA如何快速添加JavaDoc文档注释</title>
+    <url>/2023/08/19/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
+    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
+<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
+<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
+<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
+<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
+<li>在模板上加入文档注释模板：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
+<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
+<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
+<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
+<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
+<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
+<li>选择右侧的Edit variables按钮，进行如下配置：</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
+<ol start="7">
+<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
+<p>至此，配置完成</p>
+<hr>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
