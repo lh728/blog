@@ -456,7 +456,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#97;&#x61;&#97;&#64;&#x62;&#98;&#x62;&#x62;&#98;&#x2e;&#x63;&#111;&#x6d;">&#x61;&#x61;&#97;&#x61;&#97;&#64;&#x62;&#98;&#x62;&#x62;&#98;&#x2e;&#x63;&#111;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#x61;&#x61;&#97;&#x40;&#98;&#98;&#98;&#x62;&#98;&#46;&#x63;&#111;&#x6d;">&#x61;&#97;&#x61;&#x61;&#97;&#x40;&#98;&#98;&#98;&#x62;&#98;&#46;&#x63;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -749,6 +749,7 @@
 <p><strong>TIPS: 至于说这里为什么不能直接进行添加操作，另一边的大数据部门反馈这里做不到，具体的原因不得而知了。</strong></p>
 <p>总而言之，需要根据目前的需求，做一个触发器，当表A插入数据的时候，把相同的数据插入进表B，但是表B的数据不会删除，并且也不仅仅只保留当天的。另外，对于增量表B，为了避免性能问题，当表A插入的时候需要判断一下，如果新插入的数据表B已经存在了，则不要再插入了。</p>
 <p>这里就不得不提一下<code>merger into</code> 这个触发器函数了。</p>
+<p>在Oracle SQL中，<code>MERGE INTO</code>语句用于指定要合并数据的目标表；<code>USING</code> 指定要从中获取数据的源表；<code>ON</code> 指定用于匹配源表和目标表行的条件。如果条件为真，则执行匹配时的UPDATE操作，否则执行不匹配时的INSERT操作；<code>WHEN NOT MATCHED THEN</code> 在源表和目标表之间不存在匹配的情况下执行的操作块。</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TRIGGER</span> insert_trigger<br>AFTER <span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">ON</span> A<br><span class="hljs-keyword">REFERENCING</span> <span class="hljs-keyword">OLD</span> <span class="hljs-keyword">AS</span> &quot;OLD&quot; <br><span class="hljs-keyword">NEW</span> <span class="hljs-keyword">AS</span> &quot;NEW&quot;<br><span class="hljs-keyword">FOR</span> <span class="hljs-keyword">EACH</span> <span class="hljs-type">ROW</span><br><br><span class="hljs-keyword">BEGIN</span><br>	<span class="hljs-keyword">MERGE</span> <span class="hljs-keyword">INTO</span> B<br>	<span class="hljs-keyword">USING</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FROM</span> DUAL) <span class="hljs-keyword">ON</span> (B.employeeId <span class="hljs-operator">=</span> :NEW.employeeId <span class="hljs-keyword">and</span> B.date <span class="hljs-operator">=</span> <span class="hljs-keyword">NEW</span>:<span class="hljs-type">date</span>)<br>	<span class="hljs-keyword">WHEN</span> <span class="hljs-keyword">NOT</span> MATCHED <span class="hljs-keyword">THEN</span><br>	<span class="hljs-keyword">INSERT</span> (ID,employeeId,<span class="hljs-type">date</span>,...)<br>	<span class="hljs-keyword">VALUES</span> (:NEW.ID,:NEW.employeeId,:NEW.date,...);<br><span class="hljs-keyword">END</span>;<br></code></pre></td></tr></table></figure>
 
 ]]></content>
