@@ -124,8 +124,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>SQL</tag>
         <tag>Vue</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -135,7 +135,7 @@
 <p><strong>—————-For quick search and page turning, please see the table of contents on the right———————-&gt;</strong></p>
 <p><strong>—————For quick search and page turning, please see the table of contents on the right———————–&gt;</strong></p>
 <p><strong>————–For quick search and page turning, please see the table of contents on the right————————&gt;</strong></p>
-<h2 id="Connection-Migration"><a href="#Connection-Migration" class="headerlink" title="Connection Migration"></a>Connection Migration</h2><p>Recently, I received my first requirement, to migrate an already prepared page so that it can be accessed and displayed externally. What does that mean? This requirement will be explained later.</p>
+<h2 id="1-Connection-Migration"><a href="#1-Connection-Migration" class="headerlink" title="1. Connection Migration"></a>1. Connection Migration</h2><p>Recently, I received my first requirement, to migrate an already prepared page so that it can be accessed and displayed externally. What does that mean? This requirement will be explained later.</p>
 <p>In short, as a new developer, I have to say that I am confused when faced with huge enterprise-level codes and hundreds of classes in the back-end and front-end, not to mention the need to directly face a requirement that I have never touched before. Of course, the product manager also understands that it is unrealistic for me to do difficult requirements. The actual implementation of this requirement is not difficult. Many key parts of the code have been completed by others, but it is still a huge challenge for me.</p>
 <h3 id="Requirement-Description"><a href="#Requirement-Description" class="headerlink" title="Requirement Description"></a>Requirement Description</h3><p>To put it simply, the requirements of this project require me to make the pages originally placed in the management system accessible through external links.</p>
 <p>Many front-end pages and functions are displayed in a way similar to vue-element-admin. I need to take one of the completed vue pages - a BI report, and bypass the login system so that it can be accessed directly through a link (of course, it is not completely unnecessary for login verification, it is just a different form of verification). As for how it will be used after completion, I am not too clear now, there may be some hyperlinks of other webs pointing here.</p>
@@ -193,7 +193,7 @@
 <li><strong>ctrl + shift + f</strong></li>
 </ol>
 <hr>
-<h2 id="Click-to-drill-down-to-a-new-page"><a href="#Click-to-drill-down-to-a-new-page" class="headerlink" title="Click to drill down to  a new page"></a>Click to drill down to  a new page</h2><p>Indie project started</p>
+<h2 id="2-Click-to-drill-down-to-a-new-page"><a href="#2-Click-to-drill-down-to-a-new-page" class="headerlink" title="2. Click to drill down to  a new page"></a>2. Click to drill down to  a new page</h2><p>Indie project started</p>
 <h3 id="Requirement-Description-1"><a href="#Requirement-Description-1" class="headerlink" title="Requirement Description"></a>Requirement Description</h3><p>In a word, add a click method to the table data in the Vue table, click the data to a new page, and the new page has detailed information about the click data.</p>
 <p>Suppose I now have a pie chart that has been implemented, showing the percentages of the four positions of ABCD. At the same time, there is a table below the pie chart, showing the position name, number of people and percentage, roughly as follows:</p>
 <p>​                                    <strong>【pie chart】</strong> &lt;- pie chat is here ,put it on top of the form</p>
@@ -334,7 +334,7 @@
 <li><strong>learn by analogy</strong></li>
 </ol>
 <hr>
-<h2 id="Scheduling-email-task-optimization-Outlook-mailbox"><a href="#Scheduling-email-task-optimization-Outlook-mailbox" class="headerlink" title="Scheduling email task optimization (Outlook mailbox)"></a>Scheduling email task optimization (Outlook mailbox)</h2><hr>
+<h2 id="3-Scheduling-email-task-optimization-Outlook-mailbox"><a href="#3-Scheduling-email-task-optimization-Outlook-mailbox" class="headerlink" title="3. Scheduling email task optimization (Outlook mailbox)"></a>3. Scheduling email task optimization (Outlook mailbox)</h2><hr>
 <h3 id="Requirement-Description-2"><a href="#Requirement-Description-2" class="headerlink" title="Requirement  Description"></a>Requirement  Description</h3><p>The previous employee who designed the scheduling task directly returned the data in the form of <code>toString</code> after receiving the scheduling task data, resulting in the content of each email looking like this:</p>
 <p><img src="/en/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%881%EF%BC%89.png" alt="Project Records"></p>
 <p>Obviously, this is not a mode that is conducive to human reading, so this requirement requires me to change the style of this requirement, display the data in the form of a table, and attach an EXCEL file. A reasonable style should look like this:</p>
@@ -454,7 +454,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#97;&#97;&#97;&#x40;&#98;&#98;&#98;&#98;&#98;&#46;&#99;&#111;&#x6d;">&#97;&#97;&#97;&#97;&#97;&#x40;&#98;&#98;&#98;&#98;&#98;&#46;&#99;&#111;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#x61;&#x61;&#x61;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#x2e;&#99;&#x6f;&#x6d;">&#97;&#97;&#x61;&#x61;&#x61;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#x2e;&#99;&#x6f;&#x6d;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -473,7 +473,7 @@
 </ol>
 <hr>
 <hr>
-<h2 id="Dashboard-with-dropdown-boxes-x2F-Histogram"><a href="#Dashboard-with-dropdown-boxes-x2F-Histogram" class="headerlink" title="Dashboard with dropdown boxes&#x2F;Histogram"></a>Dashboard with dropdown boxes&#x2F;Histogram</h2><hr>
+<h2 id="4-Dashboard-with-dropdown-boxes-x2F-Histogram"><a href="#4-Dashboard-with-dropdown-boxes-x2F-Histogram" class="headerlink" title="4. Dashboard with dropdown boxes&#x2F;Histogram"></a>4. Dashboard with dropdown boxes&#x2F;Histogram</h2><hr>
 <p>This is a new and particularly complete page dashboard requirement, including drop-down box design and corresponding data collection and restrictions, as well as the display of data histogram in Vue, etc.</p>
 <h3 id="Requirement-Description-3"><a href="#Requirement-Description-3" class="headerlink" title="Requirement Description"></a>Requirement Description</h3><p>It is necessary to build a screen similar to the following, and the basic functional requirements included are:</p>
 <p><img src="/en/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%883%EF%BC%89.png" alt="项目记录-企业需求3"></p>
@@ -743,14 +743,45 @@
 <li><strong>Histogram design</strong></li>
 </ol>
 <hr>
+<h2 id="5-Oracle-table-triggers"><a href="#5-Oracle-table-triggers" class="headerlink" title="5. Oracle table triggers"></a>5. Oracle table triggers</h2><hr>
+<h3 id="Requirement-Description-4"><a href="#Requirement-Description-4" class="headerlink" title="Requirement Description"></a>Requirement Description</h3><p>Today there is a new project requirement, which is related to database tables and relatively simple.</p>
+<p>There is a table A now, which only records today’s data, and its data changes every five minutes. It deletes all previous data and inserts the updated data. Although table A deletes all previous data, the updated data is not modified for data from five minutes ago; it only performs an insertion operation.</p>
+<p><strong>TIPS: As for why we cannot directly perform an insertion operation here, the big data department on the other side has reported that this cannot be done, and the specific reasons are unknown.</strong></p>
+<p>In summary, based on the current requirements, a trigger is needed to insert the same data into table B when table A inserts data. However, the data in table B will not be deleted, and it will not only retain data for today. In addition, for the incremental table B, to avoid performance issues, it needs to be checked when table A inserts data. If the newly inserted data already exists in table B, it should not be inserted again.</p>
+<h3 id="Idea-and-Implementation-3"><a href="#Idea-and-Implementation-3" class="headerlink" title="Idea and Implementation"></a>Idea and Implementation</h3><p>在Oracle SQL中，<code>MERGE INTO</code>语句用于指定要合并数据的目标表；<code>USING</code> 指定要从中获取数据的源表；<code>ON</code> 指定用于匹配源表和目标表行的条件。如果条件为真，则执行匹配时的UPDATE操作，否则执行不匹配时的INSERT操作；<code>WHEN NOT MATCHED THEN</code> 在源表和目标表之间不存在匹配的情况下执行的操作块。</p>
+<p>很显然，在这里，使用<code>merge into</code> 是能满足要求的：</p>
+<p>Here it is worth mentioning the <code>MERGE INTO</code> trigger function.</p>
+<p>In Oracle SQL, the <code>MERGE INTO</code> statement is used to specify the target table for merging data; <code>USING</code> specifies the source table from which to get data; ‘<code>ON</code>‘ specifies the condition for matching rows in the source and target tables. If the condition is true, it performs an <code>UPDATE</code> operation when there is a match; otherwise, it performs an <code>INSERT</code> operation when there is no match. ‘<code>WHEN NOT MATCHED THEN</code>‘ specifies the block of operations to execute when there is no match between the source and target tables.</p>
+<p>Clearly, here, using ‘<code>MERGE INTO</code>‘ can meet the requirements.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TRIGGER</span> insert_trigger<br>AFTER <span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">ON</span> A<br><span class="hljs-keyword">REFERENCING</span> <span class="hljs-keyword">OLD</span> <span class="hljs-keyword">AS</span> &quot;OLD&quot; <br><span class="hljs-keyword">NEW</span> <span class="hljs-keyword">AS</span> &quot;NEW&quot;<br><span class="hljs-keyword">FOR</span> <span class="hljs-keyword">EACH</span> <span class="hljs-type">ROW</span><br><br><span class="hljs-keyword">BEGIN</span><br>	<span class="hljs-keyword">MERGE</span> <span class="hljs-keyword">INTO</span> B<br>	<span class="hljs-keyword">USING</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FROM</span> DUAL) <span class="hljs-keyword">ON</span> (B.employeeId <span class="hljs-operator">=</span> :NEW.employeeId <span class="hljs-keyword">and</span> B.date <span class="hljs-operator">=</span> <span class="hljs-keyword">NEW</span>:<span class="hljs-type">date</span>)<br>	<span class="hljs-keyword">WHEN</span> <span class="hljs-keyword">NOT</span> MATCHED <span class="hljs-keyword">THEN</span><br>	<span class="hljs-keyword">INSERT</span> (ID,employeeId,<span class="hljs-type">date</span>,...)<br>	<span class="hljs-keyword">VALUES</span> (:NEW.ID,:NEW.employeeId,:NEW.date,...);<br><span class="hljs-keyword">END</span>;<br></code></pre></td></tr></table></figure>
+
+<p>在上面的代码里面，我们创建了一个触发器 <code>insert_trigger</code>， 它是一个<code>AFTER INSERT</code>触发器，这意味着它会在数据插入到表A之后执行。</p>
+<p>In the code above, we created a trigger called <code>insert_trigger</code>. It is an ‘<code>AFTER INSERT</code>‘ trigger, which means it executes after data is inserted into table A</p>
+<ol>
+<li>When new data is inserted into table A, the trigger is activated.</li>
+<li>The trigger defines named references using ‘<code>REFERENCING</code>,’ using ‘<code>OLD</code>‘ to represent the previous rows (before the insertion) and ‘<code>NEW</code>‘ to represent the newly inserted rows.</li>
+<li>The trigger defines ‘<code>FOR EACH ROW</code>,’ indicating that it will execute once for each inserted row.</li>
+<li>Between ‘<code>BEGIN</code>‘ and ‘<code>END</code>‘ is the main logic of the trigger. Here, the trigger uses a ‘<code>MERGE</code>‘ statement to handle data in table B.</li>
+<li>The ‘<code>MERGE INTO</code>‘ statement allows data from a data source (in this case, ‘<code>SELECT 1 FROM DUAL</code>‘) to be merged into the target table B. In this example, it uses table B as the target.</li>
+<li>The ‘<code>USING</code>‘ clause specifies the data source, using a simple ‘<code>SELECT 1 FROM DUAL</code>.’ This clause is typically used to specify a virtual table or query to provide the data to be inserted.</li>
+<li>The ‘<code>ON</code>‘ clause defines the conditions for the merge operation. It uses a condition that matches the ‘<code>employeeId</code>‘ column in table B with the ‘<code>employeeId</code>‘ column in the newly inserted row in table A and also matches the ‘<code>date</code>‘ column with ‘<code>NEW:date</code>.’</li>
+<li>‘<code>WHEN NOT MATCHED THEN</code>‘ defines the operation to be executed when the condition doesn’t match during the merge operation. Here, it performs an insertion operation, inserting the data from the new row into table B. (<strong>Only when the ‘<code>employeeId</code>‘ column in table B does not match the ‘<code>employeeId</code>‘ column in the newly inserted row in table A and the ‘<code>date</code>‘ column does not match ‘<code>NEW:date</code>‘</strong>)</li>
+<li>The ‘<code>INSERT</code>‘ clause specifies the columns to be inserted and their corresponding values. These values come from the newly inserted row in table A (:NEW.ID, :NEW.employeeId, :NEW.date, etc.).</li>
+</ol>
+<p>In summary, the trigger’s purpose is to check for matching rows in table B when new data is inserted into table A and insert the new data into table B if the conditions do not match.</p>
+<p>With this, our trigger implementation is complete.</p>
+<h3 id="Summarize-4"><a href="#Summarize-4" class="headerlink" title="Summarize"></a>Summarize</h3><blockquote>
+<p>This requirement is relatively straightforward, and the main takeaway is learning about a new trigger function, <code>MERGE INTO</code>.</p>
+</blockquote>
+<hr>
 ]]></content>
       <categories>
         <category>Project Records</category>
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>SQL</tag>
         <tag>Vue</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
