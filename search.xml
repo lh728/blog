@@ -1,46 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>IDEA如何快速添加JavaDoc文档注释</title>
-    <url>/2023/08/19/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
-    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
-<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
-<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
-<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
-<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
-<li>在模板上加入文档注释模板：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
-<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
-<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
-<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
-<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
-<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
-<li>选择右侧的Edit variables按钮，进行如下配置：</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
-<ol start="7">
-<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
-<p>至此，配置完成</p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo转换语言，适用任何主题</title>
     <url>/2023/05/20/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/</url>
     <content><![CDATA[<p>本文主要讨论Hexo如何最简单地实现国际化，而且该方法适用性很高，对使用哪种主题我个人认为没有什么要求</p>
@@ -91,48 +51,43 @@
       </tags>
   </entry>
   <entry>
-    <title>Java虚拟机类加载的初始化</title>
-    <url>/2023/06/03/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
-    <content><![CDATA[<p>我们知道，《Java虚拟机规范》章节5.5 Initialization ^(1)^ 中严格规定了有且只有六种情况必须立即对类进行初始化：</p>
-<blockquote>
-<ul>
-<li>遇到new（实例化对象）、getstatic（读取一个没有被final修饰、没有在编译期把结果放入常量池的类的静态字段）、putstatic（设置一个没有被final修饰、没有在编译期把结果放入常量池的类的静态字段）或者invokestatic（调用一个类的静态方法）这四条字节码指令时，如果类没有进行初始化则需要触发初始化。</li>
-<li>使用java.lang.reflect包的方法对类型进行反射调用</li>
-<li>父类还没有初始化</li>
-<li>虚拟机启动时，用户需要制定一个要执行的主类（main）</li>
-<li>当使用java7新加入的动态语言支持时，如果一个MthodHandle实例最后的解析结果是REF_getStatic、REF_putstatic、REF_invokestatic、REF_newInvokeSpecial四种类型的方法句柄</li>
-<li>一个接口定义了default修饰的接口方法，同时接口的实现类发生了初始化</li>
-</ul>
-</blockquote>
-<p>除此之外，所有引用类型的方式都不会触发初始化，称为被动引用：</p>
-<h2 id="子类引用父类"><a href="#子类引用父类" class="headerlink" title="子类引用父类"></a>子类引用父类</h2><p>通过子类引用父类的静态字段不会导致子类初始化：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">package</span> com.example.demo;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sub</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span>&#123;System.out.println(<span class="hljs-string">&quot;Sub&quot;</span>);&#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Sub.value);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+    <title>IDEA如何快速添加JavaDoc文档注释</title>
+    <url>/2023/08/19/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
+    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
+<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
+<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
+<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
+<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
+<li>在模板上加入文档注释模板：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>结果是什么呢？会先输出“Super”，然后是value的值。</p>
-<p>对于静态字段，只有直接定义这个字段的类才会被初始化，所以通过子类引用父类静态字段，也只有父类会初始化。</p>
-<h2 id="数组引用类"><a href="#数组引用类" class="headerlink" title="数组引用类"></a>数组引用类</h2><p>通过数组定义来引用类，不会触发此类的初始化</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        Sub[] sp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sub</span>[<span class="hljs-number">5</span>];<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
+<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
+<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
+<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
+<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
+<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
 
-<p>结果是什么呢？</p>
-<p>什么也没有。</p>
-<p>可见Sub类并没有被初始化。不过这段代码触发了另一个名为“[Lcom.example.demo.Sub”的类的初始化阶段。这玩意是虚拟机自动生成的直接继承自Object的子类，创建动作由字节码指令anewarray（即新建引用数组）触发。</p>
-<p>这个类代表的一维数组，用户可直接使用的只有被修饰为Public的length属性和clone方法，当然数组中应用的属性和方法都实现在这个类中。这是因为Java包装了数组元素的访问（在C中是数组指针的移动），这也就是为什么Java检测到数组越界会抛出ArrayIndexOutOfBoundsException异常而不是像C中的非法内存访问。</p>
-<p>准确的说，Java的越界检查不是封装在数组元素访问的类中，而是封装在数组访问的xaload（数组的元素压栈）、xastore（针对数组的操作）字节码指令。</p>
-<h2 id="常量池引用"><a href="#常量池引用" class="headerlink" title="常量池引用"></a>常量池引用</h2><p>常量在编译阶段会存入调用类的常量池中，本质上没有直接引用到定义常量的类</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">HELLO</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Hello&quot;</span>;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Super.HELLO);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>这里的代码运行后也不会输出“Super”。</p>
-<p>hello的常量值其实在编译阶段已经被转化成SomeName类对自身常量池的引用了,所以他们俩没什么关系了。</p>
-<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><p>接口和类有一点不同。接口其实也有初始化过程，不过接口不能像类一样用static代码块来输出初始化信息，编译器会为接口生成“<clinit>”类构造器，用于初始化接口中定义的成员变量。并且：</p>
-<p>接口不要求父接口全部初始化，只有用到了才会初始化。</p>
+<ol start="5">
+<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
+<li>选择右侧的Edit variables按钮，进行如下配置：</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
+<ol start="7">
+<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
+<p>至此，配置完成</p>
 <hr>
-<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
 ]]></content>
       <categories>
         <category>后端</category>
       </categories>
       <tags>
-        <tag>Java</tag>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -200,26 +155,43 @@
       </tags>
   </entry>
   <entry>
-    <title>匿名内部类形参为什么一定要final</title>
-    <url>/2023/06/02/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%BD%A2%E5%8F%82%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%80%E5%AE%9A%E8%A6%81final/</url>
-    <content><![CDATA[<p>最近在写一些匿名内部类的时候会感觉有些难以理解，所以重新复习了一下这部分内容。  发现了一些之前没注意到的点——匿名内部类的形参必须加final前缀（除非匿名内部类没使用它）</p>
-<p>那么，怎么理解这个事情的背后原理呢？</p>
-<h2 id="内部类运作方式"><a href="#内部类运作方式" class="headerlink" title="内部类运作方式"></a>内部类运作方式</h2><p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
-<p>该class文件仅仅只保留了对外部类的引用。</p>
-<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">method</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name,<span class="hljs-keyword">final</span> <span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-keyword">class</span> <span class="hljs-title class_">InnerClass</span>&#123;<br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + name + <span class="hljs-string">&quot; and age is &quot;</span> + age);<br><br>            &#125;<br>        &#125;<br>        <span class="hljs-type">InnerClass</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InnerClass</span>();<br>        in.show();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+    <title>Java虚拟机类加载的初始化</title>
+    <url>/2023/06/03/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
+    <content><![CDATA[<p>我们知道，《Java虚拟机规范》章节5.5 Initialization ^(1)^ 中严格规定了有且只有六种情况必须立即对类进行初始化：</p>
+<blockquote>
+<ul>
+<li>遇到new（实例化对象）、getstatic（读取一个没有被final修饰、没有在编译期把结果放入常量池的类的静态字段）、putstatic（设置一个没有被final修饰、没有在编译期把结果放入常量池的类的静态字段）或者invokestatic（调用一个类的静态方法）这四条字节码指令时，如果类没有进行初始化则需要触发初始化。</li>
+<li>使用java.lang.reflect包的方法对类型进行反射调用</li>
+<li>父类还没有初始化</li>
+<li>虚拟机启动时，用户需要制定一个要执行的主类（main）</li>
+<li>当使用java7新加入的动态语言支持时，如果一个MthodHandle实例最后的解析结果是REF_getStatic、REF_putstatic、REF_invokestatic、REF_newInvokeSpecial四种类型的方法句柄</li>
+<li>一个接口定义了default修饰的接口方法，同时接口的实现类发生了初始化</li>
+</ul>
+</blockquote>
+<p>除此之外，所有引用类型的方式都不会触发初始化，称为被动引用：</p>
+<h2 id="子类引用父类"><a href="#子类引用父类" class="headerlink" title="子类引用父类"></a>子类引用父类</h2><p>通过子类引用父类的静态字段不会导致子类初始化：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">package</span> com.example.demo;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sub</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span>&#123;System.out.println(<span class="hljs-string">&quot;Sub&quot;</span>);&#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Sub.value);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
-<p>但是实际上name并不是被内部类直接调用的，实际上java编译后它长这样：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass$InnerClass</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">InnerClass</span><span class="hljs-params">(String name,<span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-built_in">this</span>.InnerClass$name = name;<br>        <span class="hljs-built_in">this</span>.InnerClass$age = age;<br>    &#125;  <br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$name + <span class="hljs-string">&quot; and age is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$age );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>结果是什么呢？会先输出“Super”，然后是value的值。</p>
+<p>对于静态字段，只有直接定义这个字段的类才会被初始化，所以通过子类引用父类静态字段，也只有父类会初始化。</p>
+<h2 id="数组引用类"><a href="#数组引用类" class="headerlink" title="数组引用类"></a>数组引用类</h2><p>通过数组定义来引用类，不会触发此类的初始化</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        Sub[] sp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sub</span>[<span class="hljs-number">5</span>];<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
-<p>所以，从以上代码看来，内部类并不是直接调用方法传进来的参数，而是内部类将传进来的参数通过自己的构造器备份到了自己的内部，自己内部的方法调用的实际是自己的属性而不是外部类方法的参数！<br>这样理解就很容易得出为什么要用final了，<strong>假设内部类修改这些参数的值，结果原参数的值却没有变化，这就影响了参数的一致性。</strong>从编程人员的角度来看这个参数是一样的，但是假设在内部类中改掉参数的值，但是外部调用的时候又发现值其实没有被改掉，这可能让人感到很困惑，所以为了避免这种尴尬的问题存在，所以编译器设计人员把内部类能够使用的参数设定为必须是final的。</p>
-<h2 id="匿名内部类运作方式"><a href="#匿名内部类运作方式" class="headerlink" title="匿名内部类运作方式"></a>匿名内部类运作方式</h2><p>OK，匿名内部类相比内部类有什么区别呢——它没有名字。</p>
-<p>没名字，所以它是用默认的无参构造器构造，如果需要参数，那么就给他带参数的构造器。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-string">&quot;Inner&quot;</span>); <br>        System.out.println(inner.getName()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(name) &#123; <br>            <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">nameStr</span> <span class="hljs-operator">=</span> name; <br> <br>            <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123; <br>                <span class="hljs-keyword">return</span> nameStr; <br>            &#125; <br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(String name) &#123; <br>        System.out.println(name); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span>; <br>&#125; <br><br></code></pre></td></tr></table></figure>
+<p>结果是什么呢？</p>
+<p>什么也没有。</p>
+<p>可见Sub类并没有被初始化。不过这段代码触发了另一个名为“[Lcom.example.demo.Sub”的类的初始化阶段。这玩意是虚拟机自动生成的直接继承自Object的子类，创建动作由字节码指令anewarray（即新建引用数组）触发。</p>
+<p>这个类代表的一维数组，用户可直接使用的只有被修饰为Public的length属性和clone方法，当然数组中应用的属性和方法都实现在这个类中。这是因为Java包装了数组元素的访问（在C中是数组指针的移动），这也就是为什么Java检测到数组越界会抛出ArrayIndexOutOfBoundsException异常而不是像C中的非法内存访问。</p>
+<p>准确的说，Java的越界检查不是封装在数组元素访问的类中，而是封装在数组访问的xaload（数组的元素压栈）、xastore（针对数组的操作）字节码指令。</p>
+<h2 id="常量池引用"><a href="#常量池引用" class="headerlink" title="常量池引用"></a>常量池引用</h2><p>常量在编译阶段会存入调用类的常量池中，本质上没有直接引用到定义常量的类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">HELLO</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Hello&quot;</span>;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Super.HELLO);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>看，这里getInner方法的参数加了final，理由和之前内部类部分加final的理由是一样的。如果内部类的改变不能影响到外部，那就干脆别动它！</p>
-<h2 id="有时候也可以不加final"><a href="#有时候也可以不加final" class="headerlink" title="有时候也可以不加final"></a>有时候也可以不加final</h2><p>什么时候可以不加final呢？如果内部类没有使用它就可以不加final了，这很好理解：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
+<p>这里的代码运行后也不会输出“Super”。</p>
+<p>hello的常量值其实在编译阶段已经被转化成SomeName类对自身常量池的引用了,所以他们俩没什么关系了。</p>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><p>接口和类有一点不同。接口其实也有初始化过程，不过接口不能像类一样用static代码块来输出初始化信息，编译器会为接口生成“<clinit>”类构造器，用于初始化接口中定义的成员变量。并且：</p>
+<p>接口不要求父接口全部初始化，只有用到了才会初始化。</p>
+<hr>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
+]]></content>
       <categories>
         <category>后端</category>
       </categories>
@@ -268,17 +240,54 @@
       </tags>
   </entry>
   <entry>
-    <title>构造器内部初始化实际过程</title>
-    <url>/2023/05/18/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="类初始化顺序"><a href="#类初始化顺序" class="headerlink" title="类初始化顺序"></a>类初始化顺序</h2><p>类的初始化遵循的顺序很多人都知道是这样：<br>（1）调用基类构造器，不断重复这个过程直到最底层<br>（2）再按照声明的顺序调用成员的初始化方法<br>（3）调用类构造器的主体  </p>
-<h2 id="类初始化的实际过程"><a href="#类初始化的实际过程" class="headerlink" title="类初始化的实际过程"></a>类初始化的实际过程</h2><p>但是，考虑这样一个例子： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
+    <title>匿名内部类形参为什么一定要final</title>
+    <url>/2023/06/02/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%BD%A2%E5%8F%82%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%80%E5%AE%9A%E8%A6%81final/</url>
+    <content><![CDATA[<p>最近在写一些匿名内部类的时候会感觉有些难以理解，所以重新复习了一下这部分内容。  发现了一些之前没注意到的点——匿名内部类的形参必须加final前缀（除非匿名内部类没使用它）</p>
+<p>那么，怎么理解这个事情的背后原理呢？</p>
+<h2 id="内部类运作方式"><a href="#内部类运作方式" class="headerlink" title="内部类运作方式"></a>内部类运作方式</h2><p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
+<p>该class文件仅仅只保留了对外部类的引用。</p>
+<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">method</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name,<span class="hljs-keyword">final</span> <span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-keyword">class</span> <span class="hljs-title class_">InnerClass</span>&#123;<br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + name + <span class="hljs-string">&quot; and age is &quot;</span> + age);<br><br>            &#125;<br>        &#125;<br>        <span class="hljs-type">InnerClass</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InnerClass</span>();<br>        in.show();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
-<p>Animal类的walk方法被设计为在Cat类中被重写，但是Animal的构造器会调用这个walk方法，这导致了对Cat.walk()的调用。<br>上述代码的生成结果是：</p>
-<blockquote>
-<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
-</blockquote>
-<p>我们会发现当Animal的构造器调用walk()方法的时候，step不是默认的初始值100，而是0。<br>因此前面讲的类初始化的顺序并不完整，实际上类的初始化顺序应该是这样的：<br>（1）<strong>在所有事情发生之前先分配空间，将分配给对象的存储空间初始化成二进制的零（或者某些特殊数据类型中与零等价的值）</strong><br>（2）如前所述的调用基类构造器，这个时候在调用cat构造器之前就要调用walk方法，因此此时的step值是0<br>（3）按照声明的顺序调用成员的初始化方法<br>（4）调用类构造器的主体<br>当然，这种错误并不容易发现，因此推荐大家如果可以的话，构造器中尽可能避免调用其他方法，在构造器内唯一能够安全调用的那些方法是基类的final方法（因为他们不会被重写，也就不会有上述的问题）。</p>
+<p>但是实际上name并不是被内部类直接调用的，实际上java编译后它长这样：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass$InnerClass</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">InnerClass</span><span class="hljs-params">(String name,<span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-built_in">this</span>.InnerClass$name = name;<br>        <span class="hljs-built_in">this</span>.InnerClass$age = age;<br>    &#125;  <br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$name + <span class="hljs-string">&quot; and age is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$age );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>所以，从以上代码看来，内部类并不是直接调用方法传进来的参数，而是内部类将传进来的参数通过自己的构造器备份到了自己的内部，自己内部的方法调用的实际是自己的属性而不是外部类方法的参数！<br>这样理解就很容易得出为什么要用final了，<strong>假设内部类修改这些参数的值，结果原参数的值却没有变化，这就影响了参数的一致性。</strong>从编程人员的角度来看这个参数是一样的，但是假设在内部类中改掉参数的值，但是外部调用的时候又发现值其实没有被改掉，这可能让人感到很困惑，所以为了避免这种尴尬的问题存在，所以编译器设计人员把内部类能够使用的参数设定为必须是final的。</p>
+<h2 id="匿名内部类运作方式"><a href="#匿名内部类运作方式" class="headerlink" title="匿名内部类运作方式"></a>匿名内部类运作方式</h2><p>OK，匿名内部类相比内部类有什么区别呢——它没有名字。</p>
+<p>没名字，所以它是用默认的无参构造器构造，如果需要参数，那么就给他带参数的构造器。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-string">&quot;Inner&quot;</span>); <br>        System.out.println(inner.getName()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(name) &#123; <br>            <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">nameStr</span> <span class="hljs-operator">=</span> name; <br> <br>            <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123; <br>                <span class="hljs-keyword">return</span> nameStr; <br>            &#125; <br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(String name) &#123; <br>        System.out.println(name); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span>; <br>&#125; <br><br></code></pre></td></tr></table></figure>
+
+<p>看，这里getInner方法的参数加了final，理由和之前内部类部分加final的理由是一样的。如果内部类的改变不能影响到外部，那就干脆别动它！</p>
+<h2 id="有时候也可以不加final"><a href="#有时候也可以不加final" class="headerlink" title="有时候也可以不加final"></a>有时候也可以不加final</h2><p>什么时候可以不加final呢？如果内部类没有使用它就可以不加final了，这很好理解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何调试springboot定时调度任务</title>
+    <url>/2023/06/27/%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95springboot%E5%AE%9A%E6%97%B6%E8%B0%83%E5%BA%A6%E4%BB%BB%E5%8A%A1/</url>
+    <content><![CDATA[<p>最近在做企业开发的时候，有个需求需要我对发送邮件的定时调度任务做调整和优化。</p>
+<h2 id="Scheduled-定时调度任务"><a href="#Scheduled-定时调度任务" class="headerlink" title="@Scheduled 定时调度任务"></a>@Scheduled 定时调度任务</h2><p>已经完成的发送邮件定时调度任务大概长这样：</p>
+<p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
+<p>该class文件仅仅只保留了对外部类的引用。</p>
+<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>优化调整的困难点在于debug麻烦：</p>
+<ul>
+<li>目前的开发环境的代码并没有设置统一接口来通过前端调试后端定时任务</li>
+<li>如果通过修改cron来调试，需要重启项目，更重要的是会发很多骚扰邮件出去</li>
+<li>还有一个思路是在测试代码里面调用方法，但是也很麻烦</li>
+</ul>
+<p>实际上还有一个比较简洁的思路，重写*<code>InitialzingBean</code><em>类的</em><code>afterPropertiesSet</code>*方法。</p>
+<p>spring初始化bean的时候，如果bean实现了*<code>InitializingBean</code><em>接口，会自动调用</em><code>afterPropertiesSet</code>*方法，所以可以想到，通过这样的方式，就可以通过重启打断点进行调试了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>是不是很简单？当然，这可能不是最优解，但是如果只在项目中短暂使用，也是问题不大的。</p>
 ]]></content>
       <categories>
         <category>后端</category>
@@ -358,26 +367,17 @@
       </tags>
   </entry>
   <entry>
-    <title>如何调试springboot定时调度任务</title>
-    <url>/2023/06/27/%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95springboot%E5%AE%9A%E6%97%B6%E8%B0%83%E5%BA%A6%E4%BB%BB%E5%8A%A1/</url>
-    <content><![CDATA[<p>最近在做企业开发的时候，有个需求需要我对发送邮件的定时调度任务做调整和优化。</p>
-<h2 id="Scheduled-定时调度任务"><a href="#Scheduled-定时调度任务" class="headerlink" title="@Scheduled 定时调度任务"></a>@Scheduled 定时调度任务</h2><p>已经完成的发送邮件定时调度任务大概长这样：</p>
-<p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
-<p>该class文件仅仅只保留了对外部类的引用。</p>
-<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
+    <title>构造器内部初始化实际过程</title>
+    <url>/2023/05/18/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="类初始化顺序"><a href="#类初始化顺序" class="headerlink" title="类初始化顺序"></a>类初始化顺序</h2><p>类的初始化遵循的顺序很多人都知道是这样：<br>（1）调用基类构造器，不断重复这个过程直到最底层<br>（2）再按照声明的顺序调用成员的初始化方法<br>（3）调用类构造器的主体  </p>
+<h2 id="类初始化的实际过程"><a href="#类初始化的实际过程" class="headerlink" title="类初始化的实际过程"></a>类初始化的实际过程</h2><p>但是，考虑这样一个例子： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
 
-<p>优化调整的困难点在于debug麻烦：</p>
-<ul>
-<li>目前的开发环境的代码并没有设置统一接口来通过前端调试后端定时任务</li>
-<li>如果通过修改cron来调试，需要重启项目，更重要的是会发很多骚扰邮件出去</li>
-<li>还有一个思路是在测试代码里面调用方法，但是也很麻烦</li>
-</ul>
-<p>实际上还有一个比较简洁的思路，重写*<code>InitialzingBean</code><em>类的</em><code>afterPropertiesSet</code>*方法。</p>
-<p>spring初始化bean的时候，如果bean实现了*<code>InitializingBean</code><em>接口，会自动调用</em><code>afterPropertiesSet</code>*方法，所以可以想到，通过这样的方式，就可以通过重启打断点进行调试了：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>是不是很简单？当然，这可能不是最优解，但是如果只在项目中短暂使用，也是问题不大的。</p>
+<p>Animal类的walk方法被设计为在Cat类中被重写，但是Animal的构造器会调用这个walk方法，这导致了对Cat.walk()的调用。<br>上述代码的生成结果是：</p>
+<blockquote>
+<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+</blockquote>
+<p>我们会发现当Animal的构造器调用walk()方法的时候，step不是默认的初始值100，而是0。<br>因此前面讲的类初始化的顺序并不完整，实际上类的初始化顺序应该是这样的：<br>（1）<strong>在所有事情发生之前先分配空间，将分配给对象的存储空间初始化成二进制的零（或者某些特殊数据类型中与零等价的值）</strong><br>（2）如前所述的调用基类构造器，这个时候在调用cat构造器之前就要调用walk方法，因此此时的step值是0<br>（3）按照声明的顺序调用成员的初始化方法<br>（4）调用类构造器的主体<br>当然，这种错误并不容易发现，因此推荐大家如果可以的话，构造器中尽可能避免调用其他方法，在构造器内唯一能够安全调用的那些方法是基类的final方法（因为他们不会被重写，也就不会有上述的问题）。</p>
 ]]></content>
       <categories>
         <category>后端</category>
@@ -390,29 +390,175 @@
     <title>项目记录——故障排查</title>
     <url>/2023/06/17/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</url>
     <content><![CDATA[<p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
-<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p>Oracle SQL表设计问题 </p>
-<h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
-<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p>很明显，这通常都是后端报错了，所以我按照流程复现了下该报错，然后直接看idea结果，idea报错：</p>
+<h2 id="SQL-DML堵塞问题（Oracle）"><a href="#SQL-DML堵塞问题（Oracle）" class="headerlink" title="SQL DML堵塞问题（Oracle）"></a>SQL DML堵塞问题（Oracle）</h2><h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>最近项目需要接收大数据部门接口传来的数据，然后对数据做一些update操作后插入到一个表里面，后文会将该表称之为Business表。在执行这个操作的时候，意外发现执行时间过长，超过二十分钟了。</p>
+<p>最开始以为是数据量过大的问题，后来发现并不是，因此不得不化身为DBA寻找阻塞原因，因此记录下解决这个问题的经历：</p>
+<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p><strong>首先可以用以下sql分析和确定下，这个查询是不是被堵住了：</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s1.username <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;@&#x27;</span> <span class="hljs-operator">||</span> s1.machine <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;(SID=)&#x27;</span> <span class="hljs-operator">||</span> s1.sid <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;)&#x27;</span> <span class="hljs-keyword">as</span> blocking_session,<br>s2.username <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;@&#x27;</span> <span class="hljs-operator">||</span> s2.machine <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;(SID=)&#x27;</span> <span class="hljs-operator">||</span> s2.sid <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;)&#x27;</span> <span class="hljs-keyword">as</span> waiting_session,<br>s1.sql_id, s1.sql_child_number,s1.sql_exec_start,s2.event<br><span class="hljs-keyword">from</span> <br>v$session s1, v$session s2<br><span class="hljs-keyword">where</span> s1.blocking_session <span class="hljs-operator">=</span> s2.sid;<br></code></pre></td></tr></table></figure>
+
+<p>这SQL查询是用来检测 Oracle 数据库中的长时间堵塞（blocking）情况，它从 <code>v$session</code> 视图中获取有关会话的信息，特别是正在阻塞其他会话的会话和正在等待的会话的信息。</p>
+<ul>
+<li><code>s1</code> 和 <code>s2</code> 是 <code>v$session</code> 视图的别名，分别代表两个不同的会话。</li>
+<li><code>s1.username || &#39;@&#39; || s1.machine || &#39;(SID=)&#39; || s1.sid || &#39;)&#39;</code> 和 <code>s2.username || &#39;@&#39; || s2.machine || &#39;(SID=)&#39; || s2.sid || &#39;)&#39;</code> 是用来创建会话的标识信息，包括用户名、机器名、会话标识（SID），以及会话是否被堵塞的标志。</li>
+<li><code>s1.sql_id</code>, <code>s1.sql_child_number</code> 表示正在执行 SQL 查询的会话（<code>s1</code>）的 SQL 查询 ID 和子编号。</li>
+<li><code>s1.sql_exec_start</code> 是 SQL 查询的执行开始时间。</li>
+<li><code>s2.event</code> 表示正在等待的会话（<code>s2</code>）当前正在等待的事件。</li>
+<li><code>where s1.blocking_session = s2.sid</code> 是查询的过滤条件，它会筛选出那些正在阻塞其他会话的会话（<code>s1</code>）和正在等待其他会话解除堵塞的会话（<code>s2</code>）。</li>
+</ul>
+<p><strong>通过上述SQL，可以找到堵塞session的SID，然后用如下sql确认阻塞原因：</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s.sid, s.serial#, s.username, s.event, s.sql_id, s.sql_child_number, s.sql_exec_start, q.sql_text<br><span class="hljs-keyword">from</span> v$session s <span class="hljs-keyword">join</span> v$<span class="hljs-keyword">sql</span> q <span class="hljs-keyword">on</span> s.sql_id <span class="hljs-operator">=</span> q.sql_id <span class="hljs-keyword">and</span> s.sql_child_number <span class="hljs-operator">=</span> q.child_number<br><span class="hljs-keyword">where</span> s.sid <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span>blocking_session_id<span class="hljs-operator">&gt;</span>; (这里输入前面查询到的阻塞SID)<br></code></pre></td></tr></table></figure>
+
+<p>这个SQL查询是用于查找数据库中指定会话（<code>sid</code>）的详细信息，包括该会话的用户名、正在执行的SQL查询、等待事件和其他相关信息。</p>
+<ul>
+<li><code>v$session s</code> 和 <code>v$sql q</code> 是 <code>v$session</code> 和 <code>v$sql</code> 视图的别名，分别代表会话信息和SQL查询信息。</li>
+<li><code>q.sql_text</code> 是用于选择会话的SQL查询文本。</li>
+<li><code>s.sql_id = q.sql_id</code> 和 <code>s.sql_child_number = q.child_number</code> 表示会话的 SQL 查询 ID 和子编号与 SQL 查询信息的 SQL ID 和子编号匹配，以关联会话和查询。</li>
+<li><code>where s.sid = &lt;blocking_session_id&gt;</code> 是查询的过滤条件，这里输入前面查询到的阻塞SID</li>
+</ul>
+<p>通过上述的代码，我查看 s.event 发现了出问题的是update语句。</p>
+<p>现在，我有两个选择：</p>
+<p>（1）通过 <code>alter system kill session &#39;&lt;sid&gt;&lt;serial#&gt;&#39; immediate</code> 命令直接终止堵塞会话，回滚事务；</p>
+<p>（2）继续深挖，找到问题原因，直接修改问题代码；</p>
+<p>显然，应该选择第二种方案，选择第一种方案再次运行还是会报错，所以<strong>继续查询<code>v$lock</code>查看锁信息</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> l.sid, s.username, l.type, l.id1, l.id2, l.lmode, l.request<br><span class="hljs-keyword">from</span> v$lock l<br><span class="hljs-keyword">join</span> <br>v$session s <span class="hljs-keyword">on</span> l.sid <span class="hljs-operator">=</span> s.sid<br></code></pre></td></tr></table></figure>
+
+<p>这个SQL查询用于检查 Oracle 数据库中的锁信息，以查找哪些会话正在持有或请求锁，以及相关的会话信息。</p>
+<ul>
+<li><code>v$lock l</code> 和 <code>v$session s</code> 是 <code>v$lock</code> 视图和 <code>v$session</code> 视图的别名，分别代表锁信息和会话信息；</li>
+<li><code>l.sid = s.sid</code> 表示锁信息的会话 ID (<code>sid</code>) 与会话信息的会话 ID 匹配，以关联锁和会话；</li>
+<li><code>l.sid</code>：这列表示持有或请求锁的会话的会话 ID（Session ID）。每个会话都有一个唯一的会话 ID。</li>
+<li><code>s.username</code>：这列表示持有或请求锁的会话的用户名。它标识了数据库中执行操作的用户。</li>
+<li><code>l.type</code>：这列表示锁的类型。不同的锁类型用于不同的资源或对象，例如表、行、索引等。</li>
+<li><code>l.id1</code> 和 <code>l.id2</code>：这两列通常一起工作，表示锁的标识符。具体的含义取决于锁的类型，例如对于表锁，它们可能表示表的对象标识符。</li>
+<li><code>l.lmode</code>：这列表示锁的模式。它描述了锁的类型，例如共享锁、排他锁等。</li>
+<li><code>l.request</code>：这列表示会话是否正在请求锁，以及请求的锁类型和模式。</li>
+</ul>
+<p>将查询结果与SID对应，发现阻塞的几个所分别是：</p>
+<table>
+<thead>
+<tr>
+<th align="center">type</th>
+<th align="center">ID1</th>
+<th align="center">ID2</th>
+<th align="center">LMODE</th>
+<th align="center">REQUEST</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">AE</td>
+<td align="center">100</td>
+<td align="center">0</td>
+<td align="center">4</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">TM</td>
+<td align="center">168385</td>
+<td align="center">0</td>
+<td align="center">3</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">TX</td>
+<td align="center">393225</td>
+<td align="center">221646</td>
+<td align="center">0</td>
+<td align="center">6</td>
+</tr>
+</tbody></table>
+<p>上述结果说明了：</p>
+<ol>
+<li><p>第一行（AE 锁）：</p>
+<ul>
+<li><code>type</code> 是 “AE”，表示这是一个表级别的锁。</li>
+<li><code>ID1</code> 是 100，可能是表的标识符。</li>
+<li><code>ID2</code> 是 0，通常表示表级别锁的 ID2 为 0。</li>
+<li><code>LMODE</code> 是 4，表示持有排他锁。</li>
+<li><code>REQUEST</code> 是 0，表示当前没有请求新的锁。</li>
+</ul>
+</li>
+<li><p>第二行（TM 锁）：</p>
+<ul>
+<li><code>type</code> 是 “TM”，表示这是一个表级别的锁。</li>
+<li><code>ID1</code> 是 168385，可能是表的另一个标识符。</li>
+<li><code>ID2</code> 是 0，通常表示表级别锁的 ID2 为 0。</li>
+<li><code>LMODE</code> 是 3，表示持有共享锁。</li>
+<li><code>REQUEST</code> 是 0，表示当前没有请求新的锁。</li>
+</ul>
+</li>
+<li><p>第三行（TX 锁）：</p>
+<ul>
+<li><p><code>type</code> 是 “TX”，表示这是一个事务级别的锁。</p>
+</li>
+<li><p><code>ID1</code> 是 393225，可能表示某个事务的标识符。</p>
+</li>
+<li><p><code>ID2</code> 是 221646，可能表示另一个事务的标识符。</p>
+</li>
+<li><p><code>LMODE</code> 是 0，表示没有锁（或者叫无锁）。</p>
+</li>
+<li><p><code>REQUEST</code> 是 6，表示当前正在请求新的锁。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>接着，识别一下第三行的事务锁，究竟锁住的是哪段代码：</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> do.object_name, row_wait_obj#, do.data_object_id,<br>row_wait_file#, row_wait_block#, row_wait_row#,<br>dbms_rowid.rowid_create(<span class="hljs-number">1</span>,do,data_object_id, row_wait_file#, row_wait_block#, row_wait_row#)<br><span class="hljs-keyword">from</span> v$session s, dba_objects do <br><span class="hljs-keyword">where</span> sid <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span>sessionId<span class="hljs-operator">&gt;</span><br><span class="hljs-keyword">and</span> s.row_wait_obj# <span class="hljs-operator">=</span> do.object_id;<br></code></pre></td></tr></table></figure>
+
+<p>这个 SQL 查询用于查找特定会话（<code>sid</code>）正在等待的行级锁的相关信息。以下是查询中的各个部分的含义：</p>
+<ol>
+<li><code>do.object_name</code>：这表示正在等待行级锁的数据对象的名称，即表的名称或其他数据库对象的名称。</li>
+<li><code>row_wait_obj#</code>：这是会话正在等待的行级锁的对象号。它用于标识数据对象，该对象上的行级锁正被等待。</li>
+<li><code>do.data_object_id</code>：这是数据对象的唯一标识符。</li>
+<li><code>row_wait_file#</code>、<code>row_wait_block#</code>、<code>row_wait_row#</code>：这些列表示行级锁的具体位置信息，包括等待的文件号、块号和行号。</li>
+<li><code>dbms_rowid.rowid_create(1, do, data_object_id, row_wait_file#, row_wait_block#, row_wait_row#)</code>：这是一个函数调用，用于创建行级锁的 ROWID（行标识符），以便精确定位到正在等待的行级锁。</li>
+<li><code>v$session s, dba_objects do</code>：这部分表示查询将从 <code>v$session</code> 视图和 <code>dba_objects</code> 视图中检索信息。</li>
+<li><code>where sid = &lt;sessionId&gt;</code>：这是查询的过滤条件，用于指定要检查的特定会话的 <code>sid</code>。</li>
+<li><code>and s.row_wait_obj# = do.object_id</code>：这是查询的连接条件，它将会话的 <code>row_wait_obj#</code> 与数据对象的 <code>object_id</code> 进行匹配，以便检索正在等待的行级锁的数据对象的信息。</li>
+</ol>
+<p>接着，我查询到的rowId 是 AABK&#x2F;5AAFAAAAHHAAA, 把这个id放到如下的sql查询里面，就能查询出来是具体哪一行出的问题了：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> Business <span class="hljs-keyword">where</span> rowid <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;AABK/5AAFAAAAHHAAA&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>注意Business是我的表名。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>定位发现问题行，同时是update语句出的问题之后，我发现是数据中有重名问题，同时update后面的insert语句执行过快，两个数据同时争夺同一个行锁，造成了阻塞。于是我修改了原来的java代码，对每个update语句增加了50ms的延时，解决了问题</p>
+<hr>
+<h2 id="EsayPoi解析Excel图片空指针"><a href="#EsayPoi解析Excel图片空指针" class="headerlink" title="EsayPoi解析Excel图片空指针"></a>EsayPoi解析Excel图片空指针</h2><h3 id="Bug描述-1"><a href="#Bug描述-1" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
+<p>现在有两个几乎一模一样的Excel文件，当我进行导入并解析的时候，一个Excel文件会报空指针，一个文件会正常解析并且导入。</p>
+<p>这里的业务逻辑是：</p>
+<ul>
+<li>业务方先下载Excel模板</li>
+<li>业务方根据模板输入自己想要导入的信息，其中有一列是图片信息</li>
+<li>图片信息是业务方自己粘贴进Excel的</li>
+<li>最后业务方点击导入，把Excel解析，把其中的信息导入数据库</li>
+</ul>
+<p>这个Bug就是业务方在这个流程中遇到的，业务方有两个几乎一模一样的Excel文件，它们的文本信息是完全一样的，唯一的区别就是图片不一样。</p>
+<p>而且，就算把可以正常解析导入的Excel文件中的图片粘贴到出问题的Excel文件，也还是会报空指针异常，很奇怪。</p>
+<h3 id="问题排查-1"><a href="#问题排查-1" class="headerlink" title="问题排查"></a>问题排查</h3><p>一开始我以为是图片可能覆盖了其他单元格，所以尝试拉伸了一下图片，发现没有作用。</p>
+<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi API的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi API的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
+<p>更准确的说，是在执行这个放里面如下所示的代码的时候报的错：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">...<br>	pic.getPreferredSize()<br>...<br></code></pre></td></tr></table></figure>
+
+<p>打断点，这里需要一个anchor的cell1属性和cell2属性。</p>
+<p>然后这里的cell2属性是空，于是报了空指针。</p>
+<p>知道错误的起源了，现在回头去找为什么cell2属性是null呢？这个属性是在哪里构造的呢？</p>
+<p>经过漫长的寻找，最后发现是在Poi API的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
+<p>该方法如下所示：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> XSSFAnchor <span class="hljs-title function_">getAnchorFromParent</span><span class="hljs-params">(XmlObject obj)</span> &#123;<br>  <span class="hljs-type">XSSFAnchor</span> <span class="hljs-variable">anchor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlObject</span> <span class="hljs-variable">parentXbean</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlCursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> obj.newCursor();<br>  <span class="hljs-keyword">if</span> (cursor.toParent()) &#123;<br>    parentXbean = cursor.getObject();<br>  &#125;<br>  cursor.dispose();<br>  <span class="hljs-keyword">if</span> (parentXbean != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTTwoCellAnchor) &#123;<br>      <span class="hljs-type">CTTwoCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTTwoCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTOneCellAnchor) &#123;<br>      <span class="hljs-type">CTOneCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTOneCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTAbsoluteAnchor) &#123;<br>      <span class="hljs-type">CTAbsoluteAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTAbsoluteAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> anchor;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>不用完全理解代码，只需要看中间这里，<code>parentXbean</code> 将会在这里创造出anchor和它的cell2属性。</p>
+<p>当我们使用断点调试，会发现，如果导入有问题的Excel，会走向这个判断：*<code>parentXbean instanceof CTOneCellAnchor</code>*</p>
+<p>而正常的Excel会走向这个判断：*<code>parentXbean instanceof CTTwoCellAnchor</code>*</p>
+<p>那么，问题就在CTTwoCellAnchor 和 CTOneCellAnchor上面了。</p>
+<p>这两个类是什么呢？显然是和图片相关的东西——在这里感谢Greg Woolsey 的解释一下子点醒了我。参考：</p>
 <blockquote>
-<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
+<p><a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
 </blockquote>
-<p>这样的报错根据字面意思，似乎是数据超了sql某个字段的字节限制，那么通过我们在 <a href="https://thellu.com/2023/06/08/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/">项目记录——企业需求</a> 中的连接迁移提到的前端代码反推后端代码的方法，找到对应的后端代码，再找到对应的实体类，看它链接的是哪个数据表，这有助于我们在公司庞大的数据库中直接定位问题表。</p>
-<p>定位到问题表table之后，在Navicat点击“设计表”，我可以直接看到每个字段的字节限制，再对应报错的excel文件里面的内容，我可以很简单的找到对应的限制了200个字节的出问题的列。但是奇怪的是，如果一个中文编码占据2个字节，我个人感觉这个excel文件中这个列的数据的字节数并没有达到208这个标准。</p>
-<p>查询：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> userenv(<span class="hljs-string">&#x27;language&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
-
-<p>结果是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
-<p>这说明我们Oracle数据库采用的是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> 作为字符编码集，这个UTF-8编码集一个中文占据三个字节，为了验证我们的猜想，查询：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> lengthb(<span class="hljs-string">&#x27;xx&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
-
-<p>xx就是超过字节限制的数据内容，得到208个字节的答案，这证明我们的猜想没错。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
-<li>更换oracle sql中字符编码集为 *<code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code>*，这样一个中文只占据两个字节。但是显然该方法可能影响到其他表</li>
-<li>要求上传excel的数据列对应内容不要太多</li>
-<li>针对该字段的字节上限进行扩容</li>
+<p>所以，<strong>CTTwoCellAnchor是指图片的大小和位置随着单元格而变</strong>；<strong>CTOneCellAnchor是指大小固定，位置随着单元格而变</strong></p>
+<p>那么，这对应的就是Excel里面的图片属性：</p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="项目记录"></p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
 </ul>
 <hr>
-<h2 id="Json默认解析方式"><a href="#Json默认解析方式" class="headerlink" title="Json默认解析方式"></a>Json默认解析方式</h2><h3 id="Bug描述-1"><a href="#Bug描述-1" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很正常的操作：我在后端调用方法，向前端返回一个List的结果集。我们知道这个结果集在前端是用很多个json数据放在一个List里面的。</p>
+<h2 id="Json默认解析方式"><a href="#Json默认解析方式" class="headerlink" title="Json默认解析方式"></a>Json默认解析方式</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很正常的操作：我在后端调用方法，向前端返回一个List的结果集。我们知道这个结果集在前端是用很多个json数据放在一个List里面的。</p>
 <p>我将要返回的数据有这几个列：</p>
 <ul>
 <li>DESCR - 部门名</li>
@@ -450,7 +596,7 @@
 </tr>
 </tbody></table>
 <p>看了下后端，打断点发现数据都是正常传过来的，DESCR这个列是有值的，但是不知道为什么在前端不显示</p>
-<h3 id="问题排查-1"><a href="#问题排查-1" class="headerlink" title="问题排查"></a>问题排查</h3><p>在前端打断点调试，发现传过来的Json数据长这个样子：</p>
+<h3 id="问题排查-2"><a href="#问题排查-2" class="headerlink" title="问题排查"></a>问题排查</h3><p>在前端打断点调试，发现传过来的Json数据长这个样子：</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>&#x27;<span class="hljs-number">1</span>&#x27;<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>&#x27;a&#x27;<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>&#x27;A&#x27;<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br><span class="hljs-punctuation">&#123;</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>&#x27;<span class="hljs-number">2</span>&#x27;<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>&#x27;b&#x27;<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>&#x27;B&#x27;<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>...<br></code></pre></td></tr></table></figure>
 
 <p>这就奇怪了，为啥DESCR这个列的首字母小写了呢？</p>
@@ -462,47 +608,31 @@
 </ul>
 <p>在SpringBoot生成的依赖包中已经自动为我们导入了相关依赖。SpringMVC 自动配置了 Jackson 和 Gson 的 HttpMessageConverter。</p>
 <p>我们公司项目默认使用的Jackson解析Json代码，jackson在序列化过程中会将大写开头的字段自动转成小写开头。</p>
-<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
 <li>给需要保留大小写的不变的属性增加*<code>@JsonFormat</code><em>或者</em><code>@JsonProperty</code>*注解</li>
 <li>给类加上 <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em> 注解</li>
 </ul>
 <hr>
-<h2 id="EsayPoi解析Excel图片空指针"><a href="#EsayPoi解析Excel图片空指针" class="headerlink" title="EsayPoi解析Excel图片空指针"></a>EsayPoi解析Excel图片空指针</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
-<p>现在有两个几乎一模一样的Excel文件，当我进行导入并解析的时候，一个Excel文件会报空指针，一个文件会正常解析并且导入。</p>
-<p>这里的业务逻辑是：</p>
-<ul>
-<li>业务方先下载Excel模板</li>
-<li>业务方根据模板输入自己想要导入的信息，其中有一列是图片信息</li>
-<li>图片信息是业务方自己粘贴进Excel的</li>
-<li>最后业务方点击导入，把Excel解析，把其中的信息导入数据库</li>
-</ul>
-<p>这个Bug就是业务方在这个流程中遇到的，业务方有两个几乎一模一样的Excel文件，它们的文本信息是完全一样的，唯一的区别就是图片不一样。</p>
-<p>而且，就算把可以正常解析导入的Excel文件中的图片粘贴到出问题的Excel文件，也还是会报空指针异常，很奇怪。</p>
-<h3 id="问题排查-2"><a href="#问题排查-2" class="headerlink" title="问题排查"></a>问题排查</h3><p>一开始我以为是图片可能覆盖了其他单元格，所以尝试拉伸了一下图片，发现没有作用。</p>
-<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi API的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi API的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
-<p>更准确的说，是在执行这个放里面如下所示的代码的时候报的错：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">...<br>	pic.getPreferredSize()<br>...<br></code></pre></td></tr></table></figure>
-
-<p>打断点，这里需要一个anchor的cell1属性和cell2属性。</p>
-<p>然后这里的cell2属性是空，于是报了空指针。</p>
-<p>知道错误的起源了，现在回头去找为什么cell2属性是null呢？这个属性是在哪里构造的呢？</p>
-<p>经过漫长的寻找，最后发现是在Poi API的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
-<p>该方法如下所示：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> XSSFAnchor <span class="hljs-title function_">getAnchorFromParent</span><span class="hljs-params">(XmlObject obj)</span> &#123;<br>  <span class="hljs-type">XSSFAnchor</span> <span class="hljs-variable">anchor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlObject</span> <span class="hljs-variable">parentXbean</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlCursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> obj.newCursor();<br>  <span class="hljs-keyword">if</span> (cursor.toParent()) &#123;<br>    parentXbean = cursor.getObject();<br>  &#125;<br>  cursor.dispose();<br>  <span class="hljs-keyword">if</span> (parentXbean != <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTTwoCellAnchor) &#123;<br>      <span class="hljs-type">CTTwoCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTTwoCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTOneCellAnchor) &#123;<br>      <span class="hljs-type">CTOneCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTOneCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTAbsoluteAnchor) &#123;<br>      <span class="hljs-type">CTAbsoluteAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTAbsoluteAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> anchor;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>不用完全理解代码，只需要看中间这里，<code>parentXbean</code> 将会在这里创造出anchor和它的cell2属性。</p>
-<p>当我们使用断点调试，会发现，如果导入有问题的Excel，会走向这个判断：*<code>parentXbean instanceof CTOneCellAnchor</code>*</p>
-<p>而正常的Excel会走向这个判断：*<code>parentXbean instanceof CTTwoCellAnchor</code>*</p>
-<p>那么，问题就在CTTwoCellAnchor 和 CTOneCellAnchor上面了。</p>
-<p>这两个类是什么呢？显然是和图片相关的东西——在这里感谢Greg Woolsey 的解释一下子点醒了我。参考：</p>
+<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p>Oracle SQL表设计问题 </p>
+<h3 id="Bug描述-3"><a href="#Bug描述-3" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
+<h3 id="问题排查-3"><a href="#问题排查-3" class="headerlink" title="问题排查"></a>问题排查</h3><p>很明显，这通常都是后端报错了，所以我按照流程复现了下该报错，然后直接看idea结果，idea报错：</p>
 <blockquote>
-<p><a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
+<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
 </blockquote>
-<p>所以，<strong>CTTwoCellAnchor是指图片的大小和位置随着单元格而变</strong>；<strong>CTOneCellAnchor是指大小固定，位置随着单元格而变</strong></p>
-<p>那么，这对应的就是Excel里面的图片属性：</p>
-<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="项目记录"></p>
-<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
-<li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
+<p>这样的报错根据字面意思，似乎是数据超了sql某个字段的字节限制，那么通过我们在 <a href="https://thellu.com/2023/06/08/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/">项目记录——企业需求</a> 中的连接迁移提到的前端代码反推后端代码的方法，找到对应的后端代码，再找到对应的实体类，看它链接的是哪个数据表，这有助于我们在公司庞大的数据库中直接定位问题表。</p>
+<p>定位到问题表table之后，在Navicat点击“设计表”，我可以直接看到每个字段的字节限制，再对应报错的excel文件里面的内容，我可以很简单的找到对应的限制了200个字节的出问题的列。但是奇怪的是，如果一个中文编码占据2个字节，我个人感觉这个excel文件中这个列的数据的字节数并没有达到208这个标准。</p>
+<p>查询：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> userenv(<span class="hljs-string">&#x27;language&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
+
+<p>结果是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
+<p>这说明我们Oracle数据库采用的是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> 作为字符编码集，这个UTF-8编码集一个中文占据三个字节，为了验证我们的猜想，查询：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> lengthb(<span class="hljs-string">&#x27;xx&#x27;</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></table></figure>
+
+<p>xx就是超过字节限制的数据内容，得到208个字节的答案，这证明我们的猜想没错。</p>
+<h3 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>更换oracle sql中字符编码集为 *<code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code>*，这样一个中文只占据两个字节。但是显然该方法可能影响到其他表</li>
+<li>要求上传excel的数据列对应内容不要太多</li>
+<li>针对该字段的字节上限进行扩容</li>
 </ul>
 <hr>
 ]]></content>
@@ -510,8 +640,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>SQL</tag>
+        <tag>Java</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
@@ -842,7 +972,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#97;&#97;&#97;&#x40;&#x62;&#98;&#98;&#x62;&#x62;&#46;&#x63;&#x6f;&#109;">&#x61;&#97;&#97;&#97;&#97;&#x40;&#x62;&#98;&#98;&#x62;&#x62;&#46;&#x63;&#x6f;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#97;&#97;&#97;&#x40;&#x62;&#98;&#x62;&#98;&#98;&#46;&#99;&#111;&#x6d;">&#x61;&#x61;&#97;&#97;&#97;&#x40;&#x62;&#98;&#x62;&#98;&#98;&#46;&#99;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -1162,8 +1292,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>SQL</tag>
+        <tag>Java</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
