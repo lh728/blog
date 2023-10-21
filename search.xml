@@ -254,8 +254,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>SQL</tag>
         <tag>Java</tag>
+        <tag>SQL</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
@@ -524,6 +524,7 @@
 <p>然后这里使用了HashMap遍历SQL的查询结果，当SQL结果对应的月份有数据的时候，就把<strong>chartVO</strong>中对应的月份的数据从0更改为对应的数据，之所以使用HashMap是为了优化时间复杂度，限制在O(N)内。</p>
 <p>至此，直方图的显示就完成了。</p>
 <h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>完全的代码可以在这里看到：</p>
+<p><a href = "https://github.com/lh728/blog/tree/a57c9105f4bb13abd4d1f0f69cb84cc5cfd9d3eb/code/Project%20Records%20-%20Enterprise%20Requirement/Dashboard%20with%20dropdown%20boxes%20Histogra" >Github</a></p>
 <p>总的来说，这一次需求相比之前难了很多，但是整体逻辑并不难，报表需求的完成只需要想清楚：</p>
 <blockquote>
 <p>前端需要什么数据，后端需要前端传入什么数据</p>
@@ -657,7 +658,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#97;&#x61;&#x61;&#64;&#x62;&#98;&#x62;&#x62;&#x62;&#46;&#x63;&#111;&#109;">&#97;&#97;&#97;&#x61;&#x61;&#64;&#x62;&#98;&#x62;&#x62;&#x62;&#46;&#x63;&#111;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#x61;&#x61;&#97;&#64;&#x62;&#98;&#x62;&#x62;&#x62;&#46;&#x63;&#x6f;&#x6d;">&#x61;&#97;&#x61;&#x61;&#97;&#64;&#x62;&#98;&#x62;&#x62;&#x62;&#46;&#x63;&#x6f;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -884,8 +885,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>SQL</tag>
         <tag>Java</tag>
+        <tag>SQL</tag>
         <tag>Vue</tag>
       </tags>
   </entry>

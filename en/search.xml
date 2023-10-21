@@ -513,8 +513,7 @@
 <p>Here I have written a new method to create a list that stores the next ten months and is all 0 — <code>chartVO</code>. The <code>chartVO</code> class has only two attributes, one is month and the other is count.</p>
 <p>Then, HashMap is used here to traverse the query results of SQL. When there is data in the month corresponding to the SQL result, the data of the corresponding month in <code>chartVO</code> is changed from 0 to the corresponding data. The reason why HashMap is used is to optimize Time complexity, limited to <strong>O(N)</strong>.</p>
 <p>So far, the display of the histogram is completed.</p>
-<h3 id="Summarize-1"><a href="#Summarize-1" class="headerlink" title="Summarize"></a>Summarize</h3><p>here is the complete corresponding code below：</p>
-<p>In general, the requirements this time are much more difficult than before, but the overall logic is not difficult. To complete the report requirements, only need to think clearly:</p>
+<h3 id="Summarize-1"><a href="#Summarize-1" class="headerlink" title="Summarize"></a>Summarize</h3><p>here is the complete corresponding code below：<br><a href = "https://github.com/lh728/blog/tree/a57c9105f4bb13abd4d1f0f69cb84cc5cfd9d3eb/code/Project%20Records%20-%20Enterprise%20Requirement/Dashboard%20with%20dropdown%20boxes%20Histogra" >Github</a><br>In general, the requirements this time are much more difficult than before, but the overall logic is not difficult. To complete the report requirements, only need to think clearly:</p>
 <blockquote>
 <p>What data does the front end need, and what data does the back end need to pass in from the front end?</p>
 </blockquote>
@@ -648,7 +647,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#97;&#97;&#x40;&#98;&#x62;&#98;&#98;&#x62;&#x2e;&#x63;&#111;&#x6d;">&#x61;&#x61;&#x61;&#97;&#97;&#x40;&#98;&#x62;&#98;&#98;&#x62;&#x2e;&#x63;&#111;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#x62;&#x62;&#x62;&#x62;&#x62;&#x2e;&#x63;&#111;&#109;">&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#x62;&#x62;&#x62;&#x62;&#x62;&#x2e;&#x63;&#111;&#109;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>

@@ -6,8 +6,8 @@ Welcome to my blog: http://thellu.com
 
 For some complex content, here is the complete corresponding code below
 
-## Project Records - Enterprise Requirement
+## <a href = "https://thellu.com/en/2023/06/12/Project%20Records%20-%20Enterprise%20Requirement/" >Project Records - Enterprise Requirement</a> 
 
 ### Dashboard with dropdown boxes/Histogram
 
-https://github.com/lh728/blog/tree/a57c9105f4bb13abd4d1f0f69cb84cc5cfd9d3eb/code/Project%20Records%20-%20Enterprise%20Requirement/Dashboard%20with%20dropdown%20boxes%20Histogram
+<a href = "https://github.com/lh728/blog/tree/a57c9105f4bb13abd4d1f0f69cb84cc5cfd9d3eb/code/Project%20Records%20-%20Enterprise%20Requirement/Dashboard%20with%20dropdown%20boxes%20Histogra" >Github</a>
