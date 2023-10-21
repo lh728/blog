@@ -1,3 +1,13 @@
-Thellu's Blog
+# Thellu's Blog
 
 Welcome to my blog: http://thellu.com
+
+
+
+For some complex content, here is the complete corresponding code below
+
+## Project Records - Enterprise Requirement
+
+### Dashboard with dropdown boxes/Histogram
+
+https://github.com/lh728/blog/tree/a57c9105f4bb13abd4d1f0f69cb84cc5cfd9d3eb/code/Project%20Records%20-%20Enterprise%20Requirement/Dashboard%20with%20dropdown%20boxes%20Histogram
