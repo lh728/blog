@@ -254,8 +254,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>SQL</tag>
+        <tag>Java</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
@@ -266,14 +266,214 @@
 <p><strong>——————————————-快速检索和翻页请见右侧目录—————————–&gt;</strong></p>
 <p><strong>——————————————-快速检索和翻页请见右侧目录—————————–&gt;</strong></p>
 <p><strong>——————————————-快速检索和翻页请见右侧目录—————————–&gt;</strong></p>
-<h2 id="表格单元格合并与动态列"><a href="#表格单元格合并与动态列" class="headerlink" title="表格单元格合并与动态列"></a>表格单元格合并与动态列</h2><hr>
+<h2 id="表格单元格合并、动态列与Excel导出"><a href="#表格单元格合并、动态列与Excel导出" class="headerlink" title="表格单元格合并、动态列与Excel导出"></a>表格单元格合并、动态列与Excel导出</h2><hr>
 <h3 id="需求描述"><a href="#需求描述" class="headerlink" title="需求描述"></a>需求描述</h3><p>最近我又制作了一个新的报表：人员追溯表（PersonnelTraceability），这个报表需要记录某个项目下面的某个线体下面的某个岗位的员工工作情况。举例来讲，如下图所示，项目A下面可能会有两个线体：Assembly和Production, 每个线体还对应了一个jobName。另外注意，一个项目下面的一个线体的一个岗位可能有多个人，对于这种情况，需要把所有人都显示出来，这些人按照逗号分隔。</p>
 <p>报表还支持项目、线体的下拉搜索，开始结束日期的选取以及员工ID和姓名的模糊搜索。</p>
 <p>除此之外，表格会根据选择的日期进行纵向展开，这也就意味着动态列名的生成：即图中 2023&#x2F;1&#x2F;1- 2023&#x2F;1&#x2F;5 这样的列生成，但是project&#x2F; line&#x2F;job这样的列式固定的。</p>
 <p>最后，该报表还需要支持搜索、重置和Excel导出功能。</p>
 <p><img src="D:\Blog\hexo\source\images\项目记录——企业需求\项目记录——企业需求（5）.png" alt="表格单元格合并与动态列"></p>
-<h3 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h3><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>全部代码可以在Github上看到：</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>这个需求有很多功能点，其中的核心难点是什么呢？</p>
+<ul>
+<li><p>如何处理动态列的展示？</p>
+</li>
+<li><p>单元格如何合并？</p>
+</li>
+<li><p>Excel导出怎么实现？</p>
+</li>
+</ul>
+<h3 id="思路与实现"><a href="#思路与实现" class="headerlink" title="思路与实现"></a>思路与实现</h3><h4 id="后端与SQL"><a href="#后端与SQL" class="headerlink" title="后端与SQL"></a>后端与SQL</h4><p>在进行这些问题的处理之前，先要规定好后端的传值逻辑。</p>
+<p>在这里，我们将会使用如下的<code>findDetail</code>后端方法用于返回后端数据，其Controller类如下所示： </p>
+<p>(<code>exportExcel</code> 方法会在后面讲excel导出的时候使用)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;/personnelTraceability&quot;)</span><br><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PersonnelTraceabilityController</span> &#123;<br>    <span class="hljs-keyword">final</span> PersonnelTraceabilityService personnelTraceabilityService;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">PersonnelTraceabilityController</span><span class="hljs-params">(PersonnelTraceabilityService personnelTraceabilityService)</span>&#123;<br>        <span class="hljs-built_in">this</span>.personnelTraceabilityService = personnelTraceabilityService;<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/findDetail&quot;)</span><br>    <span class="hljs-keyword">public</span> WebResult&lt;PageResult&lt;Map&lt;String,Object&gt;&gt;&gt; <span class="hljs-title function_">findDetail</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> PersonnelTraceabilityDTO queryParam)</span>&#123;<br>        PageResult&lt;Map&lt;String,Object&gt;&gt; pageResult = personnelTraceabilityService.findDeatil(queryParam);<br>        <span class="hljs-keyword">return</span> WebResult.ok(pageResult);<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/exportExcel&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">exportExcel</span><span class="hljs-params">(<span class="hljs-meta">@Validated</span> <span class="hljs-meta">@RequestBody</span> PersonnelTraceabilityDTO queryParams, HttpServletResponse response)</span> <span class="hljs-keyword">throws</span> IOException&#123;<br>        personnelTraceabilityService.exportExcel(queryParams, response);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，<code>findDetail</code>方法的返回值是一个<code>PageResult&lt;Map&lt;String,Object&gt;&gt;</code>，对于PageResult类就不赘述了，大致用途就是提供<code>page</code>和<code>limit</code>属性用于分页，重点在于返回的<code>Map&lt;String,Object&gt;</code>。</p>
+<p>那么问题来了，这里的<code>Map&lt;String,Object&gt;</code> 究竟接收到了什么数据？</p>
+<p>要回答这个问题，需要分析怎么做数据库交互的，即SQL查询语句。我们的数据来源于一个表 New_Base_Call_Names, 该表主要列如下所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">id</th>
+<th align="center">project_Name</th>
+<th align="center">Line_Name</th>
+<th align="center">job_Name</th>
+<th align="center">EmployeeId</th>
+<th align="center">EmployeeName</th>
+<th align="center">D_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">A</td>
+<td align="center">Assembly</td>
+<td align="center">PM</td>
+<td align="center">1259539</td>
+<td align="center">Jack</td>
+<td align="center">2023-08-09</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">A</td>
+<td align="center">Production</td>
+<td align="center">QCI</td>
+<td align="center">1659467</td>
+<td align="center">Julia</td>
+<td align="center">2023-08-10</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">B</td>
+<td align="center">Production</td>
+<td align="center">QCI</td>
+<td align="center">1659467</td>
+<td align="center">Julia</td>
+<td align="center">2023-08-12</td>
+</tr>
+</tbody></table>
+<p>这是一个标准的表数据，基本上存储了所有我们需要的信息，问题在于我们需要把日期横向展示作为列名，而不是像现在这样只存储在行数据里面。于是，很自然我们能想到使用 <strong>pivot</strong> 即转置函数。</p>
+<p>但是，Oracle sql确实支持 pivot 转置，但是要求提前知道要将哪些列转换为行，因此它不直接支持动态列名。PIVOT函数的语法要求你在查询中指定要转换为行的列，并在查询中明确列出这些列的名称。</p>
+<p>所以，我们只能在Java代码里面完成SQL 语句的拼接来完成这个任务。</p>
+<p>首先我们创建一个DTO类存放前端传来的参数：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@ClassName</span> PersonnelTraceabilityDTO</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@Author</span> lhj</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@DATE</span> 2023/10/22 1:56</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@Version</span> 1.0</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Data</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PersonnelTraceabilityDTO</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">PageParam</span>&#123;<br><br>    <span class="hljs-keyword">private</span> String projectCode;<br>    <span class="hljs-keyword">private</span> String lineCode;<br>    <span class="hljs-keyword">private</span> String employeeId;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> String beginDate; <span class="hljs-comment">// use to generate dynamic column</span><br>    <span class="hljs-keyword">private</span> String endDate;<span class="hljs-comment">// use to generate dynamic column</span><br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>要在Java中完成该任务，首先明确动态列将是什么？在这里，动态生成的列应该是日期，也就是说，用户在前端选择的日期会作为参数传递到SQL语句中，用户选择的日期当然只有开始日期和结束日期，因此这里我们需要把开始日期和结束日期中间每一天的日期都取出来存放在一个List里面：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> List&lt;String&gt; <span class="hljs-title function_">getDateList</span><span class="hljs-params">(LocalDate startDate, LocalDate endDate)</span> &#123;<br>    ArrayList&lt;String&gt; dateList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>    <span class="hljs-type">LocalDate</span> <span class="hljs-variable">currentDate</span> <span class="hljs-operator">=</span> startDate;<br>    <span class="hljs-keyword">while</span> (!currentDate.isAfter(endDate))&#123;<br>        dateList.add(currentDate.format(DateTimeFormatter.ISO_DATE));<br>        currentDate = currentDate.plusDays(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> dateList;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的dateList将会在下面的代码中使用：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> String <span class="hljs-title function_">getSql</span><span class="hljs-params">(PersonnelTraceabilityDTO queryParam, List&lt;String&gt; dateList)</span> &#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">sql</span> <span class="hljs-operator">=</span> SqlUtils.formatSql(<span class="hljs-string">&quot;select * from (select distinct &quot;</span> +<br>            <span class="hljs-string">&quot;project_Name as projectName&quot;</span> +<br>            <span class="hljs-string">&quot;Line_Name as lineName,&quot;</span> +<br>            <span class="hljs-string">&quot;job_Name as jobName,&quot;</span> +<br>            <span class="hljs-string">&quot;EmployeeId || &#x27;/&#x27; || EmployeeName as employeeInfo,&quot;</span> +<br>            <span class="hljs-string">&quot;D_date,&quot;</span> +<br>            <span class="hljs-string">&quot;from NEW_BASE_CALL_NAMES&quot;</span> +<br>            <span class="hljs-string">&quot;where employeeId is not null&quot;</span> +<br>            (StringUtils.isNotEmpty(queryParam.getProjectCode()) ? <span class="hljs-string">&quot; and project_code = &#x27;&quot;</span> + queryParam.getProjectCode() + <span class="hljs-string">&quot;&#x27;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>) +<br>            (StringUtils.isNotEmpty(queryParam.getLineCode()) ? <span class="hljs-string">&quot; and line_code = &#x27;&quot;</span> + queryParam.getLineCode() + <span class="hljs-string">&quot;&#x27;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>) +<br>            (StringUtils.isNotEmpty(queryParam.getEmployeeId()) ? <span class="hljs-string">&quot; and employeeId like &#x27;%&quot;</span> + queryParam.getProjectCode() + <span class="hljs-string">&quot;%&#x27;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>) +<br>            (StringUtils.isNotEmpty(queryParam.getName()) ? <span class="hljs-string">&quot; and name like &#x27;%&quot;</span> + queryParam.getName() + <span class="hljs-string">&quot;%&#x27;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>) +<br>            <span class="hljs-string">&quot;and d_date &gt;= &#x27;&quot;</span> + queryParam.getBeginDate() + <span class="hljs-string">&quot;&#x27; and d_date &lt;= &#x27;&quot;</span> + queryParam.getEndDate() +<br>        <span class="hljs-string">&quot;&#x27; ) pivot (listagg(employeeInfo, &#x27;,&#x27;) with group (order by employeeInfo) for d_date in &quot;</span> +<br>        Tools.listToStr(dateList) + <span class="hljs-string">&quot;)&quot;</span>);<br>    <span class="hljs-keyword">return</span> sql;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>上述拼接语句中，使用了三元运算符，例如 <code>StringUtils.isNotEmpty(queryParam.getProjectCode()</code> 即对部分参数的非空判断，如果不为空才在where语句中进行判断，如果为空则在sql字符串中拼接 “”。另外，对于动态列名的生成，值得注意的是，在Oracle sql中，pivot的使用需要给每一个转置后的列名加上单引号，举个例子，pivot的语法如下：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">SELECT</span> Region, <span class="hljs-keyword">Month</span>, Sales <span class="hljs-keyword">FROM</span> sales)<br>PIVOT (<span class="hljs-built_in">SUM</span>(Sales) <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">Month</span> <span class="hljs-keyword">IN</span> (<span class="hljs-string">&#x27;Jan&#x27;</span> , <span class="hljs-string">&#x27;Feb&#x27;</span> , <span class="hljs-string">&#x27;Mar&#x27;</span> ));<br></code></pre></td></tr></table></figure>
+
+<p>因此，我们使用了<code>Tools.listToStr</code>的方法处理动态数据，将传入的List<String> 的每个元素两边都加上单引号，再用逗号分隔拼接在一起。具体的方法这里就不详细展开了。</p>
+<p>除此之外，由于需求还需要把多个人的姓名和工号组合在一起并通过逗号分隔，所以这里还使用了 <code>EmployeeId || &#39;/&#39; || EmployeeName as employeeInfo</code> 拼接字符，再通过 <code>pivot (listagg(employeeInfo, &#39;,&#39;) with group (order by employeeInfo) for d_date in</code> 分隔每个员工。</p>
+<p>总而言之，通过下面的代码执行SQL并分页之后，传给前端的格式就确定了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> PageResult&lt;Map&lt;String, Object&gt;&gt; <span class="hljs-title function_">findDeatil</span><span class="hljs-params">(PersonnelTraceabilityDTO queryParam)</span> &#123;<br>    <span class="hljs-type">LocalDate</span> <span class="hljs-variable">startDate</span> <span class="hljs-operator">=</span> LocalDate.parse(queryParam.getBeginDate(), DateTimeFormatter.ISO_DATE);<br>    <span class="hljs-type">LocalDate</span> <span class="hljs-variable">endDate</span> <span class="hljs-operator">=</span> LocalDate.parse(queryParam.getEndDate(), DateTimeFormatter.ISO_DATE);<br><br>    List&lt;String&gt; dateList = getDateList(startDate,endDate);<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">sql</span> <span class="hljs-operator">=</span> getSql(queryParam,dateList);<br>    <span class="hljs-type">PageRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> DefaultPageRequest.of(queryParam.getPage(),queryParam.getLimit);<br>    PageResult&lt;Map&lt;String, Object&gt;&gt; result = getSqlManager().execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">SQLReady</span>(sql), Map.class, request);<br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的Map格式如下：</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>projectName</td>
+<td>A</td>
+</tr>
+<tr>
+<td>lineName</td>
+<td>…</td>
+</tr>
+<tr>
+<td>jobName</td>
+<td>…</td>
+</tr>
+<tr>
+<td>‘2023-08-09’</td>
+<td>…</td>
+</tr>
+<tr>
+<td>‘2023-08-10’</td>
+<td>…</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>以上就是Map 是后端即将传给前端的数据了。</p>
+<h4 id="动态列展示"><a href="#动态列展示" class="headerlink" title="动态列展示"></a>动态列展示</h4><p>现在，前端接收参数，并把分页后的数据存放进 <code>dataList</code> ，把数据总数存放进 <code>total</code>: </p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">handleList</span>(<span class="hljs-params"></span>)&#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">loading</span> = <span class="hljs-literal">true</span>;<br>            personTraceApi.<span class="hljs-title function_">findDetail</span>(&#123;<br>                <span class="hljs-attr">projectCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">projectCode</span>,<br>                <span class="hljs-attr">lineCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">lineCode</span>,<br>                <span class="hljs-attr">beginDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">beginDate</span>,<br>                <span class="hljs-attr">endDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">endDate</span>,<br>                <span class="hljs-attr">name</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">name</span>,<br>                <span class="hljs-attr">employeeId</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">employeeId</span>,<br>                <span class="hljs-attr">page</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">page</span>,<br>                <span class="hljs-attr">limit</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">limit</span>,<br>            &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span> = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>,&#123;<br>                    <span class="hljs-attr">dataList</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">list</span>,<br>                    <span class="hljs-attr">total</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">totalRow</span><br>                &#125;);<br>            &#125;);<br>        &#125;<br></code></pre></td></tr></table></figure>
+
+<p>现在，我们可以想象到，一个 <code>List&lt;Map&lt;String,Object&gt;&gt;</code>已经被存放在了 <code>this.dataTable.dataList</code> 里面了，现在我们要思考，怎么把这样的结果显示在前端。</p>
+<p>其实很简单，element-ui支持这样的操作：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript">&lt;el-table-column<br>    v-<span class="hljs-keyword">for</span>=<span class="hljs-string">&quot;columnn in dynamicColumns&quot;</span><br>    :key=<span class="hljs-string">&quot;columnn.index&quot;</span><br>    :prop=<span class="hljs-string">&quot;column&quot;</span><br>    :label=<span class="hljs-string">&quot;column&quot;</span><br>    width=<span class="hljs-string">&quot;100px&quot;</span><br>&gt;&lt;/el-table-column&gt; <br></code></pre></td></tr></table></figure>
+
+<p>通过 v-for 遍历一个数组，作为每一个列来展示。</p>
+<p>因此，我们可以想到，只需要把每次后端出来的数据里面的map的key都存放在<code>dynamicColumns</code>中就可以每次都动态展示出来了。但是，其实有一个更简单的方法，虽然我们的列数量确实是动态的，但是实际上有哪些列需要被展示是可以被基本确定的——用户需要首先选择日期，因此，实际上把选择的日期范围作为动态列的范围即可：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">generateDateRange</span>(<span class="hljs-params">startdate,enddate</span>)&#123;<br>    <span class="hljs-keyword">const</span> startdate = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(startdate);<br>    <span class="hljs-keyword">const</span> enddate = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(endDate);<br>    <span class="hljs-keyword">const</span> dateArray = [];<br>    <span class="hljs-keyword">const</span> currentDate = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(startdate);<br>    <span class="hljs-comment">// Loop through each day and convert it to a string.</span><br>    <span class="hljs-keyword">while</span>(currentDate &lt;= enddate)&#123;<br>        <span class="hljs-keyword">const</span> formattedDate = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">formatDate</span>(currentDate);<br>        dateArray.<span class="hljs-title function_">push</span>(formattedDate);<br>        currentDate.<span class="hljs-title function_">setDate</span>(currentDate.<span class="hljs-title function_">getDate</span>() + <span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> dateArray;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<p>通过上述方程，假设用户选择 2023-08-08 至 2023-08-10，则 <code>dateArray = [2023-08-08,2023-08-09,2023-08-10]</code>。把该值放进 <code>dynamicColumns</code> 即可，handleList() 方法可以拓展为：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">handleList</span>(<span class="hljs-params"></span>)&#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">loading</span> = <span class="hljs-literal">true</span>;<br>            personTraceApi.<span class="hljs-title function_">findDetail</span>(&#123;<br>                <span class="hljs-attr">projectCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">projectCode</span>,<br>                <span class="hljs-attr">lineCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">lineCode</span>,<br>                <span class="hljs-attr">beginDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">beginDate</span>,<br>                <span class="hljs-attr">endDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">endDate</span>,<br>                <span class="hljs-attr">name</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">name</span>,<br>                <span class="hljs-attr">employeeId</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">employeeId</span>,<br>                <span class="hljs-attr">page</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">page</span>,<br>                <span class="hljs-attr">limit</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">limit</span>,<br>            &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span> = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>,&#123;<br>                    <span class="hljs-attr">dataList</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">list</span>,<br>                    <span class="hljs-attr">total</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">totalRow</span><br>                &#125;);<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dynamicColumns</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">generateDateRange</span>(<br>                    <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">beginDate</span>,<br>                    <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">endDate</span>,<br>                );<br>            &#125;);<br>        &#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="单元格合并"><a href="#单元格合并" class="headerlink" title="单元格合并"></a>单元格合并</h4><p>动态列的问题我们解决了，现在思考如何实现表格行数据的单元格合并。</p>
+<p>首先， element-ui 是支持单元格合并的，不过需要我们自己配置合并函数在 <code>:span-method</code> 里面：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript">&lt;el-table<br>    :data=<span class="hljs-string">&quot;this .dataTable.dataList&quot;</span><br>    style=<span class="hljs-string">&quot;width: 100%&quot;</span><br>    :span-method=<span class="hljs-string">&quot;arraySpanMethod&quot;</span><br>    border<br>    :header-cell-style=<span class="hljs-string">&quot;&#123;&#x27;text-align&#x27;:&#x27;center&#x27;&#125;&quot;</span><br>    :v-loading=<span class="hljs-string">&quot;this.dataTable.loading&quot;</span>            <br>    &gt;<br>&lt;/el-table&gt;<br></code></pre></td></tr></table></figure>
+
+<p>合并函数：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// cell merged</span><br><span class="hljs-title function_">arraySpanMethod</span>(<span class="hljs-params">&#123;row,column,rowIndex,columnIndex&#125;</span>)&#123;<br>    <span class="hljs-comment">// determine whether current column is first column (project)</span><br>    <span class="hljs-keyword">if</span> (columnIndex == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">const</span> _row = <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr</span>[rowIndex]<br>        <span class="hljs-keyword">const</span> _col = _row &gt; <span class="hljs-number">0</span>? <span class="hljs-number">1</span>: <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">return</span>&#123;<br>            <span class="hljs-attr">rowspan</span>: _row,<br>            <span class="hljs-attr">colspan</span>: _col<br>        &#125;;<br>    &#125;<br>    <span class="hljs-comment">// determine whether current column is second column (line)</span><br>        <span class="hljs-keyword">if</span> (columnIndex == <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-keyword">const</span> _row2 = <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr2</span>[rowIndex]<br>        <span class="hljs-keyword">const</span> _col2 = _row2 &gt; <span class="hljs-number">0</span>? <span class="hljs-number">1</span>: <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">return</span>&#123;<br>            <span class="hljs-attr">rowspan</span>: _row2,<br>            <span class="hljs-attr">colspan</span>: _col2<br>        &#125;;<br>    &#125;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<p>函数接受一个包含信息的参数对象，包括 <code>row</code>（当前行名）、<code>column</code>（当前列名）、<code>rowIndex</code>（当前行索引）和 <code>columnIndex</code>（当前列索引）。</p>
+<p>在代码中，首先检查 <code>columnIndex</code> 是否为0。如果是，它执行接下来的逻辑进行行合并。</p>
+<p>如果 <code>columnIndex</code> 是0，它会检查一个名为 <code>spanArr</code> 的数组（或类似结构）来获取该行中当前列需要合并的行数和列数。然后，它将这些合并信息作为一个对象返回，包括 <code>rowspan</code>（行合并数）和 <code>colspan</code>（列合并数）。</p>
+<p>接着，代码类似地检查 <code>columnIndex</code> 是否为1，以确定第二列（line）是否需要进行行合并和列合并。这部分的逻辑与第一部分类似。</p>
+<p>而spanArr 数组通过以下的方式获得：（其实就是对数据进行判断，如果相等为1不相等为0）</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// Obtain the array of cells that need to be merged.</span><br><span class="hljs-title function_">getSpanArr</span>(<span class="hljs-params">data</span>)&#123;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; data.<span class="hljs-property">length</span>; i++)&#123;<br>        <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span>)&#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr</span> = []<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr2</span> = []<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">1</span>)<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr2</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">1</span>)<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">pos</span> = <span class="hljs-number">0</span><br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">pos2</span> = <span class="hljs-number">0</span><br>        &#125; <span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-comment">// Determine if the current element is equal to the previous element</span><br>            <span class="hljs-keyword">if</span> (data[i].<span class="hljs-property">projectName</span> === data[i - <span class="hljs-number">1</span>].<span class="hljs-property">projectName</span>)&#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">pos</span>] += <span class="hljs-number">1</span>;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">0</span>);<br>            &#125;<span class="hljs-keyword">else</span>&#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">1</span>)<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">pos</span> = i<br>            &#125;<br>            <span class="hljs-keyword">if</span> (data[i].<span class="hljs-property">lineName</span> === data[i - <span class="hljs-number">1</span>].<span class="hljs-property">lineName</span>)&#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr2</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">pos2</span>] += <span class="hljs-number">1</span>;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr2</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">0</span>);<br>            &#125;<span class="hljs-keyword">else</span>&#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">spanArr2</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">1</span>)<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">pos2</span> = i<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;,<br></code></pre></td></tr></table></figure>
+
+<p>使用一个循环来遍历数据数组 <code>data</code>。</p>
+<p>在第一个迭代（<code>i</code> 等于0）中，初始化 <code>spanArr</code> 和 <code>spanArr2</code> 为一个包含一个元素的数组，该元素的值为1。然后初始化 <code>pos</code> 和 <code>pos2</code> 为0。</p>
+<p>对于后续迭代（<code>i</code> 大于0），它检查当前元素（<code>data[i]</code>）与前一个元素（<code>data[i - 1]</code>）是否满足特定条件。这些条件涉及到数据的某些属性，比如 <code>projectName</code> 和 <code>lineName</code>。</p>
+<p>如果当前元素的 <code>projectName</code> 与前一个元素相同，表示需要进行行合并，因此在 <code>spanArr</code> 数组中对应的位置的值加1，并在 <code>spanArr</code> 中添加一个0，以表示需要列合并。</p>
+<p>否则，如果 <code>projectName</code> 不同，表示需要在下一个单元格开始一个新的行，因此在 <code>spanArr</code> 中添加一个1，并更新 <code>pos</code> 为当前迭代的索引 <code>i</code>。类似的逻辑使用于 spanArr2，即lineName列</p>
+<p>至此，我们完成了行数据的合并：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">handleList</span>(<span class="hljs-params"></span>)&#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">loading</span> = <span class="hljs-literal">true</span>;<br>            personTraceApi.<span class="hljs-title function_">findDetail</span>(&#123;<br>                <span class="hljs-attr">projectCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">projectCode</span>,<br>                <span class="hljs-attr">lineCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">lineCode</span>,<br>                <span class="hljs-attr">beginDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">beginDate</span>,<br>                <span class="hljs-attr">endDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">endDate</span>,<br>                <span class="hljs-attr">name</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">name</span>,<br>                <span class="hljs-attr">employeeId</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">employeeId</span>,<br>                <span class="hljs-attr">page</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">page</span>,<br>                <span class="hljs-attr">limit</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">limit</span>,<br>            &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span> = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>,&#123;<br>                    <span class="hljs-attr">dataList</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">list</span>,<br>                    <span class="hljs-attr">total</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">totalRow</span><br>                &#125;);<br>                <span class="hljs-keyword">const</span> modifiedData = [];<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">dataList</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> &#123;<br>                    <span class="hljs-keyword">const</span> modifieditem = &#123;&#125;;<br>                    <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(item).<span class="hljs-title function_">forEach</span>(<span class="hljs-function">(<span class="hljs-params">key</span>) =&gt;</span> &#123;<br>                        <span class="hljs-comment">// Eliminate single quotes on both sides of a string &#x27;yyyy-mm-dd&#x27; </span><br>                        <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;&#x27;$/</span>.<span class="hljs-title function_">test</span>(key))&#123;<br>                            modifieditem[key.<span class="hljs-title function_">slice</span>(<span class="hljs-number">1</span>,-<span class="hljs-number">1</span>)] = item[key];<br>                        &#125;<span class="hljs-keyword">else</span>&#123;<br>                            modifieditem[key] = item[key];<br>                        &#125;   <br>                    &#125;);<br>                    modifiedData.<span class="hljs-title function_">push</span>(modifieditem);<br>                &#125;);<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">dataList</span> = modifiedData;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">loading</span> = <span class="hljs-literal">false</span>;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getSpanArr</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">dataTable</span>.<span class="hljs-property">dataList</span>);<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">dynamicColumns</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">generateDateRange</span>(<br>                    <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">beginDate</span>,<br>                    <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">endDate</span>,<br>                );<br>            &#125;);<br>        &#125;,<br></code></pre></td></tr></table></figure>
+
+<p>另外，我还在代码中添加了一个逻辑，还记得吗，从后端获取到的数据日期格式是” ‘yyyy-mm-dd’ “格式的，这里的单引号会在前端显示出来，所以我用正则表达式进行匹配并去除了单引号。</p>
+<h4 id="Excel导出"><a href="#Excel导出" class="headerlink" title="Excel导出"></a>Excel导出</h4><p>Excel导出和搜索有点类似，不过区别在于收集到的数据不需要分页，需要进行全量展示。这里的前端代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">handleExport</span>(<span class="hljs-params"></span>)&#123;<br>    personTraceApi.<span class="hljs-title function_">exportExcel</span>(&#123;<br>        <span class="hljs-attr">projectCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">projectCode</span>,<br>        <span class="hljs-attr">lineCode</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">lineCode</span>,<br>        <span class="hljs-attr">beginDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">beginDate</span>,<br>        <span class="hljs-attr">endDate</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">endDate</span>,<br>        <span class="hljs-attr">name</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">name</span>,<br>        <span class="hljs-attr">employeeId</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">queryParam</span>.<span class="hljs-property">query</span>.<span class="hljs-property">employeeId</span>,<br>    &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">const</span> blob = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Blob</span>([res],&#123;<br>            <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;application/vnd.ms-excel;charset=utf-8&quot;</span><br>        &#125;);<br>        <span class="hljs-keyword">const</span> downloadElemnt = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&quot;a&quot;</span>);<br>        <span class="hljs-keyword">const</span> href = <span class="hljs-variable language_">window</span>.<span class="hljs-property">URL</span>.<span class="hljs-title function_">createObjectURL</span>(blob);<br>        downloadElemnt.<span class="hljs-property">herf</span> = href<br>        downloadElemnt.<span class="hljs-property">download</span> = <span class="hljs-string">&quot;personnelTraceability.xls&quot;</span><br>        <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-title function_">appendChild</span>(downloadElemnt);<br>        downloadElemnt.<span class="hljs-title function_">click</span>();<br>        downloadElemnt.<span class="hljs-property">body</span>.<span class="hljs-title function_">removeChild</span>(downloadElemnt);<br>        <span class="hljs-variable language_">window</span>.<span class="hljs-property">URL</span>.<span class="hljs-title function_">revokeObjectURL</span>(href);<br>    &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li>一旦请求成功并获取到导出的数据（在 <code>then</code> 部分），数据以二进制流的形式存储在 <code>res</code> 变量中。</li>
+<li>接下来，代码使用 <code>Blob</code> 对象将数据包装成二进制数据，同时设置数据的类型为 Excel 文件，这是通过 <code>type</code> 设置的。</li>
+<li>之后，代码创建一个 <code>&lt;a&gt;</code> 元素（超链接元素），用于触发下载操作。它设置了 <code>href</code> 属性，将之前创建的 Blob 对象的 URL 赋给 <code>href</code>。</li>
+<li>然后，给这个 <code>&lt;a&gt;</code> 元素设置了 <code>download</code> 属性，指定下载时的文件名为 “personnelTraceability.xls”。</li>
+<li>接着，将这个 <code>&lt;a&gt;</code> 元素添加到 <code>document.body</code>，这样它会在页面上占据一个位置。</li>
+<li>通过触发 <code>click</code> 事件，模拟用户点击这个链接，从而触发文件下载操作。</li>
+<li>最后，代码将这个 <code>&lt;a&gt;</code> 元素从 <code>document.body</code> 中移除，以避免在页面上留下不必要的元素。</li>
+<li>最后，调用 <code>window.URL.revokeObjectURL</code> 来释放之前创建的 Blob URL，以释放浏览器资源。</li>
+</ol>
+<p>那么，后端应该做些什么呢？</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">exportExcel</span><span class="hljs-params">(PersonnelTraceabilityDTO queryParams, HttpServletResponse response)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    List&lt;Map&gt; list = findList(queryParams);<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>首先，获取数据是方法的第一步：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> List&lt;Map&gt; <span class="hljs-title function_">findList</span><span class="hljs-params">(PersonnelTraceabilityDTO queryParams)</span> &#123;<br>    <span class="hljs-type">LocalDate</span> <span class="hljs-variable">startDate</span> <span class="hljs-operator">=</span> LocalDate.parse(queryParams.getBeginDate(), DateTimeFormatter.ISO_DATE);<br>    <span class="hljs-type">LocalDate</span> <span class="hljs-variable">endDate</span> <span class="hljs-operator">=</span> LocalDate.parse(queryParams.getEndDate(), DateTimeFormatter.ISO_DATE);<br><br>    List&lt;String&gt; dateList = getDateList(startDate,endDate);<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">sql</span> <span class="hljs-operator">=</span> getSql(queryParams,dateList);<br>    List&lt;Map&gt; result = getSqlManager().execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">SQLReady</span>(sql),Map.class);<br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个方法和前面的后端方法几乎一模一样，区别仅仅只是没有使用PageResult接收来进行分页。</p>
+<p>在该项目里，还需要对里面的表头和数据进行翻译（因为初始数据是中文的），这里就不详细讲解翻译的内容了，总而言之，数据和表头都需要单独作为列表展示出来，同时转化为<code>List&lt;List&lt;Object&gt;&gt;</code>的形式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">  <span class="hljs-keyword">private</span> List&lt;List&lt;Object&gt;&gt; <span class="hljs-title function_">getTranslatedData</span><span class="hljs-params">(List&lt;Map&gt; list, Map&lt;String, String&gt; translatedMap, List&lt;String&gt; headers)</span> &#123;<br>      <span class="hljs-comment">// translated and replace single quotes</span><br>...<br>      <span class="hljs-comment">// change data to required List&lt;List&lt;Object&gt;&gt;</span><br>      List&lt;List&lt;Object&gt;&gt; lists = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>      <span class="hljs-keyword">for</span> (Map&lt;String,Object&gt; map : list) &#123;<br>          ArrayList&lt;Object&gt; objects = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>          <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; headers.size(); i++) &#123;<br>              objects.add(map.get(headers.get(i)));<br>          &#125;<br>          lists.add(objects);<br>      &#125;<br>      <span class="hljs-keyword">return</span> lists;<br>  &#125;<br><br>  <span class="hljs-keyword">private</span> List&lt;List&lt;String&gt;&gt; <span class="hljs-title function_">createdHead</span><span class="hljs-params">(List&lt;String&gt; headerMap)</span> &#123;<br>      List&lt;List&lt;String&gt;&gt; headList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>      <span class="hljs-comment">// change headers to required List&lt;List&lt;Object&gt;&gt;</span><br>      <span class="hljs-keyword">for</span> (String head : headerMap) &#123;<br>          ArrayList&lt;String&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>          list.add(head);<br>          headList.add(list);<br>      &#125;<br>      <span class="hljs-keyword">return</span> headList;<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p>最后，以下代码会用于导出EXCEL：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">  <span class="hljs-meta">@Override</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">exportExcel</span><span class="hljs-params">(PersonnelTraceabilityDTO queryParams, HttpServletResponse response)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>      List&lt;Map&gt; list = findList(queryParams);<br><br>...getTranslatedData...<br><br>      <span class="hljs-type">File</span> <span class="hljs-variable">file</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>( <span class="hljs-string">&quot;&quot;</span>);<br>      <span class="hljs-type">String</span> <span class="hljs-variable">filePath</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>      filePath = file.getCanonicalPath();<br>      filePath = filePath +<span class="hljs-string">&quot;/downloadExportTemplate&quot;</span>;<br>      <span class="hljs-keyword">if</span> (!FileUtil.isDirectory(filePath))&#123;<br>          FileUtil.mkdir(filePath);<br>      &#125;<br>      <span class="hljs-type">String</span> <span class="hljs-variable">fileName</span> <span class="hljs-operator">=</span> filePath.concat( <span class="hljs-string">&quot;/personnelTraceability.xls&quot;</span>);<br><br>      <span class="hljs-type">ExcelWriterBuilder</span> <span class="hljs-variable">writerBuilder</span> <span class="hljs-operator">=</span> EasyExcel.write(fileName)<br>              <span class="hljs-comment">// set column width</span><br>              .registerWriteHandler(<span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleColumnWidthStyleStrategy</span>(<span class="hljs-number">25</span>))<br>              .head(createdHead(headers));<br>      writerBuilder.sheet(<span class="hljs-string">&quot;personnelTraceability&quot;</span>).doWrite(datalist);<br><br>      <span class="hljs-type">InputStream</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(fileName);<br>      <span class="hljs-type">String</span> <span class="hljs-variable">encode</span> <span class="hljs-operator">=</span> URLEncoder.encode(fileName, <span class="hljs-string">&quot;UTF-8&quot;</span>);<br>      response.setCharacterEncoding(<span class="hljs-string">&quot;UTF-8&quot;</span>);<br>      response.setContentType(<span class="hljs-string">&quot;application/vnd.ms-excel;charset=utf-8&quot;</span>);<br>      response.setHeader(<span class="hljs-string">&quot;Content-Disposition&quot;</span>,<span class="hljs-string">&quot;attachment; filename=&quot;</span> + encode);<br>      <span class="hljs-type">HSSFWorkbook</span> <span class="hljs-variable">workbook</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HSSFWorkbook</span>(in);<br>      workbook.write(response.getOutputStream());<br>      in.close();<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li><code>File file = new File(&quot;&quot;);</code>：这一行创建了一个空的 <code>File</code> 对象，实际上并没有指定文件路径。</li>
+<li><code>String filePath = null;</code>：初始化一个字符串变量 <code>filePath</code>。</li>
+<li><code>filePath = file.getCanonicalPath();</code>：这一行获取当前项目或应用程序的工作目录，并将其存储在 <code>filePath</code> 中。</li>
+<li><code>filePath = filePath +&quot;/downloadExportTemplate&quot;;</code>：将字符串 <code>&quot;/downloadExportTemplate&quot;</code> 添加到 <code>filePath</code> 中，用于指定下载文件的目录。</li>
+<li><code>if (!FileUtil.isDirectory(filePath))</code>：检查指定的目录是否存在，如果不存在，执行下面的操作。</li>
+<li><code>FileUtil.mkdir(filePath);</code>：如果目录不存在，创建该目录。这是通过项目中的 <code>FileUtil</code> 类或者第三方库来执行的，这里就不详细解释了。</li>
+<li><code>String fileName = filePath.concat( &quot;/personnelTraceability.xls&quot;);</code>：设置要生成的 Excel 文件的文件名和路径。</li>
+<li><code>ExcelWriterBuilder writerBuilder = EasyExcel.write(fileName)</code>：创建一个 EasyExcel 的写入器，用于将数据写入 Excel 文件。指定了文件名和路径。</li>
+<li><code>.registerWriteHandler(new SimpleColumnWidthStyleStrategy(25))</code>：设置列宽样式，这里指定了列宽为 25。</li>
+<li><code>.head(createdHead(headers))</code>：设置 Excel 表格的表头信息，<code>createdHead(headers)</code> 方法用于创建表头的内容。</li>
+<li><code>writerBuilder.sheet(&quot;personnelTraceability&quot;).doWrite(datalist);</code>：创建一个工作表（sheet）命名为 “personnelTraceability”，并将数据列表 <code>datalist</code> 写入到 Excel 文件中。</li>
+<li><code>InputStream in = new FileInputStream(fileName);</code>：打开生成的 Excel 文件并创建一个输入流。</li>
+<li><code>String encode = URLEncoder.encode(fileName, &quot;UTF-8&quot;);</code>：将文件名进行 URL 编码。</li>
+<li><code>response.setCharacterEncoding(&quot;UTF-8&quot;);</code>：设置 HTTP 响应字符编码为 UTF-8。</li>
+<li><code>response.setContentType(&quot;application/vnd.ms-excel;charset=utf-8&quot;);</code>：设置响应的内容类型为 Excel 文件。</li>
+<li><code>response.setHeader(&quot;Content-Disposition&quot;,&quot;attachment; filename=&quot; + encode);</code>：设置响应头，告诉浏览器这是一个附件，并提供文件名。</li>
+<li><code>HSSFWorkbook workbook = new HSSFWorkbook(in);</code>：创建一个 HSSFWorkbook 对象，用于处理 Excel 文件。</li>
+<li><code>workbook.write(response.getOutputStream());</code>：将 Excel 数据写入 HTTP 响应的输出流，以便浏览器下载。</li>
+<li><code>in.close();</code>：关闭输入流。</li>
+</ol>
+<p>至此，整个需求已基本完成了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>全部代码可以在Github上看到：</p>
 <p><a href = "https://github.com/lh728/BlogCode/tree/72fb88c591dde967f19cc58fe0756ec0838a2e37/Project%20Records%20-%20Enterprise%20Requirement/Table%20Cell%20Merging%20and%20Dynamic%20Columns" >Github</a></p>
+<p>学习到了新的三类功能的实现思路。</p>
+<hr>
 <h2 id="Oracle表触发器"><a href="#Oracle表触发器" class="headerlink" title="Oracle表触发器"></a>Oracle表触发器</h2><hr>
 <h3 id="需求描述-1"><a href="#需求描述-1" class="headerlink" title="需求描述"></a>需求描述</h3><p>今天有个新的项目需求，这个需求是有关数据库表的，相对简单。</p>
 <p>现在有一个表A，它只记录当天的数据，并且它的数据每五分钟都会进行变化，它会删掉之前的所有数据，再把更新后的数据插入进来。并且尽管表A会删除掉之前的所有数据，但是更新后的数据对于五分钟之前的数据并不会做修改，只是做了添加操作。</p>
@@ -315,7 +515,7 @@
 <li>姓名，员工id的input框</li>
 <li>数据表格的实现</li>
 </ul>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>正如在需求描述中所写的一样，需要实现的功能与我的问题高度相关：</p>
+<h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><p>正如在需求描述中所写的一样，需要实现的功能与我的问题高度相关：</p>
 <ul>
 <li><p>下拉框功能应该怎么实现？</p>
 </li>
@@ -545,7 +745,7 @@
 <p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%881%EF%BC%89.png" alt="项目记录——企业需求"></p>
 <p>很显然，这不是利于人类阅读的模式，因此这个需求要求我更改这个需求的样式，把这些数据按照表格的形式展示出来，同时附件带有EXCEL文件。合理的样式应该如下所示：</p>
 <p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82%EF%BC%882%EF%BC%89.png" alt="项目记录——企业需求（2）"></p>
-<h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><p>看到需求，接下来需要解决的问题是：</p>
+<h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><p>看到需求，接下来需要解决的问题是：</p>
 <ul>
 <li><p>定时任务怎么调试？</p>
 </li>
@@ -659,7 +859,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#x61;&#97;&#97;&#64;&#98;&#x62;&#98;&#98;&#x62;&#x2e;&#x63;&#x6f;&#109;">&#97;&#97;&#x61;&#97;&#97;&#64;&#98;&#x62;&#98;&#98;&#x62;&#x2e;&#x63;&#x6f;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#97;&#97;&#97;&#x40;&#x62;&#x62;&#98;&#x62;&#x62;&#46;&#99;&#x6f;&#x6d;">&#x61;&#97;&#97;&#97;&#97;&#x40;&#x62;&#x62;&#98;&#x62;&#x62;&#46;&#99;&#x6f;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -749,7 +949,7 @@
 <td>F</td>
 </tr>
 </tbody></table>
-<h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><p>看到需求，我思考了一下，觉得需要解决的问题是：</p>
+<h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><p>看到需求，我思考了一下，觉得需要解决的问题是：</p>
 <ul>
 <li><p>怎么添加前端的点击事件？</p>
 </li>
@@ -827,7 +1027,7 @@
 <p>总之，作为一个开发新人，不得不说面对企业级的庞大代码，后端前端加起来上百个类的时候是一脸懵的，更别说还需要直接面对一个自己之前没接触过的需求了。当然，产品经理也明白一来让我做很难的需求也不现实，这个需求的实际实现并不算难，很多关键部位的代码已经被其他人完成了，但是对我来说也还是一个巨大的挑战。</p>
 <h3 id="需求描述-5"><a href="#需求描述-5" class="headerlink" title="需求描述"></a>需求描述</h3><p>简单的说，这个项目需求要求我把原来放在管理系统中的页面可以通过外部链接进行访问。</p>
 <p>前端的页面和功能很多是通过类似Vue-element-admin的方式展示的。我需要把其中一个已经完成的Vue页面——一张BI报表，绕过登录系统做到可以直接通过链接访问的形式（当然并不是完全不需要登录验证了，只是换了一种验证形式），至于完成后会拿来怎么用，现在我不是太清楚，可能会有一些别的APP的超链接指向这里。</p>
-<h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><p>需求是这样的，但是依旧有很多不理解的问题：</p>
+<h3 id="问题-4"><a href="#问题-4" class="headerlink" title="问题"></a>问题</h3><p>需求是这样的，但是依旧有很多不理解的问题：</p>
 <ul>
 <li>链接？是什么样的链接去访问的？它应该是什么样子的？</li>
 <li>前端应该怎么实现？</li>
@@ -886,8 +1086,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>SQL</tag>
+        <tag>Java</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
