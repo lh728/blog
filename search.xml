@@ -287,8 +287,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>SQL</tag>
+        <tag>Java</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
@@ -892,7 +892,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#97;&#x61;&#x40;&#98;&#x62;&#x62;&#x62;&#98;&#46;&#x63;&#111;&#109;">&#x61;&#x61;&#x61;&#97;&#x61;&#x40;&#98;&#x62;&#x62;&#x62;&#98;&#46;&#x63;&#111;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#97;&#x61;&#x61;&#x40;&#x62;&#98;&#x62;&#x62;&#x62;&#x2e;&#x63;&#111;&#x6d;">&#x61;&#x61;&#97;&#x61;&#x61;&#x40;&#x62;&#98;&#x62;&#x62;&#x62;&#x2e;&#x63;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -1119,8 +1119,8 @@
         <category>项目记录</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>SQL</tag>
+        <tag>Java</tag>
         <tag>Vue</tag>
       </tags>
   </entry>
