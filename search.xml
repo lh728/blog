@@ -1,110 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>IDEA如何快速添加JavaDoc文档注释</title>
-    <url>/2023/10/25/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
-    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
-<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
-<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
-<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
-<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
-<li>在模板上加入文档注释模板：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
-<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
-<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
-<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
-<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
-<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
-<li>选择右侧的Edit variables按钮，进行如下配置：</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
-<ol start="7">
-<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
-<p>至此，配置完成</p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL数据备份</title>
-    <url>/2023/10/25/MySQL%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD/</url>
-    <content><![CDATA[<p>该博文用于记录一下学习过程中学到的新知识，关于如何在MySQL中进行数据备份。如果之后有用到，可以用作参考。</p>
-<p>直接看代码：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql">Q1:<span class="hljs-keyword">SET</span> SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;<br>Q2:<span class="hljs-keyword">START</span> TRANSACTION  <span class="hljs-keyword">WITH</span> CONSISTENT SNAPSHOT；<br><span class="hljs-comment">/* other tables */</span><br>Q3:<span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* 时刻 1 */</span><br>Q4:<span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> `t1`;<br><span class="hljs-comment">/* 时刻 2 */</span><br>Q5:<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> `t1`;<br><span class="hljs-comment">/* 时刻 3 */</span><br>Q6:<span class="hljs-keyword">ROLLBACK</span> <span class="hljs-keyword">TO</span> <span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* 时刻 4 */</span><br><span class="hljs-comment">/* other tables */</span><br></code></pre></td></tr></table></figure>
-
-<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
-<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
-<p>设置一个保存点（Q3）；</p>
-<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。</p>
-<p>注意如果这时传来一个DDL语句，假设这是一个小表，并且到达后如果开始执行，很快能够执行完成。这时会有什么现象呢？</p>
-<ul>
-<li>如果在 Q4 语句执行之前到达，即时刻一，现象：没有影响，备份拿到的是 DDL 后的表结构。</li>
-<li>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</li>
-<li>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</li>
-<li>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</li>
-</ul>
-<p>该博文引用了《MySQL 实战 45 讲》的内容 ^(1)^</p>
-<hr>
-<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>(1) <a href="https://time.geekbang.org/column/article/70215">https://time.geekbang.org/column/article/70215</a></p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Oracle SQL优化</title>
-    <url>/2023/10/25/Oracle%20SQL%E4%BC%98%E5%8C%96/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>最近在写一个项目SQL的时候遇到了问题，SQL的执行时间过长：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
-
-<p>上面的代码是一个配合Union组合使用的SQL代码，其他部分的代码和这一部分的代码很相似，仅仅是修改了<code>select</code>中的<code>type</code>和<code>inner join</code> 的部门id。代码的总运行时间达到了110s左右，单段SQL代码运行时间在18S左右，可以说是非常长的运行时间了。</p>
-<p>另外， <code>#&#123;begin_date&#125;</code>，<code>#&#123;end_date&#125;</code>分别是后端将会传入的参数，做动态查询使用。</p>
-<h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><p>首先分析最直接的问题——为什么运行时间这么长？</p>
-<p>其实这里的问题并没有很复杂，<code>attendance</code>表的数据有一千三百多万条，庞大的数据量光是最基础的简单的查询都需要花费20S左右。</p>
-<p>另外，需要关联的部门表是一个递归<code>join</code>，这里会查询出给出的<code>deptId</code>下面的所有小部门，这里的查询也很耗时间。</p>
-<p>那么，怎么解决问题呢？</p>
-<p>方案一：首先数据量的问题是无解的，我们不可能说某一段数据直接舍弃了，而且注意，我们的where 条件是限制了时间的，因此对数据量实际上是有一定限制的。因此首先优化的思路就是在<code>Join</code>上：</p>
-<blockquote>
-<p>递归<code>Join</code>是很耗时的一个操作，因此我们可以直接想到在<code>deptId</code>上建立一个索引——事实上这是个正确的思路，通过建立索引运行时间直接从18S优化到了2S。</p>
-</blockquote>
-<p>方案二：这里还可以优化<code>where</code>的查询条件：</p>
-<blockquote>
-<p>在日期限制的时候使用了<code>to_date</code>函数，事实上仅仅做年月日对比的时候，可以直接不使用这个函数做字符串比较。这是因为Oracle SQL的<a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">数据优先级</a>，会将低优先级的字符串隐式转换转为日期格式。这里通过隐式转换，运行时间可以继续优化，从2S提升至1S。</p>
-</blockquote>
-<p><strong>但是注意，这是有风险的——首先，隐式数据类型转换可能会对性能产生负面影响（当然这里是正面的）；而且，隐式转换可能会产生奇怪的结果。具体取决于<code>NLS_DATE_FORMAT</code>参数的值。</strong></p>
-<p>当通过隐式转换或不指定格式模型的显式转换将日期时间值转换为文本时，格式模型由全球化会话参数之一定义，即<code>NLS_DATE_FORMAT</code>、<code>NLS_TIMESTAMP_FORMAT</code>或者<code>NLS_TIMESTAMP_TZ_FORMAT</code>。</p>
-<p>举个例子，<code>NLS_DATE_FORMAT</code>设置的默认值是<code>&#39;DD-MON-RR&#39;</code>两位数年份，因此当日期转换为字符串时，世纪时间可能会丢失，并在根据十年的值转换回日期时被 1900 或 2000 替换掉；并且假设原始时间有时分秒，这些数据也会丢失掉。</p>
-<p>总之，不同的参数可能有不同的结果。</p>
-<p>所以，考虑到方案2的优化并不是必要的，我还是保留了日期函数。</p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo转换语言，适用任何主题</title>
     <url>/2023/10/25/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/</url>
     <content><![CDATA[<p>本文主要讨论Hexo如何最简单地实现国际化，而且该方法适用性很高，对使用哪种主题我个人认为没有什么要求</p>
@@ -152,6 +48,76 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL数据备份</title>
+    <url>/2023/10/25/MySQL%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD/</url>
+    <content><![CDATA[<p>该博文用于记录一下学习过程中学到的新知识，关于如何在MySQL中进行数据备份。如果之后有用到，可以用作参考。</p>
+<p>直接看代码：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql">Q1:<span class="hljs-keyword">SET</span> SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;<br>Q2:<span class="hljs-keyword">START</span> TRANSACTION  <span class="hljs-keyword">WITH</span> CONSISTENT SNAPSHOT；<br><span class="hljs-comment">/* other tables */</span><br>Q3:<span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* 时刻 1 */</span><br>Q4:<span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> `t1`;<br><span class="hljs-comment">/* 时刻 2 */</span><br>Q5:<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> `t1`;<br><span class="hljs-comment">/* 时刻 3 */</span><br>Q6:<span class="hljs-keyword">ROLLBACK</span> <span class="hljs-keyword">TO</span> <span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* 时刻 4 */</span><br><span class="hljs-comment">/* other tables */</span><br></code></pre></td></tr></table></figure>
+
+<p>在备份开始的时候，为了确保 RR（可重复读）隔离级别，再设置一次 RR 隔离级别 (Q1);</p>
+<p>启动事务，这里用 WITH CONSISTENT SNAPSHOT 确保这个语句执行完就可以得到一个一致性视图（Q2)；</p>
+<p>设置一个保存点（Q3）；</p>
+<p>show create 是为了拿到表结构 (Q4)，然后正式导数据 （Q5），回滚到 SAVEPOINT sp，在这里的作用是释放 t1 的 MDL 锁 （Q6）。</p>
+<p>注意如果这时传来一个DDL语句，假设这是一个小表，并且到达后如果开始执行，很快能够执行完成。这时会有什么现象呢？</p>
+<ul>
+<li>如果在 Q4 语句执行之前到达，即时刻一，现象：没有影响，备份拿到的是 DDL 后的表结构。</li>
+<li>如果在“时刻 2”到达，则表结构被改过，Q5 执行的时候，报 Table definition has changed, please retry transaction，现象：mysqldump 终止；</li>
+<li>如果在“时刻 2”和“时刻 3”之间到达，mysqldump 占着 t1 的 MDL 读锁，binlog 被阻塞，现象：主从延迟，直到 Q6 执行完成。</li>
+<li>从“时刻 4”开始，mysqldump 释放了 MDL 读锁，现象：没有影响，备份拿到的是 DDL 前的表结构。</li>
+</ul>
+<p>该博文引用了《MySQL 实战 45 讲》的内容 ^(1)^</p>
+<hr>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>(1) <a href="https://time.geekbang.org/column/article/70215">https://time.geekbang.org/column/article/70215</a></p>
+<hr>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IDEA如何快速添加JavaDoc文档注释</title>
+    <url>/2023/10/25/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
+    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
+<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
+<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
+<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
+<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
+<li>在模板上加入文档注释模板：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
+<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
+<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
+<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
+<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
+<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
+<li>选择右侧的Edit variables按钮，进行如下配置：</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
+<ol start="7">
+<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
+<p>至此，配置完成</p>
+<hr>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -265,6 +231,40 @@
       </categories>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Oracle SQL优化</title>
+    <url>/2023/10/25/Oracle%20SQL%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>最近在写一个项目SQL的时候遇到了问题，SQL的执行时间过长：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
+
+<p>上面的代码是一个配合Union组合使用的SQL代码，其他部分的代码和这一部分的代码很相似，仅仅是修改了<code>select</code>中的<code>type</code>和<code>inner join</code> 的部门id。代码的总运行时间达到了110s左右，单段SQL代码运行时间在18S左右，可以说是非常长的运行时间了。</p>
+<p>另外， <code>#&#123;begin_date&#125;</code>，<code>#&#123;end_date&#125;</code>分别是后端将会传入的参数，做动态查询使用。</p>
+<h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><p>首先分析最直接的问题——为什么运行时间这么长？</p>
+<p>其实这里的问题并没有很复杂，<code>attendance</code>表的数据有一千三百多万条，庞大的数据量光是最基础的简单的查询都需要花费20S左右。</p>
+<p>另外，需要关联的部门表是一个递归<code>join</code>，这里会查询出给出的<code>deptId</code>下面的所有小部门，这里的查询也很耗时间。</p>
+<p>那么，怎么解决问题呢？</p>
+<p>方案一：首先数据量的问题是无解的，我们不可能说某一段数据直接舍弃了，而且注意，我们的where 条件是限制了时间的，因此对数据量实际上是有一定限制的。因此首先优化的思路就是在<code>Join</code>上：</p>
+<blockquote>
+<p>递归<code>Join</code>是很耗时的一个操作，因此我们可以直接想到在<code>deptId</code>上建立一个索引——事实上这是个正确的思路，通过建立索引运行时间直接从18S优化到了2S。</p>
+</blockquote>
+<p>方案二：这里还可以优化<code>where</code>的查询条件：</p>
+<blockquote>
+<p>在日期限制的时候使用了<code>to_date</code>函数，事实上仅仅做年月日对比的时候，可以直接不使用这个函数做字符串比较。这是因为Oracle SQL的<a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">数据优先级</a>，会将低优先级的字符串隐式转换转为日期格式。这里通过隐式转换，运行时间可以继续优化，从2S提升至1S。</p>
+</blockquote>
+<p><strong>但是注意，这是有风险的——首先，隐式数据类型转换可能会对性能产生负面影响（当然这里是正面的）；而且，隐式转换可能会产生奇怪的结果。具体取决于<code>NLS_DATE_FORMAT</code>参数的值。</strong></p>
+<p>当通过隐式转换或不指定格式模型的显式转换将日期时间值转换为文本时，格式模型由全球化会话参数之一定义，即<code>NLS_DATE_FORMAT</code>、<code>NLS_TIMESTAMP_FORMAT</code>或者<code>NLS_TIMESTAMP_TZ_FORMAT</code>。</p>
+<p>举个例子，<code>NLS_DATE_FORMAT</code>设置的默认值是<code>&#39;DD-MON-RR&#39;</code>两位数年份，因此当日期转换为字符串时，世纪时间可能会丢失，并在根据十年的值转换回日期时被 1900 或 2000 替换掉；并且假设原始时间有时分秒，这些数据也会丢失掉。</p>
+<p>总之，不同的参数可能有不同的结果。</p>
+<p>所以，考虑到方案2的优化并不是必要的，我还是保留了日期函数。</p>
+<hr>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -1306,7 +1306,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#97;&#97;&#x61;&#x40;&#98;&#x62;&#98;&#98;&#98;&#46;&#99;&#x6f;&#x6d;">&#x61;&#x61;&#97;&#97;&#x61;&#x40;&#98;&#x62;&#98;&#98;&#98;&#46;&#99;&#x6f;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#97;&#x61;&#64;&#98;&#98;&#x62;&#98;&#x62;&#46;&#99;&#x6f;&#x6d;">&#x61;&#x61;&#x61;&#97;&#x61;&#64;&#98;&#98;&#x62;&#98;&#x62;&#46;&#99;&#x6f;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
