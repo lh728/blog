@@ -1,6 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>How to debug spring boot scheduling tasks</title>
+    <url>/en/2023/10/25/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</url>
+    <content><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p>
+<h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p>
+<ul>
+<li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li>
+<li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li>
+<li>Another idea is to call the method in the test code, but it is also very tricky</li>
+</ul>
+<p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p>
+<p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL Data Backup</title>
+    <url>/en/2023/10/25/MySQL%20Data%20Backup/</url>
+    <content><![CDATA[<p>“This blog post is intended to document the new knowledge I’ve acquired during the learning process, specifically about how to perform data backup in MySQL. If needed in the future, it can serve as a reference.”</p>
+<p>Take a look at the code directly.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql">Q1:<span class="hljs-keyword">SET</span> SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;<br>Q2:<span class="hljs-keyword">START</span> TRANSACTION  <span class="hljs-keyword">WITH</span> CONSISTENT SNAPSHOT；<br><span class="hljs-comment">/* other tables */</span><br>Q3:<span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* Time 1 */</span><br>Q4:<span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> `t1`;<br><span class="hljs-comment">/* Time 2 */</span><br>Q5:<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> `t1`;<br><span class="hljs-comment">/* Time 3 */</span><br>Q6:<span class="hljs-keyword">ROLLBACK</span> <span class="hljs-keyword">TO</span> <span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* Time 4 */</span><br><span class="hljs-comment">/* other tables */</span><br></code></pre></td></tr></table></figure>
+
+<p>At the beginning of the backup process, to ensure the Repeatable Read (RR) isolation level, set the RR isolation level once more (Q1).</p>
+<p>Start a transaction, using ‘<code>WITH CONSISTENT SNAPSHOT</code>‘ to ensure that a consistent view is obtained as soon as this statement is executed (Q2).</p>
+<p>Set a savepoint (Q3).</p>
+<p>Use ‘<code>SHOW CREATE</code>‘ to retrieve the table structure (Q4), and then proceed to export the data (Q5). After that, roll back to the savepoint ‘sp,’ where its purpose is to release the MDL lock on ‘t1’ (Q6).</p>
+<p>Please note, if at this point, a DDL statement is received, assuming it is for a small table and if it starts executing shortly after arrival and can complete quickly, what would be the scenario?</p>
+<ul>
+<li>If it arrives before the execution of the Q4 statement, i.e., at <strong>time 1</strong>, the scenario is: No impact; the backup will capture the table structure after the DDL statement.</li>
+<li>If it arrives at “<strong>time 2</strong>,” the table structure has been altered. When Q5 is executed, it will result in an error: “Table definition has changed, please retry transaction.” Scenario: mysqldump terminates.</li>
+<li>If it arrives between <strong>“time 2</strong>“ and “<strong>time 3</strong>,” mysqldump holds the MDL read lock on t1, and the binlog is blocked. Scenario: There is master-slave replication delay until Q6 is completed.</li>
+<li>Starting from “<strong>time 4</strong>,” mysqldump releases the MDL read lock. Scenario: No impact; the backup captures the table structure before the DDL statement.</li>
+</ul>
+<p>This blog post references content from ‘MySQL in Action: 45 Lectures’ ^(1)^.</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) <a href="https://time.geekbang.org/column/article/70215">https://time.geekbang.org/column/article/70215</a></p>
+<hr>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IDEA quickly adds JavaDoc comments</title>
+    <url>/en/2023/10/25/IDEA%20quickly%20adds%20JavaDoc%20comments/</url>
+    <content><![CDATA[<p>As a programmer, adding Javadoc comments can be considered an essential step. However, manually adding extensive content each time can undoubtedly become a cumbersome task.</p>
+<p>This article serves as a record, aiming to facilitate the process of reconfiguration when changing environments in the future:</p>
+<p>(The method described here is auto-generated by IntelliJ IDEA and does not require installing additional plugins.)</p>
+<h2 id="Class、Interface-Comments"><a href="#Class、Interface-Comments" class="headerlink" title="Class、Interface Comments"></a>Class、Interface Comments</h2><ol>
+<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
+<li>Add documentation comment templates to the template:</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Once completed, every time a class or interface is created, the comments will be automatically generated.</p>
+<h2 id="Method-Comments"><a href="#Method-Comments" class="headerlink" title="Method Comments"></a>Method Comments</h2><ol>
+<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
+<li>Click on the right-hand side <code>+</code> icon, select &#96;Template Group…, and create a new custom template group. You can name it with your desired name.</li>
+<li>Select the created template group, click on the right-hand side <code>+</code> icon, choose <code>Live Template</code>, and set the value of <code>abbreviation</code> to <code>*</code>.</li>
+<li>Set the template content: Choose <code>Template Text</code> and enter the following code below:</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>Configure where this template should be effective: Select <code>Define</code>“ below, then choose <code>Everywhere</code> and <code>Java</code> to ensure it only takes effect in Java files.</li>
+<li>Select the <code>Edit variables</code> button on the right-hand side and configure as follows:</li>
+</ol>
+<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
+<ol start="7">
+<li>Use <code>/* </code>+ the template name we just set (in this case, it’s the asterisk <code>*</code>) + <code>tab</code> (this is the default template expansion shortcut, as set in <code>By default expand with</code> above). So now, when you use <code>/**</code> + <code>tab</code>, it will auto-complete, and the effect will be as follows:</li>
+</ol>
+<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
+<p>With this, the configuration is complete.</p>
+<hr>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo switch language, suitable for any theme</title>
     <url>/en/2023/10/25/Hexo%20switch%20language,%20suitable%20for%20any%20theme/</url>
     <content><![CDATA[<p>This article mainly discusses how Hexo achieves internationalization in the simplest way, and this method is highly applicable. I personally think that there is no requirement for which theme to use.</p>
@@ -51,107 +147,37 @@
       </tags>
   </entry>
   <entry>
-    <title>How to debug spring boot scheduling tasks</title>
-    <url>/en/2023/10/25/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</url>
-    <content><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p>
-<h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
+    <title>Oracle SQL optimization</title>
+    <url>/en/2023/10/25/Oracle%20SQL%20optimization/</url>
+    <content><![CDATA[<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Recently, I encountered a problem when writing a SQL, and the execution time of SQL was too long:</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
 
-<p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p>
-<ul>
-<li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li>
-<li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li>
-<li>Another idea is to call the method in the test code, but it is also very tricky</li>
-</ul>
-<p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p>
-<p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>IDEA quickly adds JavaDoc comments</title>
-    <url>/en/2023/10/25/IDEA%20quickly%20adds%20JavaDoc%20comments/</url>
-    <content><![CDATA[<p>As a programmer, adding Javadoc comments can be considered an essential step. However, manually adding extensive content each time can undoubtedly become a cumbersome task.</p>
-<p>This article serves as a record, aiming to facilitate the process of reconfiguration when changing environments in the future:</p>
-<p>(The method described here is auto-generated by IntelliJ IDEA and does not require installing additional plugins.)</p>
-<h2 id="Class、Interface-Comments"><a href="#Class、Interface-Comments" class="headerlink" title="Class、Interface Comments"></a>Class、Interface Comments</h2><ol>
-<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
-<li>Add documentation comment templates to the template:</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>Once completed, every time a class or interface is created, the comments will be automatically generated.</p>
-<h2 id="Method-Comments"><a href="#Method-Comments" class="headerlink" title="Method Comments"></a>Method Comments</h2><ol>
-<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
-<li>Click on the right-hand side <code>+</code> icon, select &#96;Template Group…, and create a new custom template group. You can name it with your desired name.</li>
-<li>Select the created template group, click on the right-hand side <code>+</code> icon, choose <code>Live Template</code>, and set the value of <code>abbreviation</code> to <code>*</code>.</li>
-<li>Set the template content: Choose <code>Template Text</code> and enter the following code below:</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>Configure where this template should be effective: Select <code>Define</code>“ below, then choose <code>Everywhere</code> and <code>Java</code> to ensure it only takes effect in Java files.</li>
-<li>Select the <code>Edit variables</code> button on the right-hand side and configure as follows:</li>
-</ol>
-<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
-<ol start="7">
-<li>Use <code>/* </code>+ the template name we just set (in this case, it’s the asterisk <code>*</code>) + <code>tab</code> (this is the default template expansion shortcut, as set in <code>By default expand with</code> above). So now, when you use <code>/**</code> + <code>tab</code>, it will auto-complete, and the effect will be as follows:</li>
-</ol>
-<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
-<p>With this, the configuration is complete.</p>
+<p>The above code is a SQL code used in combination with <code>Union</code>. The other parts of the code are very similar to this part of the code, except that the department id in the <code>inner join</code> statement and <code>type</code> in the <code>select</code> statement. The total running time of the code reaches about 110s, and the running time of a single SQL code is about 18s, which can be said runtime is too long.</p>
+<p>In addition, <code>#&#123;begin_date&#125;</code> and <code>#&#123;end_date&#125;</code> are the parameters that will be passed in by the backend respectively, and are used for dynamic query.</p>
+<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><p>First analyze the most immediate question - why is the running time so long?</p>
+<p>In fact, the problem here is not very complicated. There are more than 13 million pieces of data in the <code>attendance</code> table. The huge amount of data takes about 20 seconds for even the most basic and simple query.</p>
+<p>In addition, the department table that needs to be associated is a recursive <code>join</code>, which will query all the small departments under the given <code>deptId</code>, and the query here is also time-consuming.</p>
+<p>So, how to solve the problem?</p>
+<p><strong>Solution 1</strong>: First of all, the problem of data volume is unsolvable. It is impossible for us to say that a certain piece of data is directly discarded. Moreover, our <code>where</code> condition has already limited the time, so there is actually a certain limit on the data volume. Therefore, the first idea of optimization is on <code>Join</code>:</p>
+<blockquote>
+<p>Recursive <code>Join</code> is a very time-consuming operation, so we can directly think of building an index on <code>deptId</code>-in fact, this is the correct idea, and the running time of indexing is directly optimized from 18S to 2S.</p>
+</blockquote>
+<p>Solution 2: Here can also optimize the query condition of <code>where</code>:</p>
+<blockquote>
+<p>The <code>to_date</code> function is used when the date is limited. In fact, when only comparing the year, month, and day, we can directly not use this function for string comparison. This is because Oracle SQL’s <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">Data Priority</a> will implicitly convert low-priority strings to date formats. Here, through implicit conversion, the running time can be continuously optimized, from 2S to 1S.</p>
+</blockquote>
+<p><strong>But note, this is risky - first, implicit data type conversion may have a negative impact on performance (of course here is a positive); also, implicit conversion may produce strange results. Depending on the value of the <code>NLS_DATE_FORMAT</code> parameter.</strong> </p>
+<p>When converting a datetime value to text via an implicit conversion or an explicit conversion that does not specify a format model, the format model is defined by one of the globalization session parameters, namely <code>NLS_DATE_FORMAT</code>, <code>NLS_TIMESTAMP_FORMAT</code>, or <code>NLS_TIMESTAMP_TZ_FORMAT</code>.</p>
+<p>For example, the default value of the <code>NLS_DATE_FORMAT</code> setting is <code>&#39;DD-MON-RR&#39;</code> two-digit year, so the century time may be lost when the date is converted to a string, and replaced by 1900 or 2000 when converted back to a date based on the decade value; and assuming that the original time has some minutes and seconds, this data will also be lost.</p>
+<p>In conclusion, different parameters may have different results.</p>
+<p>So, considering that the optimization of Solution 2 is not necessary, I still keep the date function.</p>
 <hr>
 ]]></content>
       <categories>
         <category>back-end</category>
       </categories>
       <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Intranet projects avoid pitfall</title>
-    <url>/en/2023/10/25/Intranet%20projects%20avoid%20pitfall/</url>
-    <content><![CDATA[<p>As we all know, some projects are completely established in the offline mode of the intranet. The first time I came into contact with this offline mode project recently, record the problems encountered:</p>
-<h2 id="Maven-offline-model"><a href="#Maven-offline-model" class="headerlink" title="Maven offline model"></a>Maven offline model</h2><p>Due to the requirements of the intranet, the project is running on a virtual machine, and the development environment cannot be connected to the Internet on the virtual machine, so all projects need to be downloaded again. There was a problem when configuring pom.xml, and idea kept reporting a strange error:</p>
-<blockquote>
-<p>Cannot access maven-default-http-blocker (<a href="http://0.0.0.0/">http://0.0.0.0/</a>) in offline mode</p>
-</blockquote>
-<p>At first, according to the instructions on the Internet, I turned on the offline mode of maven, but it still couldn’t solve the problem. Later, I found out that it was a Maven version problem.</p>
-<p>This is because the default Bundled (Maven3) of the idea I use, the maven version here is too high above 3.8, and there is a mirror text in the setting.xml file of the high version maven:</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br>     <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>maven-default-http-blockerid&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>external:http:*mirrorOf&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Pseudo repository to mirror external repositories initially using HTTP.name&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://0.0.0.0/url&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">blocked</span>&gt;</span>trueblocked&gt;<br>   <span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-<p>This thing is that maven blocks external HTTP repositories by default, and the simple solution is to comment it out. </p>
-<p>If the user does not take the initiative to comment out the maven-default-http-blocker configuration, this will cause persistence problems when IDEA uses the bundled maven.</p>
-<p>This is actually a bit inconvenient. The main reason for setting this is to use the HTTP protocol to download dependencies, which may lead to man-in-the-middle attacks. So Maven 3.8.1 prohibits all Maven repositories of the HTTP protocol.</p>
-<p>So, there are mainly two solutions:</p>
-<ol>
-<li><strong>Downgrade the version</strong></li>
-<li>When idea loads the external configuration file, it will first load the settings.xml in the \plugins\maven\lib\maven3\conf folder in the installation directory, and <strong>comment the maven-default-http-blocker configuration in this file</strong></li>
-</ol>
-<h2 id="idea-SVN-import-project"><a href="#idea-SVN-import-project" class="headerlink" title="idea SVN import project"></a>idea SVN import project</h2><p>The project runs on the amazing SVN instead of git. When trying to import a project from SVN, similar to git, we open the interface from idea File -&gt; new -&gt; project from version control:</p>
-<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95.png" alt="内网项目踩坑记录"></p>
-<p>You can see that there is a version control option on the top, and the drop-down menu here can choose subversion (ie SVN).</p>
-<p>After selecting, enter the url of the company’s SVN project, and the corresponding folder will be automatically generated, which contains project code, test code, packages and so on. However, problems often occur now, and an error will be reported here:</p>
-<blockquote>
-<p>Cannot run program “svn”: CreateProcess error&#x3D;2</p>
-</blockquote>
-<p>The reason is that SVN needs to use command-line tools. If there is no SVN command-line tool locally, an error will result.</p>
-<p>So reopen the msi file where you installed SVN, select modify (click the picture on the left instead of the text), install the command line client tools and it will be OK.</p>
-<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95(2).png" alt="内网项目"></p>
-]]></content>
-      <categories>
-        <category>Project Records</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -227,36 +253,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL Data Backup</title>
-    <url>/en/2023/10/25/MySQL%20Data%20Backup/</url>
-    <content><![CDATA[<p>“This blog post is intended to document the new knowledge I’ve acquired during the learning process, specifically about how to perform data backup in MySQL. If needed in the future, it can serve as a reference.”</p>
-<p>Take a look at the code directly.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql">Q1:<span class="hljs-keyword">SET</span> SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;<br>Q2:<span class="hljs-keyword">START</span> TRANSACTION  <span class="hljs-keyword">WITH</span> CONSISTENT SNAPSHOT；<br><span class="hljs-comment">/* other tables */</span><br>Q3:<span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* Time 1 */</span><br>Q4:<span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> `t1`;<br><span class="hljs-comment">/* Time 2 */</span><br>Q5:<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> `t1`;<br><span class="hljs-comment">/* Time 3 */</span><br>Q6:<span class="hljs-keyword">ROLLBACK</span> <span class="hljs-keyword">TO</span> <span class="hljs-keyword">SAVEPOINT</span> sp;<br><span class="hljs-comment">/* Time 4 */</span><br><span class="hljs-comment">/* other tables */</span><br></code></pre></td></tr></table></figure>
-
-<p>At the beginning of the backup process, to ensure the Repeatable Read (RR) isolation level, set the RR isolation level once more (Q1).</p>
-<p>Start a transaction, using ‘<code>WITH CONSISTENT SNAPSHOT</code>‘ to ensure that a consistent view is obtained as soon as this statement is executed (Q2).</p>
-<p>Set a savepoint (Q3).</p>
-<p>Use ‘<code>SHOW CREATE</code>‘ to retrieve the table structure (Q4), and then proceed to export the data (Q5). After that, roll back to the savepoint ‘sp,’ where its purpose is to release the MDL lock on ‘t1’ (Q6).</p>
-<p>Please note, if at this point, a DDL statement is received, assuming it is for a small table and if it starts executing shortly after arrival and can complete quickly, what would be the scenario?</p>
-<ul>
-<li>If it arrives before the execution of the Q4 statement, i.e., at <strong>time 1</strong>, the scenario is: No impact; the backup will capture the table structure after the DDL statement.</li>
-<li>If it arrives at “<strong>time 2</strong>,” the table structure has been altered. When Q5 is executed, it will result in an error: “Table definition has changed, please retry transaction.” Scenario: mysqldump terminates.</li>
-<li>If it arrives between <strong>“time 2</strong>“ and “<strong>time 3</strong>,” mysqldump holds the MDL read lock on t1, and the binlog is blocked. Scenario: There is master-slave replication delay until Q6 is completed.</li>
-<li>Starting from “<strong>time 4</strong>,” mysqldump releases the MDL read lock. Scenario: No impact; the backup captures the table structure before the DDL statement.</li>
-</ul>
-<p>This blog post references content from ‘MySQL in Action: 45 Lectures’ ^(1)^.</p>
-<hr>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) <a href="https://time.geekbang.org/column/article/70215">https://time.geekbang.org/column/article/70215</a></p>
-<hr>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Initialization of Java virtual machine class loading</title>
     <url>/en/2023/10/25/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
     <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
@@ -302,57 +298,41 @@
       </tags>
   </entry>
   <entry>
-    <title>The actual process of class initialization</title>
-    <url>/en/2023/10/25/The%20actual%20process%20of%20class%20initialization/</url>
-    <content><![CDATA[<h2 id="Class-initialization-order"><a href="#Class-initialization-order" class="headerlink" title="Class initialization order"></a>Class initialization order</h2><p>Many people know that the order of class initialization is as follows:<br>(1) Call the base class constructor and repeat this process until the bottom layer<br>(2) Then call the initialization methods of the members in the order of declaration<br>(3) Call the body of the class constructor</p>
-<h2 id="The-actual-process-of-class-initialization"><a href="#The-actual-process-of-class-initialization" class="headerlink" title="The actual process of class initialization"></a>The actual process of class initialization</h2><p>However, consider this example:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
-
-<p>The walk method of the Animal class is designed to be overridden in the Cat class, but Animal’s constructor calls the walk method, which results in a call to Cat.walk().<br>The generated result of the above code is:</p>
+    <title>Intranet projects avoid pitfall</title>
+    <url>/en/2023/10/25/Intranet%20projects%20avoid%20pitfall/</url>
+    <content><![CDATA[<p>As we all know, some projects are completely established in the offline mode of the intranet. The first time I came into contact with this offline mode project recently, record the problems encountered:</p>
+<h2 id="Maven-offline-model"><a href="#Maven-offline-model" class="headerlink" title="Maven offline model"></a>Maven offline model</h2><p>Due to the requirements of the intranet, the project is running on a virtual machine, and the development environment cannot be connected to the Internet on the virtual machine, so all projects need to be downloaded again. There was a problem when configuring pom.xml, and idea kept reporting a strange error:</p>
 <blockquote>
-<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+<p>Cannot access maven-default-http-blocker (<a href="http://0.0.0.0/">http://0.0.0.0/</a>) in offline mode</p>
 </blockquote>
-<p>We will find that when the Animal constructor calls the walk() method, the step is not the default initial value of 100, but 0.<br>Therefore, the order of class initialization mentioned earlier is not complete. In fact, the order of class initialization should be like this:<br>(1) <strong>Allocate space before everything happens, and initialize the storage space allocated to the object to binary zero (or a value equivalent to zero in some special data types)</strong><br>(2) Call the base class constructor as mentioned above. At this time, the walk method must be called before calling the cat constructor, so the step value at this time is 0<br>(3) Call the initialization methods of the members in the order of declaration<br>(4) Call the body of the class constructor<br>Of course, this kind of error is not easy to find, so it is recommended that you try to avoid calling other methods in the constructor if possible. The only methods that can be safely called in the constructor are the final methods of the base class (because they will not be overrided, there will be no above-mentioned problems)。</p>
+<p>At first, according to the instructions on the Internet, I turned on the offline mode of maven, but it still couldn’t solve the problem. Later, I found out that it was a Maven version problem.</p>
+<p>This is because the default Bundled (Maven3) of the idea I use, the maven version here is too high above 3.8, and there is a mirror text in the setting.xml file of the high version maven:</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br>     <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>maven-default-http-blockerid&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>external:http:*mirrorOf&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Pseudo repository to mirror external repositories initially using HTTP.name&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://0.0.0.0/url&gt;<br>     <span class="hljs-tag">&lt;<span class="hljs-name">blocked</span>&gt;</span>trueblocked&gt;<br>   <span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>This thing is that maven blocks external HTTP repositories by default, and the simple solution is to comment it out. </p>
+<p>If the user does not take the initiative to comment out the maven-default-http-blocker configuration, this will cause persistence problems when IDEA uses the bundled maven.</p>
+<p>This is actually a bit inconvenient. The main reason for setting this is to use the HTTP protocol to download dependencies, which may lead to man-in-the-middle attacks. So Maven 3.8.1 prohibits all Maven repositories of the HTTP protocol.</p>
+<p>So, there are mainly two solutions:</p>
+<ol>
+<li><strong>Downgrade the version</strong></li>
+<li>When idea loads the external configuration file, it will first load the settings.xml in the \plugins\maven\lib\maven3\conf folder in the installation directory, and <strong>comment the maven-default-http-blocker configuration in this file</strong></li>
+</ol>
+<h2 id="idea-SVN-import-project"><a href="#idea-SVN-import-project" class="headerlink" title="idea SVN import project"></a>idea SVN import project</h2><p>The project runs on the amazing SVN instead of git. When trying to import a project from SVN, similar to git, we open the interface from idea File -&gt; new -&gt; project from version control:</p>
+<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95.png" alt="内网项目踩坑记录"></p>
+<p>You can see that there is a version control option on the top, and the drop-down menu here can choose subversion (ie SVN).</p>
+<p>After selecting, enter the url of the company’s SVN project, and the corresponding folder will be automatically generated, which contains project code, test code, packages and so on. However, problems often occur now, and an error will be reported here:</p>
+<blockquote>
+<p>Cannot run program “svn”: CreateProcess error&#x3D;2</p>
+</blockquote>
+<p>The reason is that SVN needs to use command-line tools. If there is no SVN command-line tool locally, an error will result.</p>
+<p>So reopen the msi file where you installed SVN, select modify (click the picture on the left instead of the text), install the command line client tools and it will be OK.</p>
+<p><img src="/en/images/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95(2).png" alt="内网项目"></p>
 ]]></content>
       <categories>
-        <category>back-end</category>
+        <category>Project Records</category>
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Oracle SQL optimization</title>
-    <url>/en/2023/10/25/Oracle%20SQL%20optimization/</url>
-    <content><![CDATA[<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Recently, I encountered a problem when writing a SQL, and the execution time of SQL was too long:</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
-
-<p>The above code is a SQL code used in combination with <code>Union</code>. The other parts of the code are very similar to this part of the code, except that the department id in the <code>inner join</code> statement and <code>type</code> in the <code>select</code> statement. The total running time of the code reaches about 110s, and the running time of a single SQL code is about 18s, which can be said runtime is too long.</p>
-<p>In addition, <code>#&#123;begin_date&#125;</code> and <code>#&#123;end_date&#125;</code> are the parameters that will be passed in by the backend respectively, and are used for dynamic query.</p>
-<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><p>First analyze the most immediate question - why is the running time so long?</p>
-<p>In fact, the problem here is not very complicated. There are more than 13 million pieces of data in the <code>attendance</code> table. The huge amount of data takes about 20 seconds for even the most basic and simple query.</p>
-<p>In addition, the department table that needs to be associated is a recursive <code>join</code>, which will query all the small departments under the given <code>deptId</code>, and the query here is also time-consuming.</p>
-<p>So, how to solve the problem?</p>
-<p><strong>Solution 1</strong>: First of all, the problem of data volume is unsolvable. It is impossible for us to say that a certain piece of data is directly discarded. Moreover, our <code>where</code> condition has already limited the time, so there is actually a certain limit on the data volume. Therefore, the first idea of optimization is on <code>Join</code>:</p>
-<blockquote>
-<p>Recursive <code>Join</code> is a very time-consuming operation, so we can directly think of building an index on <code>deptId</code>-in fact, this is the correct idea, and the running time of indexing is directly optimized from 18S to 2S.</p>
-</blockquote>
-<p>Solution 2: Here can also optimize the query condition of <code>where</code>:</p>
-<blockquote>
-<p>The <code>to_date</code> function is used when the date is limited. In fact, when only comparing the year, month, and day, we can directly not use this function for string comparison. This is because Oracle SQL’s <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">Data Priority</a> will implicitly convert low-priority strings to date formats. Here, through implicit conversion, the running time can be continuously optimized, from 2S to 1S.</p>
-</blockquote>
-<p><strong>But note, this is risky - first, implicit data type conversion may have a negative impact on performance (of course here is a positive); also, implicit conversion may produce strange results. Depending on the value of the <code>NLS_DATE_FORMAT</code> parameter.</strong> </p>
-<p>When converting a datetime value to text via an implicit conversion or an explicit conversion that does not specify a format model, the format model is defined by one of the globalization session parameters, namely <code>NLS_DATE_FORMAT</code>, <code>NLS_TIMESTAMP_FORMAT</code>, or <code>NLS_TIMESTAMP_TZ_FORMAT</code>.</p>
-<p>For example, the default value of the <code>NLS_DATE_FORMAT</code> setting is <code>&#39;DD-MON-RR&#39;</code> two-digit year, so the century time may be lost when the date is converted to a string, and replaced by 1900 or 2000 when converted back to a date based on the decade value; and assuming that the original time has some minutes and seconds, this data will also be lost.</p>
-<p>In conclusion, different parameters may have different results.</p>
-<p>So, considering that the optimization of Solution 2 is not necessary, I still keep the date function.</p>
-<hr>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -378,6 +358,26 @@
 <p>Look, here the parameter of the getInner method is final, the reason is the same as the reason for adding final to the inner class part before. </p>
 <h2 id="Sometimes-you-can-also-not-add-final"><a href="#Sometimes-you-can-also-not-add-final" class="headerlink" title="Sometimes you can also not add final"></a>Sometimes you can also not add final</h2><p>When can you not add final? If the inner class does not use it, you can not add final, which is easy to understand:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>The actual process of class initialization</title>
+    <url>/en/2023/10/25/The%20actual%20process%20of%20class%20initialization/</url>
+    <content><![CDATA[<h2 id="Class-initialization-order"><a href="#Class-initialization-order" class="headerlink" title="Class initialization order"></a>Class initialization order</h2><p>Many people know that the order of class initialization is as follows:<br>(1) Call the base class constructor and repeat this process until the bottom layer<br>(2) Then call the initialization methods of the members in the order of declaration<br>(3) Call the body of the class constructor</p>
+<h2 id="The-actual-process-of-class-initialization"><a href="#The-actual-process-of-class-initialization" class="headerlink" title="The actual process of class initialization"></a>The actual process of class initialization</h2><p>However, consider this example:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
+
+<p>The walk method of the Animal class is designed to be overridden in the Cat class, but Animal’s constructor calls the walk method, which results in a call to Cat.walk().<br>The generated result of the above code is:</p>
+<blockquote>
+<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+</blockquote>
+<p>We will find that when the Animal constructor calls the walk() method, the step is not the default initial value of 100, but 0.<br>Therefore, the order of class initialization mentioned earlier is not complete. In fact, the order of class initialization should be like this:<br>(1) <strong>Allocate space before everything happens, and initialize the storage space allocated to the object to binary zero (or a value equivalent to zero in some special data types)</strong><br>(2) Call the base class constructor as mentioned above. At this time, the walk method must be called before calling the cat constructor, so the step value at this time is 0<br>(3) Call the initialization methods of the members in the order of declaration<br>(4) Call the body of the class constructor<br>Of course, this kind of error is not easy to find, so it is recommended that you try to avoid calling other methods in the constructor if possible. The only methods that can be safely called in the constructor are the final methods of the base class (because they will not be overrided, there will be no above-mentioned problems)。</p>
+]]></content>
       <categories>
         <category>back-end</category>
       </categories>
@@ -1300,7 +1300,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#x61;&#97;&#97;&#x40;&#x62;&#98;&#x62;&#98;&#x62;&#x2e;&#99;&#x6f;&#109;">&#97;&#x61;&#x61;&#97;&#97;&#x40;&#x62;&#98;&#x62;&#98;&#x62;&#x2e;&#99;&#x6f;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#97;&#x61;&#x61;&#x40;&#x62;&#x62;&#98;&#x62;&#98;&#46;&#x63;&#x6f;&#109;">&#97;&#x61;&#97;&#x61;&#x61;&#x40;&#x62;&#x62;&#98;&#x62;&#98;&#46;&#x63;&#x6f;&#109;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
