@@ -51,46 +51,6 @@
       </tags>
   </entry>
   <entry>
-    <title>IDEA如何快速添加JavaDoc文档注释</title>
-    <url>/2023/10/25/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
-    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
-<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
-<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
-<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
-<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
-<li>在模板上加入文档注释模板：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
-<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
-<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
-<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
-<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
-<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
-<li>选择右侧的Edit variables按钮，进行如下配置：</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
-<ol start="7">
-<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
-</ol>
-<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
-<p>至此，配置完成</p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java虚拟机类加载的初始化</title>
     <url>/2023/10/25/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
     <content><![CDATA[<p>我们知道，《Java虚拟机规范》章节5.5 Initialization ^(1)^ 中严格规定了有且只有六种情况必须立即对类进行初始化：</p>
@@ -163,6 +123,46 @@
       </categories>
       <tags>
         <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IDEA如何快速添加JavaDoc文档注释</title>
+    <url>/2023/10/25/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/</url>
+    <content><![CDATA[<p>作为程序员，添加javadoc注释可以说是必要的一步，但是每一次都自己手动添加大段内容也无疑是一件很麻烦的事情。</p>
+<p>该文章主要做个记录，方便自己下次如果需要换环境的时候重新配置：</p>
+<p>（这里的方法是idea自动生成的，不需要安装插件）</p>
+<h2 id="类、接口注释"><a href="#类、接口注释" class="headerlink" title="类、接口注释"></a>类、接口注释</h2><ol>
+<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
+<li>在模板上加入文档注释模板：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>完成之后以后每次创建类或者接口的时候就会自动生成注释了</p>
+<h2 id="方法注释"><a href="#方法注释" class="headerlink" title="方法注释"></a>方法注释</h2><ol>
+<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
+<li>单击右侧“+”号，选择Template Group…，新建一个自定义模板组，可以使用自己的名字命名；</li>
+<li>选择该模板组，单击右侧“+”号，选择“Live TempLate”，设置“abbreviation”的值为”*”；</li>
+<li>设置模板内容：选择Temple Text，在下方输入如下代码：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>设置该模板在哪些文件生效，选择下方的define -&gt; everywhere -&gt; java，设置只在java文件中生效</li>
+<li>选择右侧的Edit variables按钮，进行如下配置：</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
+<ol start="7">
+<li>使用&#x2F;<em>+刚设置的模板名（此处为我们前面设置的“ * ”）+tab（默认模板补全快捷键，在上方的“By default expand with”设置），所以此时我们使用&#x2F;</em>* + tab就能补全，效果如下:</li>
+</ol>
+<p><img src="/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
+<p>至此，配置完成</p>
+<hr>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -240,6 +240,63 @@
       </tags>
   </entry>
   <entry>
+    <title>匿名内部类形参为什么一定要final</title>
+    <url>/2023/10/25/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%BD%A2%E5%8F%82%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%80%E5%AE%9A%E8%A6%81final/</url>
+    <content><![CDATA[<p>最近在写一些匿名内部类的时候会感觉有些难以理解，所以重新复习了一下这部分内容。  发现了一些之前没注意到的点——匿名内部类的形参必须加final前缀（除非匿名内部类没使用它）</p>
+<p>那么，怎么理解这个事情的背后原理呢？</p>
+<h2 id="内部类运作方式"><a href="#内部类运作方式" class="headerlink" title="内部类运作方式"></a>内部类运作方式</h2><p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
+<p>该class文件仅仅只保留了对外部类的引用。</p>
+<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">method</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name,<span class="hljs-keyword">final</span> <span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-keyword">class</span> <span class="hljs-title class_">InnerClass</span>&#123;<br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + name + <span class="hljs-string">&quot; and age is &quot;</span> + age);<br><br>            &#125;<br>        &#125;<br>        <span class="hljs-type">InnerClass</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InnerClass</span>();<br>        in.show();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>但是实际上name并不是被内部类直接调用的，实际上java编译后它长这样：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass$InnerClass</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">InnerClass</span><span class="hljs-params">(String name,<span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-built_in">this</span>.InnerClass$name = name;<br>        <span class="hljs-built_in">this</span>.InnerClass$age = age;<br>    &#125;  <br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$name + <span class="hljs-string">&quot; and age is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$age );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>所以，从以上代码看来，内部类并不是直接调用方法传进来的参数，而是内部类将传进来的参数通过自己的构造器备份到了自己的内部，自己内部的方法调用的实际是自己的属性而不是外部类方法的参数！<br>这样理解就很容易得出为什么要用final了，<strong>假设内部类修改这些参数的值，结果原参数的值却没有变化，这就影响了参数的一致性。</strong>从编程人员的角度来看这个参数是一样的，但是假设在内部类中改掉参数的值，但是外部调用的时候又发现值其实没有被改掉，这可能让人感到很困惑，所以为了避免这种尴尬的问题存在，所以编译器设计人员把内部类能够使用的参数设定为必须是final的。</p>
+<h2 id="匿名内部类运作方式"><a href="#匿名内部类运作方式" class="headerlink" title="匿名内部类运作方式"></a>匿名内部类运作方式</h2><p>OK，匿名内部类相比内部类有什么区别呢——它没有名字。</p>
+<p>没名字，所以它是用默认的无参构造器构造，如果需要参数，那么就给他带参数的构造器。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-string">&quot;Inner&quot;</span>); <br>        System.out.println(inner.getName()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(name) &#123; <br>            <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">nameStr</span> <span class="hljs-operator">=</span> name; <br> <br>            <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123; <br>                <span class="hljs-keyword">return</span> nameStr; <br>            &#125; <br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(String name) &#123; <br>        System.out.println(name); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span>; <br>&#125; <br><br></code></pre></td></tr></table></figure>
+
+<p>看，这里getInner方法的参数加了final，理由和之前内部类部分加final的理由是一样的。如果内部类的改变不能影响到外部，那就干脆别动它！</p>
+<h2 id="有时候也可以不加final"><a href="#有时候也可以不加final" class="headerlink" title="有时候也可以不加final"></a>有时候也可以不加final</h2><p>什么时候可以不加final呢？如果内部类没有使用它就可以不加final了，这很好理解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何调试springboot定时调度任务</title>
+    <url>/2023/10/25/%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95springboot%E5%AE%9A%E6%97%B6%E8%B0%83%E5%BA%A6%E4%BB%BB%E5%8A%A1/</url>
+    <content><![CDATA[<p>最近在做企业开发的时候，有个需求需要我对发送邮件的定时调度任务做调整和优化。</p>
+<h2 id="Scheduled-定时调度任务"><a href="#Scheduled-定时调度任务" class="headerlink" title="@Scheduled 定时调度任务"></a>@Scheduled 定时调度任务</h2><p>已经完成的发送邮件定时调度任务大概长这样：</p>
+<p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
+<p>该class文件仅仅只保留了对外部类的引用。</p>
+<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>优化调整的困难点在于debug麻烦：</p>
+<ul>
+<li>目前的开发环境的代码并没有设置统一接口来通过前端调试后端定时任务</li>
+<li>如果通过修改cron来调试，需要重启项目，更重要的是会发很多骚扰邮件出去</li>
+<li>还有一个思路是在测试代码里面调用方法，但是也很麻烦</li>
+</ul>
+<p>实际上还有一个比较简洁的思路，重写*<code>InitialzingBean</code><em>类的</em><code>afterPropertiesSet</code>*方法。</p>
+<p>spring初始化bean的时候，如果bean实现了*<code>InitializingBean</code><em>接口，会自动调用</em><code>afterPropertiesSet</code>*方法，所以可以想到，通过这样的方式，就可以通过重启打断点进行调试了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>是不是很简单？当然，这可能不是最优解，但是如果只在项目中短暂使用，也是问题不大的。</p>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>方法静态分派</title>
     <url>/2023/10/25/%E6%96%B9%E6%B3%95%E9%9D%99%E6%80%81%E5%88%86%E6%B4%BE/</url>
     <content><![CDATA[<p>该例子参考了书《深入理解Java虚拟机》。</p>
@@ -301,63 +358,6 @@
 </blockquote>
 <p>可见变长参数的优先级是最低的，这时候字符’a’被当做了一个char[] 数组的元素。</p>
 <p>以上例子属于比较极端的例子，除了面试时用作难为求职者外实际工作中很难有所用途，但是有所了解相信也对java的进一步认知有帮助。</p>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>匿名内部类形参为什么一定要final</title>
-    <url>/2023/10/25/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%BD%A2%E5%8F%82%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%80%E5%AE%9A%E8%A6%81final/</url>
-    <content><![CDATA[<p>最近在写一些匿名内部类的时候会感觉有些难以理解，所以重新复习了一下这部分内容。  发现了一些之前没注意到的点——匿名内部类的形参必须加final前缀（除非匿名内部类没使用它）</p>
-<p>那么，怎么理解这个事情的背后原理呢？</p>
-<h2 id="内部类运作方式"><a href="#内部类运作方式" class="headerlink" title="内部类运作方式"></a>内部类运作方式</h2><p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
-<p>该class文件仅仅只保留了对外部类的引用。</p>
-<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">method</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name,<span class="hljs-keyword">final</span> <span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-keyword">class</span> <span class="hljs-title class_">InnerClass</span>&#123;<br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + name + <span class="hljs-string">&quot; and age is &quot;</span> + age);<br><br>            &#125;<br>        &#125;<br>        <span class="hljs-type">InnerClass</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InnerClass</span>();<br>        in.show();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>但是实际上name并不是被内部类直接调用的，实际上java编译后它长这样：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OuterClass$InnerClass</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">InnerClass</span><span class="hljs-params">(String name,<span class="hljs-type">int</span> age)</span>&#123;<br>        <span class="hljs-built_in">this</span>.InnerClass$name = name;<br>        <span class="hljs-built_in">this</span>.InnerClass$age = age;<br>    &#125;  <br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;your name is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$name + <span class="hljs-string">&quot; and age is &quot;</span> + <span class="hljs-built_in">this</span>.InnerClass$age );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>所以，从以上代码看来，内部类并不是直接调用方法传进来的参数，而是内部类将传进来的参数通过自己的构造器备份到了自己的内部，自己内部的方法调用的实际是自己的属性而不是外部类方法的参数！<br>这样理解就很容易得出为什么要用final了，<strong>假设内部类修改这些参数的值，结果原参数的值却没有变化，这就影响了参数的一致性。</strong>从编程人员的角度来看这个参数是一样的，但是假设在内部类中改掉参数的值，但是外部调用的时候又发现值其实没有被改掉，这可能让人感到很困惑，所以为了避免这种尴尬的问题存在，所以编译器设计人员把内部类能够使用的参数设定为必须是final的。</p>
-<h2 id="匿名内部类运作方式"><a href="#匿名内部类运作方式" class="headerlink" title="匿名内部类运作方式"></a>匿名内部类运作方式</h2><p>OK，匿名内部类相比内部类有什么区别呢——它没有名字。</p>
-<p>没名字，所以它是用默认的无参构造器构造，如果需要参数，那么就给他带参数的构造器。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-string">&quot;Inner&quot;</span>); <br>        System.out.println(inner.getName()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-keyword">final</span> String name)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(name) &#123; <br>            <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">nameStr</span> <span class="hljs-operator">=</span> name; <br> <br>            <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span> &#123; <br>                <span class="hljs-keyword">return</span> nameStr; <br>            &#125; <br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(String name) &#123; <br>        System.out.println(name); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> String <span class="hljs-title function_">getName</span><span class="hljs-params">()</span>; <br>&#125; <br><br></code></pre></td></tr></table></figure>
-
-<p>看，这里getInner方法的参数加了final，理由和之前内部类部分加final的理由是一样的。如果内部类的改变不能影响到外部，那就干脆别动它！</p>
-<h2 id="有时候也可以不加final"><a href="#有时候也可以不加final" class="headerlink" title="有时候也可以不加final"></a>有时候也可以不加final</h2><p>什么时候可以不加final呢？如果内部类没有使用它就可以不加final了，这很好理解：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何调试springboot定时调度任务</title>
-    <url>/2023/10/25/%E5%A6%82%E4%BD%95%E8%B0%83%E8%AF%95springboot%E5%AE%9A%E6%97%B6%E8%B0%83%E5%BA%A6%E4%BB%BB%E5%8A%A1/</url>
-    <content><![CDATA[<p>最近在做企业开发的时候，有个需求需要我对发送邮件的定时调度任务做调整和优化。</p>
-<h2 id="Scheduled-定时调度任务"><a href="#Scheduled-定时调度任务" class="headerlink" title="@Scheduled 定时调度任务"></a>@Scheduled 定时调度任务</h2><p>已经完成的发送邮件定时调度任务大概长这样：</p>
-<p>首先，思考内部类是怎么运行的。我们知道在内部类编译成功后，它会产生一个新的class文件。</p>
-<p>该class文件仅仅只保留了对外部类的引用。</p>
-<p>举个例子，当外部类传入的参数需要被内部类调用时，直接看起来好像就是被直接调用的： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>优化调整的困难点在于debug麻烦：</p>
-<ul>
-<li>目前的开发环境的代码并没有设置统一接口来通过前端调试后端定时任务</li>
-<li>如果通过修改cron来调试，需要重启项目，更重要的是会发很多骚扰邮件出去</li>
-<li>还有一个思路是在测试代码里面调用方法，但是也很麻烦</li>
-</ul>
-<p>实际上还有一个比较简洁的思路，重写*<code>InitialzingBean</code><em>类的</em><code>afterPropertiesSet</code>*方法。</p>
-<p>spring初始化bean的时候，如果bean实现了*<code>InitializingBean</code><em>接口，会自动调用</em><code>afterPropertiesSet</code>*方法，所以可以想到，通过这样的方式，就可以通过重启打断点进行调试了：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>是不是很简单？当然，这可能不是最优解，但是如果只在项目中短暂使用，也是问题不大的。</p>
 ]]></content>
       <categories>
         <category>后端</category>
@@ -1306,7 +1306,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#x61;&#97;&#97;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#46;&#99;&#x6f;&#109;">&#x61;&#97;&#x61;&#97;&#97;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#46;&#99;&#x6f;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#97;&#x61;&#x61;&#97;&#64;&#98;&#x62;&#98;&#98;&#x62;&#46;&#99;&#111;&#109;">&#x61;&#97;&#x61;&#x61;&#97;&#64;&#98;&#x62;&#98;&#98;&#x62;&#46;&#99;&#111;&#109;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
