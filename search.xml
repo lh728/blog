@@ -4,7 +4,7 @@
     <title>项目记录——故障排查</title>
     <url>/2023/10/25/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</url>
     <content><![CDATA[<p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
-<h2 id="SQL-DML堵塞问题（Oracle）"><a href="#SQL-DML堵塞问题（Oracle）" class="headerlink" title="SQL DML堵塞问题（Oracle）"></a>SQL DML堵塞问题（Oracle）</h2><h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>最近项目需要接收大数据部门接口传来的数据，然后对数据做一些update操作后插入到一个表里面，后文会将该表称之为Business表。在执行这个操作的时候，意外发现执行时间过长，超过二十分钟了。</p>
+<h2 id="SQL-DML堵塞问题（Oracle）"><a href="#SQL-DML堵塞问题（Oracle）" class="headerlink" title="SQL DML堵塞问题（Oracle）"></a>SQL DML堵塞问题（Oracle）</h2><h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>最近项目需要接收大数据部门接口传来的数据，然后对数据做一些update操作后插入到一个表里面，后文会将该表称之为Business表。在执行这个操作的时候，意外发现执行时间过长，超过二十分钟了。.</p>
 <p>最开始以为是数据量过大的问题，后来发现并不是，因此不得不化身为DBA寻找阻塞原因，因此记录下解决这个问题的经历：</p>
 <h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p><strong>首先可以用以下sql分析和确定下，这个查询是不是被堵住了：</strong></p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s1.username <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;@&#x27;</span> <span class="hljs-operator">||</span> s1.machine <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;(SID=)&#x27;</span> <span class="hljs-operator">||</span> s1.sid <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;)&#x27;</span> <span class="hljs-keyword">as</span> blocking_session,<br>s2.username <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;@&#x27;</span> <span class="hljs-operator">||</span> s2.machine <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;(SID=)&#x27;</span> <span class="hljs-operator">||</span> s2.sid <span class="hljs-operator">||</span> <span class="hljs-string">&#x27;)&#x27;</span> <span class="hljs-keyword">as</span> waiting_session,<br>s1.sql_id, s1.sql_child_number,s1.sql_exec_start,s2.event<br><span class="hljs-keyword">from</span> <br>v$session s1, v$session s2<br><span class="hljs-keyword">where</span> s1.blocking_session <span class="hljs-operator">=</span> s2.sid;<br></code></pre></td></tr></table></figure>
@@ -920,7 +920,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#x61;&#97;&#97;&#x40;&#x62;&#x62;&#x62;&#x62;&#98;&#x2e;&#99;&#x6f;&#109;">&#97;&#97;&#x61;&#97;&#97;&#x40;&#x62;&#x62;&#x62;&#x62;&#98;&#x2e;&#99;&#x6f;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#97;&#x61;&#97;&#64;&#x62;&#x62;&#98;&#x62;&#x62;&#46;&#99;&#111;&#109;">&#97;&#97;&#97;&#x61;&#97;&#64;&#x62;&#x62;&#98;&#x62;&#x62;&#46;&#99;&#111;&#109;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
