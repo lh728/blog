@@ -1,0 +1,519 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Project Records — Troubleshooting | Hongjin's Blog</title><meta name="author" content="hongjin lu"><meta name="copyright" content="hongjin lu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Here I will record some insightful bugs I encountered in enterprise development, as well as troubleshooting for code SQL DML Blocking Issue (Oracle)Bug DescriptionRecently, our project needs to receiv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Project Records — Troubleshooting">
+<meta property="og:url" content="http://lh728.github.io/en/2023/06/10/Project%20Records%20-%20Troubleshooting/index.html">
+<meta property="og:site_name" content="Hongjin's Blog">
+<meta property="og:description" content="Here I will record some insightful bugs I encountered in enterprise development, as well as troubleshooting for code SQL DML Blocking Issue (Oracle)Bug DescriptionRecently, our project needs to receiv">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lh728.github.io/en/img/avatar.png">
+<meta property="article:published_time" content="2023-06-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-01-10T16:00:00.000Z">
+<meta property="article:author" content="hongjin lu">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lh728.github.io/en/img/avatar.png"><link rel="shortcut icon" href="/en/img/favicon.png"><link rel="canonical" href="http://lh728.github.io/en/2023/06/10/Project%20Records%20-%20Troubleshooting/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/en/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/en/',
+  algolia: undefined,
+  localSearch: {"path":"/en/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"Traditional Chinese Activated Manually","cht_to_chs":"Simplified Chinese Activated Manually","day_to_night":"Dark Mode Activated Manually","night_to_day":"Light Mode Activated Manually","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Project Records — Troubleshooting',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-01-11 00:00:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/static/css/custom.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/en/rss2.xml" title="Hongjin's Blog" type="application/rss+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = 'hidden';
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+
+preloader.initLoading()
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/en/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">12</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">5</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/en/"><i class="fa-fw fas fa-home"></i><span> Home Page</span></a></div><div class="menus_item"><a class="site-page" href="/en/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/en/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="http://thellu.com/"><i class="fa-fw fa fa-language"></i><span> 中文</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/en/" title="Hongjin's Blog"><span class="site-name">Hongjin's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/en/"><i class="fa-fw fas fa-home"></i><span> Home Page</span></a></div><div class="menus_item"><a class="site-page" href="/en/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/en/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="http://thellu.com/"><i class="fa-fw fa fa-language"></i><span> 中文</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Project Records — Troubleshooting</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-06-09T16:00:00.000Z" title="Created 2023-06-10 00:00:00">2023-06-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-01-10T16:00:00.000Z" title="Updated 2024-01-11 00:00:00">2024-01-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/en/categories/Project-Records/">Project Records</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word count:</span><span class="word-count">3.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading time:</span><span>24min</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Project Records — Troubleshooting"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">Comments:</span><a href="/en/2023/06/10/Project%20Records%20-%20Troubleshooting/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>Here I will record some insightful bugs I encountered in enterprise development, as well as troubleshooting for code</p>
+<h2 id="SQL-DML-Blocking-Issue-Oracle"><a href="#SQL-DML-Blocking-Issue-Oracle" class="headerlink" title="SQL DML Blocking Issue (Oracle)"></a>SQL DML Blocking Issue (Oracle)</h2><h3 id="Bug-Description"><a href="#Bug-Description" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>Recently, our project needs to receive data from the Big Data department’s interface and perform some update operations on the data before inserting it into a table, which we will refer to as the “Business table” in the following text. During the execution of this operation, it was unexpectedly observed that the execution time exceeded twenty minutes.</p>
+<p>At first, it was thought to be a problem related to the large data volume, but later it was discovered that this was not the case. Consequently, I had to transform into a DBA to identify the blocking issue’s root cause. Here, I will document the experience of resolving this problem.</p>
+<h3 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p><strong>First, we can use the following SQL query to analyze and confirm whether this query is being blocked</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s1.username <span class="hljs-operator">||</span> <span class="hljs-string">'@'</span> <span class="hljs-operator">||</span> s1.machine <span class="hljs-operator">||</span> <span class="hljs-string">'(SID=)'</span> <span class="hljs-operator">||</span> s1.sid <span class="hljs-operator">||</span> <span class="hljs-string">')'</span> <span class="hljs-keyword">as</span> blocking_session,<br>s2.username <span class="hljs-operator">||</span> <span class="hljs-string">'@'</span> <span class="hljs-operator">||</span> s2.machine <span class="hljs-operator">||</span> <span class="hljs-string">'(SID=)'</span> <span class="hljs-operator">||</span> s2.sid <span class="hljs-operator">||</span> <span class="hljs-string">')'</span> <span class="hljs-keyword">as</span> waiting_session,<br>s1.sql_id, s1.sql_child_number,s1.sql_exec_start,s2.event<br><span class="hljs-keyword">from</span> <br>v$session s1, v$session s2<br><span class="hljs-keyword">where</span> s1.blocking_session <span class="hljs-operator">=</span> s2.sid;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>This SQL query is used to detect long-running blocking situations in an Oracle database. It retrieves information about sessions from the <code>v$session</code> view, particularly the sessions that are blocking others and the sessions that are waiting.</p>
+<ul>
+<li><code>s1</code> and <code>s2</code> are aliases for the <code>v$session</code> view, representing two different sessions.</li>
+<li><code>s1.username || '@' || s1.machine || '(SID=)' || s1.sid || ')'</code> and <code>s2.username || '@' || s2.machine || '(SID=)' || s2.sid || ')'</code> are used to create identification information for sessions, including the username, machine name, session identifier (SID), and a flag indicating whether the session is blocking.</li>
+<li><code>s1.sql_id</code> and <code>s1.sql_child_number</code> represent the SQL query ID and child number for the session executing a SQL query (<code>s1</code>).</li>
+<li><code>s1.sql_exec_start</code> is the start time of the SQL query’s execution.</li>
+<li><code>s2.event</code> represents the event the waiting session (<code>s2</code>) is currently waiting for.</li>
+<li><code>where s1.blocking_session = s2.sid</code> is the query’s filter condition, which selects sessions that are blocking other sessions (<code>s1</code>) and sessions waiting for other sessions to be unblocked (<code>s2</code>).</li>
+</ul>
+<p><strong>With the above SQL, wecan identify the SID of the blocking session. Then, we can use the following SQL to confirm the blocking reason:</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s.sid, s.serial#, s.username, s.event, s.sql_id, s.sql_child_number, s.sql_exec_start, q.sql_text<br><span class="hljs-keyword">from</span> v$session s <span class="hljs-keyword">join</span> v$<span class="hljs-keyword">sql</span> q <span class="hljs-keyword">on</span> s.sql_id <span class="hljs-operator">=</span> q.sql_id <span class="hljs-keyword">and</span> s.sql_child_number <span class="hljs-operator">=</span> q.child_number<br><span class="hljs-keyword">where</span> s.sid <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span>blocking_session_id<span class="hljs-operator">&gt;</span>; (Here, you should input the blocking SID that you found <span class="hljs-keyword">in</span> the previous query.)<br></code></pre></td></tr></tbody></table></figure>
+
+<p>This SQL query is used to find detailed information about a specified session (<code>sid</code>) in the database, including the session’s username, the SQL query it is currently executing, the wait event, and other relevant information.</p>
+<ul>
+<li><code>v$session s</code> and <code>v$sql q</code> are aliases for the <code>v$session</code> and <code>v$sql</code> views, representing session information and SQL query information, respectively.</li>
+<li><code>q.sql_text</code> is used to select the SQL query text for the session.</li>
+<li><code>s.sql_id = q.sql_id</code> and <code>s.sql_child_number = q.child_number</code> indicate that the session’s SQL query ID and child number match the SQL ID and child number in the SQL query information to associate the session with the query.</li>
+<li><code>where s.sid = &lt;blocking_session_id&gt;</code> is the query’s filter condition, where you should input the previously found blocking SID.</li>
+</ul>
+<p>From the above code, I checked <code>s.event</code> and identified that the issue is related to an update statement.</p>
+<p>Now, I have two options:</p>
+<p>(1) Terminate the blocking session with the <code>alter system kill session '&lt;sid&gt;&lt;serial#&gt;' immediate</code> command, which will roll back the transaction.</p>
+<p>(2) Continue investigating to find the root cause of the problem and make direct modifications to the problematic code.</p>
+<p>Clearly, choosing the second option is the right course of action, as selecting the first option and running it again will likely result in errors. <strong>So, let’s proceed with the second option and continue by querying <code>v$lock</code> to examine lock information.</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> l.sid, s.username, l.type, l.id1, l.id2, l.lmode, l.request<br><span class="hljs-keyword">from</span> v$lock l<br><span class="hljs-keyword">join</span> <br>v$session s <span class="hljs-keyword">on</span> l.sid <span class="hljs-operator">=</span> s.sid<br></code></pre></td></tr></tbody></table></figure>
+
+<p>This SQL query is used to examine lock information in an Oracle database, helping to identify which sessions are either holding or requesting locks and providing related session information.</p>
+<ul>
+<li><code>v$lock l</code> and <code>v$session s</code> are aliases for the <code>v$lock</code> view and the <code>v$session</code> view, representing lock information and session information, respectively.</li>
+<li><code>l.sid = s.sid</code> associates lock information’s session ID (<code>sid</code>) with session information’s session ID to relate locks to sessions.</li>
+<li><code>l.sid</code>: This represents the session ID (Session ID) of the session holding or requesting the lock. Each session has a unique session ID.</li>
+<li><code>s.username</code>: This represents the username of the session holding or requesting the lock. It identifies the user performing operations in the database.</li>
+<li><code>l.type</code>: This indicates the type of lock. Different lock types are used for various resources or objects, such as tables, rows, indexes, etc.</li>
+<li><code>l.id1</code> and <code>l.id2</code>: These two columns typically work together and represent the lock’s identifier. Their specific meanings depend on the lock type; for example, for a table lock, they may represent the object identifier of the table.</li>
+<li><code>l.lmode</code>: This represents the lock mode, describing the type of lock, such as shared, exclusive, etc.</li>
+<li><code>l.request</code>: This indicates whether the session is currently requesting a lock, along with the requested lock type and mode.</li>
+</ul>
+<p>The query results are associated with SIDs, and it’s observed that the blocking locks are as follows: </p>
+<table>
+<thead>
+<tr>
+<th align="center">type</th>
+<th align="center">ID1</th>
+<th align="center">ID2</th>
+<th align="center">LMODE</th>
+<th align="center">REQUEST</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">AE</td>
+<td align="center">100</td>
+<td align="center">0</td>
+<td align="center">4</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">TM</td>
+<td align="center">168385</td>
+<td align="center">0</td>
+<td align="center">3</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">TX</td>
+<td align="center">393225</td>
+<td align="center">221646</td>
+<td align="center">0</td>
+<td align="center">6</td>
+</tr>
+</tbody></table>
+<p>The above results indicate:</p>
+<ol>
+<li><p>The first row (AE lock):</p>
+<ul>
+<li><code>type</code> is “AE,” indicating that this is a table-level lock.</li>
+<li><code>ID1</code> is 100, which might represent an identifier for the table.</li>
+<li><code>ID2</code> is 0, typically indicating an ID2 of 0 for table-level locks.</li>
+<li><code>LMODE</code> is 4, indicating the holding of an exclusive lock.</li>
+<li><code>REQUEST</code> is 0, signifying that there is currently no request for a new lock.</li>
+</ul>
+</li>
+<li><p>The second row (TM lock):</p>
+<ul>
+<li><code>type</code> is “TM,” indicating that this is a table-level lock.</li>
+<li><code>ID1</code> is 168385, possibly representing another identifier for the table.</li>
+<li><code>ID2</code> is 0, typically indicating an ID2 of 0 for table-level locks.</li>
+<li><code>LMODE</code> is 3, indicating the holding of a shared lock.</li>
+<li><code>REQUEST</code> is 0, indicating that there is currently no request for a new lock.</li>
+</ul>
+</li>
+<li><p>The third row (TX lock):</p>
+<ul>
+<li><code>type</code> is “TX,” indicating that this is a transaction-level lock.</li>
+<li><code>ID1</code> is 393225, possibly representing an identifier for some transaction.</li>
+<li><code>ID2</code> is 221646, possibly representing an identifier for another transaction.</li>
+<li><code>LMODE</code> is 0, indicating no lock.</li>
+<li><code>REQUEST</code> is 6, indicating that there is a current request for a new lock.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Next, let’s identify which piece of code the third row’s transaction lock is holding:</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> do.object_name, row_wait_obj#, do.data_object_id,<br>row_wait_file#, row_wait_block#, row_wait_row#,<br>dbms_rowid.rowid_create(<span class="hljs-number">1</span>,do,data_object_id, row_wait_file#, row_wait_block#, row_wait_row#)<br><span class="hljs-keyword">from</span> v$session s, dba_objects do <br><span class="hljs-keyword">where</span> sid <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span>sessionId<span class="hljs-operator">&gt;</span><br><span class="hljs-keyword">and</span> s.row_wait_obj# <span class="hljs-operator">=</span> do.object_id;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>This SQL query is used to find information related to specific session (<code>sid</code>) waiting for row-level locks. Here are the meanings of various parts of the query:</p>
+<ol>
+<li><code>do.object_name</code>: This represents the name of the data object for which the session is waiting for row-level locks, such as the table’s name or the name of another database object.</li>
+<li><code>row_wait_obj#</code>: This is the object number for the row-level lock the session is waiting for. It is used to identify the data object for which row-level locks are being waited.</li>
+<li><code>do.data_object_id</code>: This is the unique identifier of the data object.</li>
+<li><code>row_wait_file#</code>, <code>row_wait_block#</code>, <code>row_wait_row#</code>: These indicate specific location information for the row-level lock, including the file number, block number, and row number being waited for.</li>
+<li><code>dbms_rowid.rowid_create(1, do, data_object_id, row_wait_file#, row_wait_block#, row_wait_row#)</code>: This is a function call used to create the ROWID (Row Identifier) of the row-level lock to precisely locate the row-level lock being waited for.</li>
+<li><code>v$session s, dba_objects do</code>: This part indicates that the query will retrieve information from the <code>v$session</code> view and the <code>dba_objects</code> view.</li>
+<li><code>where sid = &lt;sessionId&gt;</code>: This is the query’s filtering condition, specifying the <code>sid</code> of the specific session to be examined.</li>
+<li><code>and s.row_wait_obj# = do.object_id</code>: This is the query’s join condition, matching the session’s <code>row_wait_obj#</code> with the data object’s <code>object_id</code> to retrieve information about the data object for which row-level locks are being waited.</li>
+</ol>
+<p>Next, by inserting the obtained ROWID (AABK/5AAFAAAAHHAAA) into the following SQL query, we can identify the specific row that is causing the issue:</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> Business <span class="hljs-keyword">where</span> rowid <span class="hljs-operator">=</span> <span class="hljs-string">'AABK/5AAFAAAAHHAAA'</span>;<br></code></pre></td></tr></tbody></table></figure>
+
+<p><strong>Please note that ‘Business</strong></p>
+<h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><p>After pinpointing the problematic rows, I found that the real problem was the presence of duplicate data. Furthermore, the insert statement following the update was executing too quickly, causing two data elements to simultaneously contend for the same row lock and resulting in a blockage. Consequently, I made modifications to the original Java code by introducing a 50ms delay for each update statement. This adjustment effectively resolved the problem.</p>
+<hr>
+<h2 id="Wrapper-Object-Reference-Issue"><a href="#Wrapper-Object-Reference-Issue" class="headerlink" title="Wrapper Object Reference Issue"></a>Wrapper Object Reference Issue</h2><h3 id="Bug-Description-1"><a href="#Bug-Description-1" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>The issue of <code>==</code> and <code>equals</code> with wrapper objects is a well-discussed topic, but I recently encountered a pitfall.</p>
+<p>While completing a recent project, I faced a problem. I noticed within a tree-shaped dropdown menu that some menus had second and third-level submenus, while others, which were supposed to have third-level submenus, were missing.</p>
+<p>It looked something like this:</p>
+<p><img src="/en/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(2).png"></p>
+<h3 id="Troubleshooting-1"><a href="#Troubleshooting-1" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>So, I delved into investigating how this bug occurred.</p>
+<p>Starting with debugging the frontend code, I discovered that the issue originated from the <code>el-tree</code> component of the Element-UI library. The logic appeared straightforward, and there shouldn’t have been any issues:</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;el-tree :data=<span class="hljs-string">"menus"</span><br>             :<span class="hljs-keyword">default</span>-expanded-keys=<span class="hljs-string">"expandedKeys"</span><br>             :expand-on-click-node=<span class="hljs-string">"false"</span><br>             :props=<span class="hljs-string">"defaultProps"</span><br>             node-key=<span class="hljs-string">"catId"</span><br>             draggable<br>             :allow-drop=<span class="hljs-string">"allowDrop"</span><br>             show-checkbox&gt;<br>                 <br>    getMenus () {<br>      <span class="hljs-variable language_">this</span>.$http({<br>        <span class="hljs-attr">url</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">$http</span>.<span class="hljs-title function_">adornUrl</span>(<span class="hljs-string">'/product/category/list/tree'</span>),<br>        <span class="hljs-attr">method</span>: <span class="hljs-string">'get'</span><br>      }).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">{data}</span>) =&gt;</span> {<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">menus</span> = data.<span class="hljs-property">page</span><br>      })<br>    },<br></code></pre></td></tr></tbody></table></figure>
+
+<p>Therefore, I shifted my focus to the backend code. The <code>serviceImpl</code> of the backend’s <code>list/tree</code> method is a recursive tree lookup method:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> List&lt;CategoryEntity&gt; <span class="hljs-title function_">listWithTree</span><span class="hljs-params">()</span> {<br>        <span class="hljs-comment">// 1. find all classification</span><br>        List&lt;CategoryEntity&gt; entities = baseMapper.selectList(<span class="hljs-literal">null</span>);<br><br>        <span class="hljs-comment">// 2. assemble to tree (parent-son)</span><br>        <span class="hljs-comment">// 2.1 find all first-level category</span><br>        List&lt;CategoryEntity&gt; firstLevel = entities.stream().filter((item) -&gt;<br>             item.getParentCid() == <span class="hljs-number">0</span><br>        ).map((cat) -&gt; {<br>            cat.setChildren(getChildren(cat,entities));<br>            <span class="hljs-keyword">return</span> cat;<br>        }).sorted(Comparator.comparingInt(CategoryEntity::getSort)).collect(Collectors.toList());<br>        <span class="hljs-keyword">return</span> firstLevel;<br>    }<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * recursion get each categories' children category</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> List&lt;CategoryEntity&gt; <span class="hljs-title function_">getChildren</span><span class="hljs-params">(CategoryEntity root, List&lt;CategoryEntity&gt; all)</span>{<br>        List&lt;CategoryEntity&gt; children = all.stream().filter(categoryEntity -&gt; {<br>            <span class="hljs-keyword">return</span> categoryEntity.getParentCid() == root.getCatId();<br>        }).map(category -&gt; {<br>            <span class="hljs-comment">// find children category</span><br>            category.setChildren(getChildren(category,all));<br>            <span class="hljs-keyword">return</span> category;<br>        }).sorted(Comparator.comparingInt(cat -&gt; (cat.getSort() == <span class="hljs-literal">null</span> ? <span class="hljs-number">0</span> : cat.getSort()))).collect(Collectors.toList());<br>        <span class="hljs-keyword">return</span> children;<br>    }<br></code></pre></td></tr></tbody></table></figure>
+
+<p>The <code>baseMapper.selectList(null)</code> is used to fetch all the data.</p>
+<p>The <code>CategoryEntity</code> has several core attributes: <code>catId</code> is the current category’s ID, <code>parentCid</code> is the ID of the parent category, and the parent category’s ID for the top-level category points to 0. <code>children</code> is an array used to store the subcategories of the current category, each represented by a <code>CategoryEntity</code>.</p>
+<p>In the <code>listWithTree</code> method, <code>item.getParentCid() == 0</code> is used to identify all top-level categories. Then, it sets the <code>children</code> for each of these categories. But how does it retrieve the subcategories for a particular category?</p>
+<p>Next, the <code>getChildren</code> method is called. This method requires the current category and all the data. It uses <code>categoryEntity.getParentCid() == root.getCatId()</code> to find all objects in the data where the parent category points to the current category. It then continues to recursively search until it finds <code>null</code>.</p>
+<p>Initially, when studying the code logic, I didn’t find any issues. However, during breakpoint debugging, I noticed that the “E-book” category has its own <code>children</code>, but why does the “sas” category have an empty <code>children</code> array?</p>
+<p>I then checked the database and confirmed that there are indeed child data entries pointing to the “sas” category. So, the question arose: why can some categories find their children while others cannot?</p>
+<p>The breakpoint debugging information from the stream pipeline was somewhat limited, so I resorted to using <code>log.info</code> to inspect each step. After patiently investigating, I finally discovered the root of the problem:</p>
+<p>The condition <code>categoryEntity.getParentCid() == root.getCatId()</code> was evaluating to <code>[]</code>, which is strange. This indicates that it did not find the appropriate object in the database, which shouldn’t be the case because I had already verified the data in the database.</p>
+<p>This led me to ponder a crucial question: What does <code>getParentCid()</code> and <code>getCatId()</code> actually retrieve?</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@TableId</span><br><span class="hljs-keyword">private</span> Long catId;<br><span class="hljs-keyword">private</span> Long parentCid;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>So, in the backend code, I noticed the use of <code>Long</code> instead of <code>long</code>. This realization led me to the heart of the issue:</p>
+<blockquote>
+<blockquote>
+<p><strong>For <code>Long</code> objects, when the value is between -128 and 127, Java uses caching, meaning identical values will share the same object. However, for values beyond this range, a new object is created each time. This results in the use of <code>==</code> for comparison, and for values beyond the cache range, even if their content is the same, it may return <code>false</code>.</strong></p>
+</blockquote>
+</blockquote>
+<p>This explains why some categories were displayed correctly while others were not. The ones that were displayed correctly hadn’t exceeded the cache range for ID values (from -128 to 127).</p>
+<h3 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>Understanding the problem, the solution is relatively straightforward. We just need to replace <code>==</code> with <code>equals</code> in the following code:</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> List&lt;CategoryEntity&gt; <span class="hljs-title function_">getChildren</span><span class="hljs-params">(CategoryEntity root, List&lt;CategoryEntity&gt; all)</span>{<br>    List&lt;CategoryEntity&gt; children = all.stream().filter(categoryEntity -&gt; {<br>        <span class="hljs-keyword">return</span> categoryEntity.getParentCid().equals(root.getCatId());<br>    }).map(category -&gt; {<br>        <span class="hljs-comment">// find children category</span><br>        category.setChildren(getChildren(category,all));<br>        <span class="hljs-keyword">return</span> category;<br>    }).sorted(Comparator.comparingInt(cat -&gt; (cat.getSort() == <span class="hljs-literal">null</span> ? <span class="hljs-number">0</span> : cat.getSort()))).collect(Collectors.toList());<br>    <span class="hljs-keyword">return</span> children;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+
+
+
+
+<hr>
+<h2 id="EsayPoi-parsing-Excel-picture-null-pointer"><a href="#EsayPoi-parsing-Excel-picture-null-pointer" class="headerlink" title="EsayPoi parsing Excel picture null pointer"></a>EsayPoi parsing Excel picture null pointer</h2><h3 id="Bug-Description-2"><a href="#Bug-Description-2" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>A very interesting bug, I have been troubled here for a day.</p>
+<p>Now there are two Excel files that are almost exactly the same. When I import and parse, one Excel file will report a null pointer, and the other file will be parsed and imported normally.</p>
+<p>The business logic here is:</p>
+<ul>
+<li>The business downloads the Excel template first</li>
+<li>The business enters the information they want to import according to the template, one of which is image information column</li>
+<li>The picture information is pasted into Excel by the business</li>
+<li>Finally, the business clicks Import, parses Excel, and imports the information into the database</li>
+</ul>
+<p>This bug is encountered by the business in this process. The business has two almost identical Excel files, and their text information is exactly the same. The only difference is that the pictures are different.</p>
+<p>Moreover, even if the picture in the Excel file that can be parsed and imported normally is pasted into the Excel file with problems, a null pointer exception will still be reported, which is very strange.</p>
+<h3 id="Troubleshooting-2"><a href="#Troubleshooting-2" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>At first I thought that the picture might cover other cells, so I tried to stretch the picture, but it didn’t work.</p>
+<p>Then carefully study the back-end code and find that this piece is parsed by calling the <em><code>importExcelMore</code></em> method of the <em><code>ExcelImportUtil</code></em> class of EasyPoi API. So I continued to drill down and found that more precisely, the problem occurred when calling the <em><code>getSheetPictures07</code></em> method of EasyPoi API’s <em><code>PoiPublicUtil</code></em> class.</p>
+<p>To be more precise, it is an error reported when executing the code shown below in this placement:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">...<br>	pic.getPreferredSize()<br>...<br></code></pre></td></tr></tbody></table></figure>
+
+<p>Break point debug , here needs an anchor’s cell1 attribute and cell2 attribute.</p>
+<p>Then the cell2 attribute here is empty, so a null pointer is reported.</p>
+<p>Knowing the origin of the error, now go back and find out why the cell2 attribute is null? Where is this attribute constructed?</p>
+<p>After a long search, I finally found that it was constructed in the <em><code>getAchorFromParent</code></em> method of Poi API’s <em><code>XSSFDrawing</code></em> class.</p>
+<p>The method looks like this:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> XSSFAnchor <span class="hljs-title function_">getAnchorFromParent</span><span class="hljs-params">(XmlObject obj)</span> {<br>  <span class="hljs-type">XSSFAnchor</span> <span class="hljs-variable">anchor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlObject</span> <span class="hljs-variable">parentXbean</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlCursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> obj.newCursor();<br>  <span class="hljs-keyword">if</span> (cursor.toParent()) {<br>    parentXbean = cursor.getObject();<br>  }<br>  cursor.dispose();<br>  <span class="hljs-keyword">if</span> (parentXbean != <span class="hljs-literal">null</span>) {<br>    <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTTwoCellAnchor) {<br>      <span class="hljs-type">CTTwoCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTTwoCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());<br>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTOneCellAnchor) {<br>      <span class="hljs-type">CTOneCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTOneCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());<br>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTAbsoluteAnchor) {<br>      <span class="hljs-type">CTAbsoluteAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTAbsoluteAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());<br>    }<br>  }<br>  <span class="hljs-keyword">return</span> anchor;<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>Don’t fully understand the code, just look at the middle here, where the <code>parentXbean</code> will create the anchor and its cell2 properties.</p>
+<p>When we use breakpoint debugging, we will find that if we import a problematic Excel, we will go to this judgment: <em><code>parentXbean instanceof CTOneCellAnchor</code></em></p>
+<p>And normal Excel will go to this judgment: <em><code>parentXbean instanceof CTTtwoCellAnchor</code></em></p>
+<p>Then, the problem lies in CTTwoCellAnchor and CTOneCellAnchor. </p>
+<p>What are these two classes? Apparently something to do with pictures - thanks to Greg Woolsey for explaining it right here. refer to:</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
+</blockquote>
+<p>Therefore, <strong>CTTwoCellAnchor means that Move and size with cells</strong>; <strong>CTOneCellAnchor means that Move but don’t size with cells</strong>.</p>
+<p>Then, this corresponds to the picture properties in Excel:</p>
+<p><img src="/en/images/Projects_Records/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="Project Records"></p>
+<h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>At this point, the problem is solved, you only need to modify the picture properties in Excel. So far, the problem has been solved. As for the deeper reason, due to the tight schedule of the project, there is no time to delve into it. Friends who understand are welcome to leave a message in the comment area</li>
+</ul>
+<hr>
+<h2 id="Json-default-parsing-method"><a href="#Json-default-parsing-method" class="headerlink" title="Json default parsing method"></a>Json default parsing method</h2><h3 id="Bug-Description-3"><a href="#Bug-Description-3" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>A very normal operation: I call a method on the backend and return a List result set to the frontend. We know that this result set is placed in a List with a lot of json data at the front end.</p>
+<p>The data I’m going to return has these columns:</p>
+<ul>
+<li>DESCR - Department name</li>
+<li>userId - ID</li>
+<li>name - name</li>
+<li>jobType - job type</li>
+</ul>
+<p>Among them, userId, name, and jobType are displayed normally on the front end, and the data is obtained, but there is no data show in the column DESCR:</p>
+<table>
+<thead>
+<tr>
+<th align="center">DESCR</th>
+<th align="center">userId</th>
+<th align="center">name</th>
+<th align="center">jobType</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center">1</td>
+<td align="center">a</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">2</td>
+<td align="center">b</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">3</td>
+<td align="center">c</td>
+<td align="center">C</td>
+</tr>
+</tbody></table>
+<p>After looking at the backend, debug at the breakpoint found that the data was passed normally. The column DESCR has a value, but I don’t know why it is not displayed on the frontend.</p>
+<h3 id="Troubleshooting-3"><a href="#Troubleshooting-3" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>Debug at the break point on the front end, and find that the Json data passed looks like this:</p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">{</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>'<span class="hljs-number">1</span>'<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>'a'<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>'A'<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span><br><span class="hljs-punctuation">{</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>'<span class="hljs-number">2</span>'<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>'b'<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>'B'<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span><br>...<br></code></pre></td></tr></tbody></table></figure>
+
+<p>This is strange, why is the first letter of the DESCR column lowercase?</p>
+<p>It was later discovered that not only the first letter of the DESCR column is lowercased, but in fact the first letter of each column with a capitalized first letter will be lowercased, because they are originally lowercased here, so they cannot be seen here.</p>
+<p>The reason for this is to discuss the principle behind it because all JSON implementations are inseparable from HttpMessageConverter, which is a message conversion tool that mainly implements two functions:</p>
+<ul>
+<li>Serialize the object returned by the server into a JSON string</li>
+<li>Deserialize the JSON string sent from the front end into a Java object</li>
+</ul>
+<p>Relevant dependencies have been automatically imported for us in the dependency package generated by SpringBoot. SpringMVC automatically configures <strong>Jackson</strong> and Gson’s HttpMessageConverter.</p>
+<p>By default, our company’s project uses Jackson to parse the Json code. During the serialization process, Jackson will automatically convert fields’ first letter beginning with uppercase to lowercase.</p>
+<h3 id="Solution-3"><a href="#Solution-3" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>Add <em><code>@JsonFormat</code></em> or <em><code>@JsonProperty</code></em> annotations to unchanging properties that need to preserve case</li>
+<li>Annotate the class with *`@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</li>
+</ul>
+<hr>
+<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p><strong>Oracle SQL table design problem</strong></p>
+<h3 id="Bug-Description-4"><a href="#Bug-Description-4" class="headerlink" title="Bug Description"></a>Bug Description</h3><p>The product manager asked me to check for a bug that occurred in an unknown environment (I didn’t ask whether it was a development, test, or formal environment). The front-end failed to upload excel to update data, and it prompted “Database exception, please contact the administrator”.</p>
+<h3 id="Troubleshooting-4"><a href="#Troubleshooting-4" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>Obviously, this is usually an error reported by the backend, so I reproduced the error according to the process, and then directly looked at the result of the idea, and the idea reported an error:</p>
+<blockquote>
+<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
+</blockquote>
+<p>According to the literal meaning of such an error, it seems that the data exceeds the byte limit of a certain field in sql, so through our <a target="_blank" rel="noopener" href="https://thellu.com/en/2023/06/12/Project%20Records%20-%20Enterprise%20Requirement/">Project Record-Enterprise Requirements</a> blog, “<strong>Frontend Code Mapping Backend</strong> <strong>Code</strong>“ method, finds the corresponding back-end code, and then finds the corresponding entity class to see which data table it links to. This helps us directly locate the problem table in the company’s huge database.</p>
+<p>After locating the problem table, click “Design Table” in Navicat, I can directly see the byte limit of each field, and then correspond to the content in the excel file that reported the error, I can easily find the corresponding limit of 200 bytes offending column. But the strange thing is that if a Chinese code occupies 2 bytes, I personally feel that the number of bytes of data in this column in this excel file does not reach the standard of 208.</p>
+<p>Then query:</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> userenv(<span class="hljs-string">'language'</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>The result is <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
+<p>This shows that our Oracle database uses <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> as the character encoding set. This UTF-8 encoding set occupies three bytes for a Chinese character. In order to verify our guess, query:</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> lengthb(<span class="hljs-string">'xx'</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>xx is the data content that exceeds the byte limit, and the answer is 208 bytes, which proves that I am correct.</p>
+<h3 id="Solution-4"><a href="#Solution-4" class="headerlink" title="Solution"></a>Solution</h3><ul>
+<li>Change the character encoding set in oracle sql to <em><code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code></em>, such a Chinese only occupies two bytes. But obviously this method may affect other tables</li>
+<li>It is not required to upload too much content corresponding to the data column of excel</li>
+<li>Expand the byte limit of the field</li>
+</ul>
+<hr>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="http://lh728.github.io/en">hongjin lu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://lh728.github.io/en/2023/06/10/Project%20Records%20-%20Troubleshooting/">http://lh728.github.io/en/2023/06/10/Project%20Records%20-%20Troubleshooting/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/Java/">Java</a><a class="post-meta__tags" href="/en/tags/SQL/">SQL</a><a class="post-meta__tags" href="/en/tags/Vue/">Vue</a></div><div class="post_share"><div class="social-share" data-image="/en/img/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/en/2023/06/17/Why%20anonymous%20inner%20class%20parameters%20must%20be%20final/" title="Why anonymous inner class parameters must be final"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">Why anonymous inner class parameters must be final</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/en/2023/06/19/Project%20Records%20-%20Enterprise%20Requirement/" title="Project Records - Enterprise Requirement"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-19</div><div class="title">Project Records - Enterprise Requirement</div></div></a></div><div><a href="/en/2023/08/10/Method%20Static%20Dispatch/" title="Method Static Dispatch"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-10</div><div class="title">Method Static Dispatch</div></div></a></div><div><a href="/en/2023/07/24/Intranet%20projects%20avoid%20pitfall/" title="Intranet projects avoid pitfall"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-24</div><div class="title">Intranet projects avoid pitfall</div></div></a></div><div><a href="/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/" title="How to debug spring boot scheduling tasks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">How to debug spring boot scheduling tasks</div></div></a></div><div><a href="/en/2023/06/17/Initialization%20of%20Java%20virtual%20machine%20class%20loading/" title="Initialization of Java virtual machine class loading"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-17</div><div class="title">Initialization of Java virtual machine class loading</div></div></a></div><div><a href="/en/2023/06/17/The%20actual%20process%20of%20class%20initialization/" title="The actual process of class initialization"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-17</div><div class="title">The actual process of class initialization</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/en/img/avatar.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">hongjin lu</div><div class="author-info__description">Code Lover</div></div><div class="card-info-data site-data is-center"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">12</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">5</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lh728"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/lh728" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:holu@tcd.ie" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/hongjinlu/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: ;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL-DML-Blocking-Issue-Oracle"><span class="toc-number">1.</span> <span class="toc-text">SQL DML Blocking Issue (Oracle)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug-Description"><span class="toc-number">1.1.</span> <span class="toc-text">Bug Description</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Troubleshooting"><span class="toc-number">1.2.</span> <span class="toc-text">Troubleshooting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution"><span class="toc-number">1.3.</span> <span class="toc-text">Solution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Wrapper-Object-Reference-Issue"><span class="toc-number">2.</span> <span class="toc-text">Wrapper Object Reference Issue</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug-Description-1"><span class="toc-number">2.1.</span> <span class="toc-text">Bug Description</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Troubleshooting-1"><span class="toc-number">2.2.</span> <span class="toc-text">Troubleshooting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution-1"><span class="toc-number">2.3.</span> <span class="toc-text">Solution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EsayPoi-parsing-Excel-picture-null-pointer"><span class="toc-number">3.</span> <span class="toc-text">EsayPoi parsing Excel picture null pointer</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug-Description-2"><span class="toc-number">3.1.</span> <span class="toc-text">Bug Description</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Troubleshooting-2"><span class="toc-number">3.2.</span> <span class="toc-text">Troubleshooting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution-2"><span class="toc-number">3.3.</span> <span class="toc-text">Solution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Json-default-parsing-method"><span class="toc-number">4.</span> <span class="toc-text">Json default parsing method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug-Description-3"><span class="toc-number">4.1.</span> <span class="toc-text">Bug Description</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Troubleshooting-3"><span class="toc-number">4.2.</span> <span class="toc-text">Troubleshooting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution-3"><span class="toc-number">4.3.</span> <span class="toc-text">Solution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BatchUpdateException-ORA-12899"><span class="toc-number">5.</span> <span class="toc-text">BatchUpdateException: ORA-12899</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug-Description-4"><span class="toc-number">5.1.</span> <span class="toc-text">Bug Description</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Troubleshooting-4"><span class="toc-number">5.2.</span> <span class="toc-text">Troubleshooting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution-4"><span class="toc-number">5.3.</span> <span class="toc-text">Solution</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/09/09/MySQL%20Data%20Backup/" title="MySQL Data Backup">MySQL Data Backup</a><time datetime="2023-09-08T16:00:00.000Z" title="Created 2023-09-09 00:00:00">2023-09-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/08/10/Method%20Static%20Dispatch/" title="Method Static Dispatch">Method Static Dispatch</a><time datetime="2023-08-09T16:00:00.000Z" title="Created 2023-08-10 00:00:00">2023-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/07/24/Intranet%20projects%20avoid%20pitfall/" title="Intranet projects avoid pitfall">Intranet projects avoid pitfall</a><time datetime="2023-07-23T16:00:00.000Z" title="Created 2023-07-24 00:00:00">2023-07-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/07/24/Oracle%20SQL%20optimization/" title="Oracle SQL optimization">Oracle SQL optimization</a><time datetime="2023-07-23T16:00:00.000Z" title="Created 2023-07-24 00:00:00">2023-07-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/" title="How to debug spring boot scheduling tasks">How to debug spring boot scheduling tasks</a><time datetime="2023-06-26T16:00:00.000Z" title="Created 2023-06-27 00:00:00">2023-06-27</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2023 - 2024 By hongjin lu</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="http://thellu.com/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '14434470b1b606fb600b',
+      clientSecret: 'ba10ef9f1658154646e0c5531ce5493a872e611b',
+      repo: 'blog',
+      owner: 'lh728',
+      admin: ['lh728'],
+      id: 'd78dbadb591a5782999f43254f1959e6',
+      updateCountCallback: commentCount
+    },{"language":"en"}))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.textContent= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/en/js/search/local-search.js"></script></div></div></body></html>
