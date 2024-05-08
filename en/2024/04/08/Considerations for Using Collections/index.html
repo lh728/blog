@@ -1,0 +1,356 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Considerations for Using Collections | Hongjin's Blog</title><meta name="author" content="hongjin lu"><meta name="copyright" content="hongjin lu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Collection Empty Check To check whether all elements inside a collection are empty, use the isEmpty() method instead of size()==0 method.  This is because the isEmpty() method provides better readabil">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Considerations for Using Collections">
+<meta property="og:url" content="http://lh728.github.io/en/2024/04/08/Considerations%20for%20Using%20Collections/index.html">
+<meta property="og:site_name" content="Hongjin's Blog">
+<meta property="og:description" content="Collection Empty Check To check whether all elements inside a collection are empty, use the isEmpty() method instead of size()==0 method.  This is because the isEmpty() method provides better readabil">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lh728.github.io/en/img/avatar.png">
+<meta property="article:published_time" content="2024-04-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-08T06:36:13.992Z">
+<meta property="article:author" content="hongjin lu">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lh728.github.io/en/img/avatar.png"><link rel="shortcut icon" href="/en/img/favicon.png"><link rel="canonical" href="http://lh728.github.io/en/2024/04/08/Considerations%20for%20Using%20Collections/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/en/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/en/',
+  algolia: undefined,
+  localSearch: {"path":"/en/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: 'days',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"Traditional Chinese Activated Manually","cht_to_chs":"Simplified Chinese Activated Manually","day_to_night":"Dark Mode Activated Manually","night_to_day":"Light Mode Activated Manually","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Considerations for Using Collections',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-05-08 14:36:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/static/css/custom.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/en/rss2.xml" title="Hongjin's Blog" type="application/rss+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = 'hidden';
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+
+preloader.initLoading()
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/en/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">5</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/en/"><i class="fa-fw fas fa-home"></i><span> Home Page</span></a></div><div class="menus_item"><a class="site-page" href="/en/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/en/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="http://thellu.com/"><i class="fa-fw fa fa-language"></i><span> 中文</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/en/" title="Hongjin's Blog"><span class="site-name">Hongjin's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/en/"><i class="fa-fw fas fa-home"></i><span> Home Page</span></a></div><div class="menus_item"><a class="site-page" href="/en/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/en/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="http://thellu.com/"><i class="fa-fw fa fa-language"></i><span> 中文</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Considerations for Using Collections</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-04-07T16:00:00.000Z" title="Created 2024-04-08 00:00:00">2024-04-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-05-08T06:36:13.992Z" title="Updated 2024-05-08 14:36:13">2024-05-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/en/categories/back-end/">back-end</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">Word count:</span><span class="word-count">1.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">Reading time:</span><span>11min</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Considerations for Using Collections"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">Comments:</span><a href="/en/2024/04/08/Considerations%20for%20Using%20Collections/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="Collection-Empty-Check"><a href="#Collection-Empty-Check" class="headerlink" title="Collection Empty Check"></a>Collection Empty Check</h3><blockquote>
+<p><strong>To check whether all elements inside a collection are empty, use the <code>isEmpty()</code> method instead of <code>size()==0</code> method.</strong></p>
+</blockquote>
+<p>This is because the <code>isEmpty()</code> method provides better readability and has a time complexity of O(1).</p>
+<p>While the time complexity of the <code>size()</code> method for most collections we use is also O(1), there are many collections, particularly those in the <code>java.util.concurrent</code> package (such as <code>ConcurrentLinkedQueue</code>, <code>ConcurrentHashMap</code>, etc.), whose complexity is not O(1).</p>
+<p>Below is the source code for the <code>size()</code> and <code>isEmpty()</code> methods of <code>ConcurrentHashMap</code>.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">size</span><span class="hljs-params">()</span> {<br>    <span class="hljs-type">long</span> <span class="hljs-variable">n</span> <span class="hljs-operator">=</span> sumCount();<br>    <span class="hljs-keyword">return</span> ((n &lt; <span class="hljs-number">0L</span>) ? <span class="hljs-number">0</span> :<br>            (n &gt; (<span class="hljs-type">long</span>)Integer.MAX_VALUE) ? Integer.MAX_VALUE :<br>            (<span class="hljs-type">int</span>)n);<br>}<br><span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-title function_">sumCount</span><span class="hljs-params">()</span> {<br>    CounterCell[] as = counterCells; CounterCell a;<br>    <span class="hljs-type">long</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> baseCount;<br>    <span class="hljs-keyword">if</span> (as != <span class="hljs-literal">null</span>) {<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; as.length; ++i) {<br>            <span class="hljs-keyword">if</span> ((a = as[i]) != <span class="hljs-literal">null</span>)<br>                sum += a.value;<br>        }<br>    }<br>    <span class="hljs-keyword">return</span> sum;<br>}<br><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isEmpty</span><span class="hljs-params">()</span> {<br>    <span class="hljs-keyword">return</span> sumCount() &lt;= <span class="hljs-number">0L</span>; <span class="hljs-comment">// ignore transient negative values</span><br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="Collection-to-Map-Conversion"><a href="#Collection-to-Map-Conversion" class="headerlink" title="Collection to Map Conversion"></a>Collection to Map Conversion</h3><blockquote>
+<p><strong>When using the <code>toMap()</code> method of the <code>java.util.stream.Collectors</code> class to convert to a <code>Map</code> collection, it is essential to note that an NPE (NullPointerException) will be thrown if the value is null.</strong> </p>
+</blockquote>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> {<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> String phoneNumber;<br>     <span class="hljs-comment">// getters and setters</span><br>}<br><br>List&lt;Person&gt; bookList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>bookList.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">"jack"</span>,<span class="hljs-string">"18163138123"</span>));<br>bookList.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">"martin"</span>,<span class="hljs-literal">null</span>));<br><span class="hljs-comment">// NPE</span><br>bookList.stream().collect(Collectors.toMap(Person::getName, Person::getPhoneNumber));<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>Let’s first examine the <code>toMap()</code> method of the <code>java.util.stream.Collectors</code> class. Inside, it invokes the <code>merge()</code> method of the <code>Map</code> interface. </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T, K, U, M <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Map</span>&lt;K, U&gt;&gt;<br>Collector&lt;T, ?, M&gt; toMap(Function&lt;? <span class="hljs-built_in">super</span> T, ? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">K</span>&gt; keyMapper,<br>                            Function&lt;? <span class="hljs-built_in">super</span> T, ? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">U</span>&gt; valueMapper,<br>                            BinaryOperator&lt;U&gt; mergeFunction,<br>                            Supplier&lt;M&gt; mapSupplier) {<br>    BiConsumer&lt;M, T&gt; accumulator<br>            = (map, element) -&gt; map.merge(keyMapper.apply(element),<br>                                          valueMapper.apply(element), mergeFunction);<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CollectorImpl</span>&lt;&gt;(mapSupplier, accumulator, mapMerger(mergeFunction), CH_ID);<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>The <code>merge()</code> method of the <code>Map</code> interface, shown below, is a default implementation within the interface. </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">default</span> V <span class="hljs-title function_">merge</span><span class="hljs-params">(K key, V value,</span><br><span class="hljs-params">        BiFunction&lt;? <span class="hljs-built_in">super</span> V, ? <span class="hljs-built_in">super</span> V, ? extends V&gt; remappingFunction)</span> {<br>    Objects.requireNonNull(remappingFunction);<br>    Objects.requireNonNull(value);<br>    <span class="hljs-type">V</span> <span class="hljs-variable">oldValue</span> <span class="hljs-operator">=</span> get(key);<br>    <span class="hljs-type">V</span> <span class="hljs-variable">newValue</span> <span class="hljs-operator">=</span> (oldValue == <span class="hljs-literal">null</span>) ? value :<br>               remappingFunction.apply(oldValue, value);<br>    <span class="hljs-keyword">if</span>(newValue == <span class="hljs-literal">null</span>) {<br>        remove(key);<br>    } <span class="hljs-keyword">else</span> {<br>        put(key, newValue);<br>    }<br>    <span class="hljs-keyword">return</span> newValue;<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>The <code>merge()</code> method first calls the <code>Objects.requireNonNull()</code> method to check if the value is null.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; T <span class="hljs-title function_">requireNonNull</span><span class="hljs-params">(T obj)</span> {<br>    <span class="hljs-keyword">if</span> (obj == <span class="hljs-literal">null</span>)<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NullPointerException</span>();<br>    <span class="hljs-keyword">return</span> obj;<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="Collection-Traversal"><a href="#Collection-Traversal" class="headerlink" title="Collection Traversal"></a><strong>Collection Traversal</strong></h3><blockquote>
+<p><strong>Avoid performing element <code>remove/add</code> operations within a foreach loop. For removing elements, use the <code>Iterator</code> approach instead. If concurrent operations are involved, ensure to synchronize access to the <code>Iterator</code> object.</strong></p>
+</blockquote>
+<p>Upon decompilation, you will discover that the foreach syntax underlyingly depends on <code>Iterator</code>. However, <code>remove/add</code> operations directly invoke methods of the collection itself, rather than <code>Iterator</code>‘s <code>remove/add</code> methods.</p>
+<p>This leads to the <code>Iterator</code> inexplicably discovering that elements have been <code>remove/add</code>-ed, resulting in a <code>ConcurrentModificationException</code> being thrown to alert users of a concurrent modification anomaly. This is known as the <strong>fail-fast</strong> mechanism in single-threaded scenarios.</p>
+<blockquote>
+<p><strong>Fail-fast mechanism:</strong> When multiple threads modify a fail-fast collection, a <code>ConcurrentModificationException</code> may be thrown.</p>
+</blockquote>
+<p>Starting from Java 8, you can use the <code>Collection.removeIf()</code> method to remove elements that satisfy specific conditions. </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">10</span>; ++i) {<br>    list.add(i);<br>}<br>list.removeIf(filter -&gt; filter % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">/* delete all even number in list */</span><br>System.out.println(list); <span class="hljs-comment">/* [1, 3, 5, 7, 9] */</span><br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>In addition to directly using <code>Iterator</code> for traversal operations, you can also:</p>
+<ul>
+<li>Utilize ordinary for loops</li>
+<li>Employ fail-safe collection classes. All classes under the <code>java.util</code> package are fail-fast, while those under the <code>java.util.concurrent</code> package are fail-safe.</li>
+<li>…..</li>
+</ul>
+<h3 id="Collection-Deduplication"><a href="#Collection-Deduplication" class="headerlink" title="Collection Deduplication"></a>Collection Deduplication</h3><blockquote>
+<p><strong>You can leverage the unique property of <code>Set</code> elements to quickly deduplicate a collection, avoiding the use of <code>List</code>‘s <code>contains()</code> for traversal deduplication or containment checks.</strong></p>
+</blockquote>
+<p>Here, we illustrate using <code>HashSet</code> and <code>ArrayList</code> as examples.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// Set </span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; Set&lt;T&gt; <span class="hljs-title function_">removeDuplicateBySet</span><span class="hljs-params">(List&lt;T&gt; data)</span> {<br><br>    <span class="hljs-keyword">if</span> (CollectionUtils.isEmpty(data)) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>    }<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;(data);<br>}<br><br><span class="hljs-comment">// List </span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; List&lt;T&gt; <span class="hljs-title function_">removeDuplicateByList</span><span class="hljs-params">(List&lt;T&gt; data)</span> {<br><br>    <span class="hljs-keyword">if</span> (CollectionUtils.isEmpty(data)) {<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><br>    }<br>    List&lt;T&gt; result = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(data.size());<br>    <span class="hljs-keyword">for</span> (T current : data) {<br>        <span class="hljs-keyword">if</span> (!result.contains(current)) {<br>            result.add(current);<br>        }<br>    }<br>    <span class="hljs-keyword">return</span> result;<br>}<br><br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>The core difference lies in the implementation of the <code>contains()</code> method.</p>
+<p>The <code>contains()</code> method of <code>HashSet</code> relies on the <code>containsKey()</code> method of <code>HashMap</code>, with a time complexity close to O(1) (O(1) when no hash collisions occur).</p>
+<p>If we insert N elements into the Set, the time complexity is close to O(n).</p>
+<p>The <code>contains()</code> method of <code>ArrayList</code> involves traversing all elements, resulting in a time complexity close to O(n).</p>
+<h3 id="Collection-to-Array-Conversion"><a href="#Collection-to-Array-Conversion" class="headerlink" title="Collection to Array Conversion"></a>Collection to Array Conversion</h3><blockquote>
+<p><strong>When converting a collection to an array, it is essential to use the collection’s <code>toArray(T[] array)</code> method, passing in an empty array of exactly the same type and with a length of 0.</strong></p>
+</blockquote>
+<p>The <code>toArray(T[] array)</code> method takes a generic array as its parameter. If no parameter is passed to the <code>toArray</code> method, it returns an array of type <code>Object</code>.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java">String [] s= <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]{<br>    <span class="hljs-string">"dog"</span>, <span class="hljs-string">"lazy"</span>, <span class="hljs-string">"a"</span>, <span class="hljs-string">"over"</span>, <span class="hljs-string">"jumps"</span>, <span class="hljs-string">"fox"</span>, <span class="hljs-string">"brown"</span>, <span class="hljs-string">"quick"</span>, <span class="hljs-string">"A"</span><br>};<br>List&lt;String&gt; list = Arrays.asList(s);<br>Collections.reverse(list);<br><br>s=list.toArray(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[<span class="hljs-number">0</span>]);<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>Due to JVM optimization, using <code>new String[0]</code> as the parameter for the <code>Collection.toArray()</code> method is now preferred. <code>new String[0]</code> serves as a template, specifying the type of the returned array. The 0 is to save space, as it merely serves to indicate the type of the returned array.</p>
+<h3 id="Array-to-Collection-Conversion"><a href="#Array-to-Collection-Conversion" class="headerlink" title="Array to Collection Conversion"></a>Array to Collection Conversion</h3><blockquote>
+<p><strong>When using the utility class <code>Arrays.asList()</code> to convert an array to a collection, avoid using its methods for modifying the collection. Its <code>add/remove/clear</code> methods will throw an <code>UnsupportedOperationException</code> exception.</strong></p>
+</blockquote>
+<p><code>Arrays.asList()</code> is quite common in everyday development, allowing us to convert an array into a <code>List</code> collection.</p>
+<p>The JDK source code explains this method as follows: </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Returns a fixed-size list backed by the specified array.  (Changes to</span><br><span class="hljs-comment">     * the returned list "write through" to the array.)  This method acts</span><br><span class="hljs-comment">     * as bridge between array-based and collection-based APIs, in</span><br><span class="hljs-comment">     * combination with {<span class="hljs-doctag">@link</span> Collection#toArray}.  The returned list is</span><br><span class="hljs-comment">     * serializable and implements {<span class="hljs-doctag">@link</span> RandomAccess}.</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * &lt;p&gt;This method also provides a convenient way to create a fixed-size</span><br><span class="hljs-comment">     * list initialized to contain several elements:</span><br><span class="hljs-comment">     * &lt;pre&gt;</span><br><span class="hljs-comment">     *     List&amp;lt;String&amp;gt; stooges = Arrays.asList("Larry", "Moe", "Curly");</span><br><span class="hljs-comment">     * &lt;/pre&gt;</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> a the array by which the list will be backed</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> a list view of the specified array</span><br><span class="hljs-comment">     */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; List&lt;T&gt; <span class="hljs-title function_">asList</span><span class="hljs-params">(T... a)</span> {<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(a);<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p><strong>1. <code>Arrays.asList()</code> is a generic method, and the array passed must be an object array, not a primitive type array.</strong> </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span>[] myArray = {<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>};<br><span class="hljs-type">List</span> <span class="hljs-variable">myList</span> <span class="hljs-operator">=</span> Arrays.asList(myArray);<br>System.out.println(myList.size());<span class="hljs-comment">//1</span><br>System.out.println(myList.get(<span class="hljs-number">0</span>));<span class="hljs-comment">//array address</span><br>System.out.println(myList.get(<span class="hljs-number">1</span>));<span class="hljs-comment">//ArrayIndexOutOfBoundsException</span><br><span class="hljs-type">int</span>[] array = (<span class="hljs-type">int</span>[]) myList.get(<span class="hljs-number">0</span>);<br>System.out.println(array[<span class="hljs-number">0</span>]);<span class="hljs-comment">//1</span><br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>When passing a primitive data type array, the actual parameter received by <code>Arrays.asList()</code> is not the elements of the array, but the array object itself! In this case, the only element of the <code>List</code> is the array itself, which explains the code above.</p>
+<p><strong>2. Using the collection’s modification methods: <code>add()</code>, <code>remove()</code>, <code>clear()</code> will throw an exception.</strong></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">List</span> <span class="hljs-variable">myList</span> <span class="hljs-operator">=</span> Arrays.asList(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br>myList.add(<span class="hljs-number">4</span>);<span class="hljs-comment">//UnsupportedOperationException</span><br>myList.remove(<span class="hljs-number">1</span>);<span class="hljs-comment">//UnsupportedOperationException</span><br>myList.clear();<span class="hljs-comment">//UnsupportedOperationException</span><br><br></code></pre></td></tr></tbody></table></figure>
+
+<p><code>Arrays.asList()</code> does not return a <code>java.util.ArrayList</code>, but rather an inner class of <code>java.util.Arrays</code>, which does not implement collection modification methods or override these methods. </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">List</span> <span class="hljs-variable">myList</span> <span class="hljs-operator">=</span> Arrays.asList(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br>System.out.println(myList.getClass());<span class="hljs-comment">//class java.util.Arrays$ArrayList</span><br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>This inner class inherits from <code>AbstractList</code> and implements the <code>RandomAccess</code> and <code>Serializable</code> interfaces.</p>
+<p>If we take a look at the <code>add/remove/clear</code> methods of <code>java.util.AbstractList</code>, we’ll understand why <code>UnsupportedOperationException</code> is thrown. </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> E <span class="hljs-title function_">remove</span><span class="hljs-params">(<span class="hljs-type">int</span> index)</span> {<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnsupportedOperationException</span>();<br>}<br><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">add</span><span class="hljs-params">(E e)</span> {<br>    add(size(), e);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>}<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">add</span><span class="hljs-params">(<span class="hljs-type">int</span> index, E element)</span> {<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnsupportedOperationException</span>();<br>}<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">clear</span><span class="hljs-params">()</span> {<br>    removeRange(<span class="hljs-number">0</span>, size());<br>}<br><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">removeRange</span><span class="hljs-params">(<span class="hljs-type">int</span> fromIndex, <span class="hljs-type">int</span> toIndex)</span> {<br>    ListIterator&lt;E&gt; it = listIterator(fromIndex);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>, n=toIndex-fromIndex; i&lt;n; i++) {<br>        it.next();<br>        it.remove();<br>    }<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+
+
+<p>So, <strong>how do we correctly convert an array to an <code>ArrayList</code>?</strong></p>
+<p>1、Manually implement a utility class.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//JDK1.5+</span><br><span class="hljs-keyword">static</span> &lt;T&gt; List&lt;T&gt; <span class="hljs-title function_">arrayToList</span><span class="hljs-params">(<span class="hljs-keyword">final</span> T[] array)</span> {<br>  <span class="hljs-keyword">final</span> List&lt;T&gt; l = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;T&gt;(array.length);<br><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">final</span> T s : array) {<br>    l.add(s);<br>  }<br>  <span class="hljs-keyword">return</span> l;<br>}<br><br><br>Integer [] myArray = { <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> };<br>System.out.println(arrayToList(myArray).getClass());<span class="hljs-comment">//class java.util.ArrayList</span><br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>2、The simplest method.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">List</span> <span class="hljs-variable">list</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(Arrays.asList(<span class="hljs-string">"a"</span>, <span class="hljs-string">"b"</span>, <span class="hljs-string">"c"</span>))<br></code></pre></td></tr></tbody></table></figure>
+
+<p>3、Utilize Java 8’s <code>Stream</code> (recommended).</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">Integer [] myArray = { <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> };<br><span class="hljs-type">List</span> <span class="hljs-variable">myList</span> <span class="hljs-operator">=</span> Arrays.stream(myArray).collect(Collectors.toList());<br><br><span class="hljs-type">int</span> [] myArray2 = { <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> };<br><span class="hljs-type">List</span> <span class="hljs-variable">myList</span> <span class="hljs-operator">=</span> Arrays.stream(myArray2).boxed().collect(Collectors.toList());<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>4、Use Guava.</p>
+<p>For immutable collections, you can use the <code>ImmutableList</code> class and its <code>of()</code> and <code>copyOf()</code> factory methods (parameters cannot be empty). </p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;String&gt; il = ImmutableList.of(<span class="hljs-string">"string"</span>, <span class="hljs-string">"elements"</span>);  <span class="hljs-comment">// from varargs</span><br>List&lt;String&gt; il = ImmutableList.copyOf(aStringArray);      <span class="hljs-comment">// from array</span><br></code></pre></td></tr></tbody></table></figure>
+
+<p>For mutable collections, you can use the <code>Lists</code> class and its <code>newArrayList()</code> factory method.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;String&gt; l1 = Lists.newArrayList(anotherListOrCollection);    <span class="hljs-comment">// from collection</span><br>List&lt;String&gt; l2 = Lists.newArrayList(aStringArray);               <span class="hljs-comment">// from array</span><br>List&lt;String&gt; l3 = Lists.newArrayList(<span class="hljs-string">"or"</span>, <span class="hljs-string">"string"</span>, <span class="hljs-string">"elements"</span>); <span class="hljs-comment">// from varargs</span><br></code></pre></td></tr></tbody></table></figure>
+
+<p>5、Use Apache Commons Collections.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;String&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;String&gt;();<br>CollectionUtils.addAll(list, str);<br></code></pre></td></tr></tbody></table></figure>
+
+<p>6、 Use Java 9’s <code>List.of()</code> method.</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Integer[] array = {<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>};<br>List&lt;Integer&gt; list = List.of(array);<br></code></pre></td></tr></tbody></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="REFEERENCE"><a href="#REFEERENCE" class="headerlink" title="REFEERENCE"></a>REFEERENCE</h3><p>(1) <a target="_blank" rel="noopener" href="https://javaguide.cn/java/collection/java-collection-precautions-for-use.html#%E6%95%B0%E7%BB%84%E8%BD%AC%E9%9B%86%E5%90%88">https://javaguide.cn/java/collection/java-collection-precautions-for-use.html#%E6%95%B0%E7%BB%84%E8%BD%AC%E9%9B%86%E5%90%88</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="http://lh728.github.io/en">hongjin lu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://lh728.github.io/en/2024/04/08/Considerations%20for%20Using%20Collections/">http://lh728.github.io/en/2024/04/08/Considerations%20for%20Using%20Collections/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="/en/img/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/en/2023/09/09/MySQL%20Data%20Backup/" title="MySQL Data Backup"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">MySQL Data Backup</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/en/2023/06/19/Project%20Records%20-%20Enterprise%20Requirement/" title="Project Records - Enterprise Requirement"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-19</div><div class="title">Project Records - Enterprise Requirement</div></div></a></div><div><a href="/en/2023/06/10/Project%20Records%20-%20Troubleshooting/" title="Project Records — Troubleshooting"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-10</div><div class="title">Project Records — Troubleshooting</div></div></a></div><div><a href="/en/2023/08/10/Method%20Static%20Dispatch/" title="Method Static Dispatch"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-10</div><div class="title">Method Static Dispatch</div></div></a></div><div><a href="/en/2023/07/24/Intranet%20projects%20avoid%20pitfall/" title="Intranet projects avoid pitfall"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-24</div><div class="title">Intranet projects avoid pitfall</div></div></a></div><div><a href="/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/" title="How to debug spring boot scheduling tasks"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">How to debug spring boot scheduling tasks</div></div></a></div><div><a href="/en/2023/06/17/Initialization%20of%20Java%20virtual%20machine%20class%20loading/" title="Initialization of Java virtual machine class loading"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-17</div><div class="title">Initialization of Java virtual machine class loading</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/en/img/avatar.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">hongjin lu</div><div class="author-info__description">Code Lover</div></div><div class="card-info-data site-data is-center"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">5</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lh728"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/lh728" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:holu@tcd.ie" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/hongjinlu/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: ;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-Empty-Check"><span class="toc-number">1.</span> <span class="toc-text">Collection Empty Check</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-to-Map-Conversion"><span class="toc-number">2.</span> <span class="toc-text">Collection to Map Conversion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-Traversal"><span class="toc-number">3.</span> <span class="toc-text">Collection Traversal</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-Deduplication"><span class="toc-number">4.</span> <span class="toc-text">Collection Deduplication</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Collection-to-Array-Conversion"><span class="toc-number">5.</span> <span class="toc-text">Collection to Array Conversion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array-to-Collection-Conversion"><span class="toc-number">6.</span> <span class="toc-text">Array to Collection Conversion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#REFEERENCE"><span class="toc-number">7.</span> <span class="toc-text">REFEERENCE</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2024/04/08/Considerations%20for%20Using%20Collections/" title="Considerations for Using Collections">Considerations for Using Collections</a><time datetime="2024-04-07T16:00:00.000Z" title="Created 2024-04-08 00:00:00">2024-04-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/09/09/MySQL%20Data%20Backup/" title="MySQL Data Backup">MySQL Data Backup</a><time datetime="2023-09-08T16:00:00.000Z" title="Created 2023-09-09 00:00:00">2023-09-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/08/10/Method%20Static%20Dispatch/" title="Method Static Dispatch">Method Static Dispatch</a><time datetime="2023-08-09T16:00:00.000Z" title="Created 2023-08-10 00:00:00">2023-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/07/24/Oracle%20SQL%20optimization/" title="Oracle SQL optimization">Oracle SQL optimization</a><time datetime="2023-07-23T16:00:00.000Z" title="Created 2023-07-24 00:00:00">2023-07-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/en/2023/07/24/Intranet%20projects%20avoid%20pitfall/" title="Intranet projects avoid pitfall">Intranet projects avoid pitfall</a><time datetime="2023-07-23T16:00:00.000Z" title="Created 2023-07-24 00:00:00">2023-07-24</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2023 - 2024 By hongjin lu</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="http://thellu.com/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '14434470b1b606fb600b',
+      clientSecret: 'ba10ef9f1658154646e0c5531ce5493a872e611b',
+      repo: 'blog',
+      owner: 'lh728',
+      admin: ['lh728'],
+      id: '9edb7e8771ec185e5581c93593f73d56',
+      updateCountCallback: commentCount
+    },{"language":"en"}))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.textContent= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/en/js/search/local-search.js"></script></div></div></body></html>
