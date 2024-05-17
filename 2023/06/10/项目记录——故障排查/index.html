@@ -1,0 +1,518 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>项目记录——故障排查 | Hongjin's Blog</title><meta name="author" content="hongjin lu"><meta name="copyright" content="hongjin lu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查 SQL DML堵塞问题（Oracle）Bug描述最近项目需要接收大数据部门接口传来的数据，然后对数据做一些update操作后插入到一个表里面，后文会将该表称之为Business表。在执行这个操作的时候，意外发现执行时间过长，超过二十分钟了。. 最开始以为是数据量过大的问题，后来发现并不是，因此不得不化身为DBA寻">
+<meta property="og:type" content="article">
+<meta property="og:title" content="项目记录——故障排查">
+<meta property="og:url" content="http://lh728.github.io/2023/06/10/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="Hongjin's Blog">
+<meta property="og:description" content="这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查 SQL DML堵塞问题（Oracle）Bug描述最近项目需要接收大数据部门接口传来的数据，然后对数据做一些update操作后插入到一个表里面，后文会将该表称之为Business表。在执行这个操作的时候，意外发现执行时间过长，超过二十分钟了。. 最开始以为是数据量过大的问题，后来发现并不是，因此不得不化身为DBA寻">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lh728.github.io/img/avatar.png">
+<meta property="article:published_time" content="2023-06-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-01-10T16:00:00.000Z">
+<meta property="article:author" content="hongjin lu">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lh728.github.io/img/avatar.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://lh728.github.io/2023/06/10/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '项目记录——故障排查',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-01-11 00:00:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/static/css/custom.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="Hongjin's Blog" type="application/rss+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = 'hidden';
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+
+preloader.initLoading()
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="http://thellu.com/en"><i class="fa-fw fa fa-language"></i><span> English</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Hongjin's Blog"><span class="site-name">Hongjin's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="http://thellu.com/en"><i class="fa-fw fa fa-language"></i><span> English</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">项目记录——故障排查</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-09T16:00:00.000Z" title="发表于 2023-06-10 00:00:00">2023-06-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-01-10T16:00:00.000Z" title="更新于 2024-01-11 00:00:00">2024-01-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95/">项目记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>17分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="项目记录——故障排查"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2023/06/10/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>这里将会记录一些我在企业开发中的遇到的一些长见识的Bug，以及针对别人代码的故障排查</p>
+<h2 id="SQL-DML堵塞问题（Oracle）"><a href="#SQL-DML堵塞问题（Oracle）" class="headerlink" title="SQL DML堵塞问题（Oracle）"></a>SQL DML堵塞问题（Oracle）</h2><h3 id="Bug描述"><a href="#Bug描述" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>最近项目需要接收大数据部门接口传来的数据，然后对数据做一些update操作后插入到一个表里面，后文会将该表称之为Business表。在执行这个操作的时候，意外发现执行时间过长，超过二十分钟了。.</p>
+<p>最开始以为是数据量过大的问题，后来发现并不是，因此不得不化身为DBA寻找阻塞原因，因此记录下解决这个问题的经历：</p>
+<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p><strong>首先可以用以下sql分析和确定下，这个查询是不是被堵住了：</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s1.username <span class="hljs-operator">||</span> <span class="hljs-string">'@'</span> <span class="hljs-operator">||</span> s1.machine <span class="hljs-operator">||</span> <span class="hljs-string">'(SID=)'</span> <span class="hljs-operator">||</span> s1.sid <span class="hljs-operator">||</span> <span class="hljs-string">')'</span> <span class="hljs-keyword">as</span> blocking_session,<br>s2.username <span class="hljs-operator">||</span> <span class="hljs-string">'@'</span> <span class="hljs-operator">||</span> s2.machine <span class="hljs-operator">||</span> <span class="hljs-string">'(SID=)'</span> <span class="hljs-operator">||</span> s2.sid <span class="hljs-operator">||</span> <span class="hljs-string">')'</span> <span class="hljs-keyword">as</span> waiting_session,<br>s1.sql_id, s1.sql_child_number,s1.sql_exec_start,s2.event<br><span class="hljs-keyword">from</span> <br>v$session s1, v$session s2<br><span class="hljs-keyword">where</span> s1.blocking_session <span class="hljs-operator">=</span> s2.sid;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这SQL查询是用来检测 Oracle 数据库中的长时间堵塞（blocking）情况，它从 <code>v$session</code> 视图中获取有关会话的信息，特别是正在阻塞其他会话的会话和正在等待的会话的信息。</p>
+<ul>
+<li><code>s1</code> 和 <code>s2</code> 是 <code>v$session</code> 视图的别名，分别代表两个不同的会话。</li>
+<li><code>s1.username || '@' || s1.machine || '(SID=)' || s1.sid || ')'</code> 和 <code>s2.username || '@' || s2.machine || '(SID=)' || s2.sid || ')'</code> 是用来创建会话的标识信息，包括用户名、机器名、会话标识（SID），以及会话是否被堵塞的标志。</li>
+<li><code>s1.sql_id</code>, <code>s1.sql_child_number</code> 表示正在执行 SQL 查询的会话（<code>s1</code>）的 SQL 查询 ID 和子编号。</li>
+<li><code>s1.sql_exec_start</code> 是 SQL 查询的执行开始时间。</li>
+<li><code>s2.event</code> 表示正在等待的会话（<code>s2</code>）当前正在等待的事件。</li>
+<li><code>where s1.blocking_session = s2.sid</code> 是查询的过滤条件，它会筛选出那些正在阻塞其他会话的会话（<code>s1</code>）和正在等待其他会话解除堵塞的会话（<code>s2</code>）。</li>
+</ul>
+<p><strong>通过上述SQL，可以找到堵塞session的SID，然后用如下sql确认阻塞原因：</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> s.sid, s.serial#, s.username, s.event, s.sql_id, s.sql_child_number, s.sql_exec_start, q.sql_text<br><span class="hljs-keyword">from</span> v$session s <span class="hljs-keyword">join</span> v$<span class="hljs-keyword">sql</span> q <span class="hljs-keyword">on</span> s.sql_id <span class="hljs-operator">=</span> q.sql_id <span class="hljs-keyword">and</span> s.sql_child_number <span class="hljs-operator">=</span> q.child_number<br><span class="hljs-keyword">where</span> s.sid <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span>blocking_session_id<span class="hljs-operator">&gt;</span>; (这里输入前面查询到的阻塞SID)<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这个SQL查询是用于查找数据库中指定会话（<code>sid</code>）的详细信息，包括该会话的用户名、正在执行的SQL查询、等待事件和其他相关信息。</p>
+<ul>
+<li><code>v$session s</code> 和 <code>v$sql q</code> 是 <code>v$session</code> 和 <code>v$sql</code> 视图的别名，分别代表会话信息和SQL查询信息。</li>
+<li><code>q.sql_text</code> 是用于选择会话的SQL查询文本。</li>
+<li><code>s.sql_id = q.sql_id</code> 和 <code>s.sql_child_number = q.child_number</code> 表示会话的 SQL 查询 ID 和子编号与 SQL 查询信息的 SQL ID 和子编号匹配，以关联会话和查询。</li>
+<li><code>where s.sid = &lt;blocking_session_id&gt;</code> 是查询的过滤条件，这里输入前面查询到的阻塞SID</li>
+</ul>
+<p>通过上述的代码，我查看 s.event 发现了出问题的是update语句。</p>
+<p>现在，我有两个选择：</p>
+<p>（1）通过 <code>alter system kill session '&lt;sid&gt;&lt;serial#&gt;' immediate</code> 命令直接终止堵塞会话，回滚事务；</p>
+<p>（2）继续深挖，找到问题原因，直接修改问题代码；</p>
+<p>显然，应该选择第二种方案，选择第一种方案再次运行还是会报错，所以<strong>继续查询<code>v$lock</code>查看锁信息</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> l.sid, s.username, l.type, l.id1, l.id2, l.lmode, l.request<br><span class="hljs-keyword">from</span> v$lock l<br><span class="hljs-keyword">join</span> <br>v$session s <span class="hljs-keyword">on</span> l.sid <span class="hljs-operator">=</span> s.sid<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这个SQL查询用于检查 Oracle 数据库中的锁信息，以查找哪些会话正在持有或请求锁，以及相关的会话信息。</p>
+<ul>
+<li><code>v$lock l</code> 和 <code>v$session s</code> 是 <code>v$lock</code> 视图和 <code>v$session</code> 视图的别名，分别代表锁信息和会话信息；</li>
+<li><code>l.sid = s.sid</code> 表示锁信息的会话 ID (<code>sid</code>) 与会话信息的会话 ID 匹配，以关联锁和会话；</li>
+<li><code>l.sid</code>：这列表示持有或请求锁的会话的会话 ID（Session ID）。每个会话都有一个唯一的会话 ID。</li>
+<li><code>s.username</code>：这列表示持有或请求锁的会话的用户名。它标识了数据库中执行操作的用户。</li>
+<li><code>l.type</code>：这列表示锁的类型。不同的锁类型用于不同的资源或对象，例如表、行、索引等。</li>
+<li><code>l.id1</code> 和 <code>l.id2</code>：这两列通常一起工作，表示锁的标识符。具体的含义取决于锁的类型，例如对于表锁，它们可能表示表的对象标识符。</li>
+<li><code>l.lmode</code>：这列表示锁的模式。它描述了锁的类型，例如共享锁、排他锁等。</li>
+<li><code>l.request</code>：这列表示会话是否正在请求锁，以及请求的锁类型和模式。</li>
+</ul>
+<p>将查询结果与SID对应，发现阻塞的几个所分别是：</p>
+<table>
+<thead>
+<tr>
+<th align="center">type</th>
+<th align="center">ID1</th>
+<th align="center">ID2</th>
+<th align="center">LMODE</th>
+<th align="center">REQUEST</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">AE</td>
+<td align="center">100</td>
+<td align="center">0</td>
+<td align="center">4</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">TM</td>
+<td align="center">168385</td>
+<td align="center">0</td>
+<td align="center">3</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">TX</td>
+<td align="center">393225</td>
+<td align="center">221646</td>
+<td align="center">0</td>
+<td align="center">6</td>
+</tr>
+</tbody></table>
+<p>上述结果说明了：</p>
+<ol>
+<li><p>第一行（AE 锁）：</p>
+<ul>
+<li><code>type</code> 是 “AE”，表示这是一个表级别的锁。</li>
+<li><code>ID1</code> 是 100，可能是表的标识符。</li>
+<li><code>ID2</code> 是 0，通常表示表级别锁的 ID2 为 0。</li>
+<li><code>LMODE</code> 是 4，表示持有排他锁。</li>
+<li><code>REQUEST</code> 是 0，表示当前没有请求新的锁。</li>
+</ul>
+</li>
+<li><p>第二行（TM 锁）：</p>
+<ul>
+<li><code>type</code> 是 “TM”，表示这是一个表级别的锁。</li>
+<li><code>ID1</code> 是 168385，可能是表的另一个标识符。</li>
+<li><code>ID2</code> 是 0，通常表示表级别锁的 ID2 为 0。</li>
+<li><code>LMODE</code> 是 3，表示持有共享锁。</li>
+<li><code>REQUEST</code> 是 0，表示当前没有请求新的锁。</li>
+</ul>
+</li>
+<li><p>第三行（TX 锁）：</p>
+<ul>
+<li><p><code>type</code> 是 “TX”，表示这是一个事务级别的锁。</p>
+</li>
+<li><p><code>ID1</code> 是 393225，可能表示某个事务的标识符。</p>
+</li>
+<li><p><code>ID2</code> 是 221646，可能表示另一个事务的标识符。</p>
+</li>
+<li><p><code>LMODE</code> 是 0，表示没有锁（或者叫无锁）。</p>
+</li>
+<li><p><code>REQUEST</code> 是 6，表示当前正在请求新的锁。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>接着，识别一下第三行的事务锁，究竟锁住的是哪段代码：</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> do.object_name, row_wait_obj#, do.data_object_id,<br>row_wait_file#, row_wait_block#, row_wait_row#,<br>dbms_rowid.rowid_create(<span class="hljs-number">1</span>,do,data_object_id, row_wait_file#, row_wait_block#, row_wait_row#)<br><span class="hljs-keyword">from</span> v$session s, dba_objects do <br><span class="hljs-keyword">where</span> sid <span class="hljs-operator">=</span> <span class="hljs-operator">&lt;</span>sessionId<span class="hljs-operator">&gt;</span><br><span class="hljs-keyword">and</span> s.row_wait_obj# <span class="hljs-operator">=</span> do.object_id;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这个 SQL 查询用于查找特定会话（<code>sid</code>）正在等待的行级锁的相关信息。以下是查询中的各个部分的含义：</p>
+<ol>
+<li><code>do.object_name</code>：这表示正在等待行级锁的数据对象的名称，即表的名称或其他数据库对象的名称。</li>
+<li><code>row_wait_obj#</code>：这是会话正在等待的行级锁的对象号。它用于标识数据对象，该对象上的行级锁正被等待。</li>
+<li><code>do.data_object_id</code>：这是数据对象的唯一标识符。</li>
+<li><code>row_wait_file#</code>、<code>row_wait_block#</code>、<code>row_wait_row#</code>：这些列表示行级锁的具体位置信息，包括等待的文件号、块号和行号。</li>
+<li><code>dbms_rowid.rowid_create(1, do, data_object_id, row_wait_file#, row_wait_block#, row_wait_row#)</code>：这是一个函数调用，用于创建行级锁的 ROWID（行标识符），以便精确定位到正在等待的行级锁。</li>
+<li><code>v$session s, dba_objects do</code>：这部分表示查询将从 <code>v$session</code> 视图和 <code>dba_objects</code> 视图中检索信息。</li>
+<li><code>where sid = &lt;sessionId&gt;</code>：这是查询的过滤条件，用于指定要检查的特定会话的 <code>sid</code>。</li>
+<li><code>and s.row_wait_obj# = do.object_id</code>：这是查询的连接条件，它将会话的 <code>row_wait_obj#</code> 与数据对象的 <code>object_id</code> 进行匹配，以便检索正在等待的行级锁的数据对象的信息。</li>
+</ol>
+<p>接着，我查询到的rowId 是 AABK/5AAFAAAAHHAAA, 把这个id放到如下的sql查询里面，就能查询出来是具体哪一行出的问题了：</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> Business <span class="hljs-keyword">where</span> rowid <span class="hljs-operator">=</span> <span class="hljs-string">'AABK/5AAFAAAAHHAAA'</span>;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>注意Business是我的表名。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>定位发现问题行，同时是update语句出的问题之后，我发现是数据中有重名问题，同时update后面的insert语句执行过快，两个数据同时争夺同一个行锁，造成了阻塞。于是我修改了原来的java代码，对每个update语句增加了50ms的延时，解决了问题</p>
+<hr>
+<h2 id="包装对象引用问题"><a href="#包装对象引用问题" class="headerlink" title="包装对象引用问题"></a>包装对象引用问题</h2><h3 id="Bug描述-1"><a href="#Bug描述-1" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>包装对象的==和equals是个老生常谈的问题，但是我最近还是踩坑了。</p>
+<p>最近完成项目的时候遇到一个问题，我发现一个树形的下拉框里面，有的菜单有二级菜单三级菜单，有的应该有三级菜单却没有。</p>
+<p>大概就是这样：</p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(2).png" alt="项目记录——故障排查(2).png"></p>
+<h3 id="问题排查-1"><a href="#问题排查-1" class="headerlink" title="问题排查"></a>问题排查</h3><p>于是我就去研究这个BUG是怎么产生的。</p>
+<p>刚开始调试前端代码，发现是element-ui的el-tree组件，逻辑很简单，不应该有问题：</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;el-tree :data=<span class="hljs-string">"menus"</span><br>             :<span class="hljs-keyword">default</span>-expanded-keys=<span class="hljs-string">"expandedKeys"</span><br>             :expand-on-click-node=<span class="hljs-string">"false"</span><br>             :props=<span class="hljs-string">"defaultProps"</span><br>             node-key=<span class="hljs-string">"catId"</span><br>             draggable<br>             :allow-drop=<span class="hljs-string">"allowDrop"</span><br>             show-checkbox&gt;<br>                 <br>    getMenus () {<br>      <span class="hljs-variable language_">this</span>.$http({<br>        <span class="hljs-attr">url</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">$http</span>.<span class="hljs-title function_">adornUrl</span>(<span class="hljs-string">'/product/category/list/tree'</span>),<br>        <span class="hljs-attr">method</span>: <span class="hljs-string">'get'</span><br>      }).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">{data}</span>) =&gt;</span> {<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">menus</span> = data.<span class="hljs-property">page</span><br>      })<br>    },<br></code></pre></td></tr></tbody></table></figure>
+
+<p>所以我把重心转向了后端代码，后端list/tree方法的serviceImpl 是一个递归查找树方法：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> List&lt;CategoryEntity&gt; <span class="hljs-title function_">listWithTree</span><span class="hljs-params">()</span> {<br>        <span class="hljs-comment">// 1. find all classification</span><br>        List&lt;CategoryEntity&gt; entities = baseMapper.selectList(<span class="hljs-literal">null</span>);<br><br>        <span class="hljs-comment">// 2. assemble to tree (parent-son)</span><br>        <span class="hljs-comment">// 2.1 find all first-level category</span><br>        List&lt;CategoryEntity&gt; firstLevel = entities.stream().filter((item) -&gt;<br>             item.getParentCid() == <span class="hljs-number">0</span><br>        ).map((cat) -&gt; {<br>            cat.setChildren(getChildren(cat,entities));<br>            <span class="hljs-keyword">return</span> cat;<br>        }).sorted(Comparator.comparingInt(CategoryEntity::getSort)).collect(Collectors.toList());<br>        <span class="hljs-keyword">return</span> firstLevel;<br>    }<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * recursion get each categories' children category</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> List&lt;CategoryEntity&gt; <span class="hljs-title function_">getChildren</span><span class="hljs-params">(CategoryEntity root, List&lt;CategoryEntity&gt; all)</span>{<br>        List&lt;CategoryEntity&gt; children = all.stream().filter(categoryEntity -&gt; {<br>            <span class="hljs-keyword">return</span> categoryEntity.getParentCid() == root.getCatId();<br>        }).map(category -&gt; {<br>            <span class="hljs-comment">// find children category</span><br>            category.setChildren(getChildren(category,all));<br>            <span class="hljs-keyword">return</span> category;<br>        }).sorted(Comparator.comparingInt(cat -&gt; (cat.getSort() == <span class="hljs-literal">null</span> ? <span class="hljs-number">0</span> : cat.getSort()))).collect(Collectors.toList());<br>        <span class="hljs-keyword">return</span> children;<br>    }<br></code></pre></td></tr></tbody></table></figure>
+
+<p><code>baseMapper.selectList(null)</code> 用于拿到所有数据。</p>
+<p>CategoryEntity 有几个核心属性： catId 是当前分类的ID，parentCid是当前分类的父分类ID，顶级分类的父分类ID是指向0的。children 是一个数组，用于存放当前分类的子分类有哪些 CategoryEntity 。</p>
+<p>因此，在listWithTree 方法里面，<code>item.getParentCid() == 0</code> 用于找到所有的第一级顶级分类，然后设置其中每一个分类的children，那么，如何获取某个分类的子分类呢？</p>
+<p>接下来就调用 getChildren 方法，这个方法需要传入当前分类和所有数据，通过 <code>categoryEntity.getParentCid() == root.getCatId()</code> 找到所有数据中，所有父分类指向当前分类的对象，然后继续递归查找直到查询到null为止。</p>
+<p>刚开始的时候我研究代码逻辑并没有发现问题，断点调试的时候，如图所示的 E-book分类有自己的children，那为什么sas 分类的children 是 [] 呢？</p>
+<p>接着我去看了下数据库，数据库也确实存在指向sas 分类的子数据。那问题来了，为什么有的分类能找到有的找不到呢？</p>
+<p>stream流的断点调试信息稍微不足，只好通过log.info 查看每一步信息，经过我耐心的查找，我终于发现了问题所在：</p>
+<p>**categoryEntity.getParentCid() == root.getCatId() 的判断是[]**，这就很奇怪了，这说明没有在数据库找到合适的对象，这不应该啊，因为我已经在数据库验证过数据了。</p>
+<p>于是我想到了一个问题：<code>getParentCid()</code> 和 <code>getCatId()</code> 到底获取到了什么东西？</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@TableId</span><br><span class="hljs-keyword">private</span> Long catId;<br><span class="hljs-keyword">private</span> Long parentCid;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>于是，我在后台代码看到了Long而不是long，就意识到了问题所在了：</p>
+<blockquote>
+<p><strong>对于 <code>Long</code> 对象，当值在 -128 到 127 之间时，Java 会使用缓存，即相同的值会共享同一个对象。而超出这个范围的值，每次都会创建新的对象。这就导致了使用 <code>==</code> 比较时，对于超出缓存范围的值，即使它们的内容相同，也可能得到 <code>false</code>。</strong></p>
+</blockquote>
+<p>这也就解释了为什么有的能显示，有的不能显示。能显示不过是因为ID值还没有超出127而已。</p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>明白问题了，解决方案也就相对容易，只需要使用equals替换成如下代码即可：</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> List&lt;CategoryEntity&gt; <span class="hljs-title function_">getChildren</span><span class="hljs-params">(CategoryEntity root, List&lt;CategoryEntity&gt; all)</span>{<br>    List&lt;CategoryEntity&gt; children = all.stream().filter(categoryEntity -&gt; {<br>        <span class="hljs-keyword">return</span> categoryEntity.getParentCid().equals(root.getCatId());<br>    }).map(category -&gt; {<br>        <span class="hljs-comment">// find children category</span><br>        category.setChildren(getChildren(category,all));<br>        <span class="hljs-keyword">return</span> category;<br>    }).sorted(Comparator.comparingInt(cat -&gt; (cat.getSort() == <span class="hljs-literal">null</span> ? <span class="hljs-number">0</span> : cat.getSort()))).collect(Collectors.toList());<br>    <span class="hljs-keyword">return</span> children;<br>}<br></code></pre></td></tr></tbody></table></figure>
+
+<p>真心希望不要有下次踩坑了。</p>
+<h2 id="EsayPoi解析Excel图片空指针"><a href="#EsayPoi解析Excel图片空指针" class="headerlink" title="EsayPoi解析Excel图片空指针"></a>EsayPoi解析Excel图片空指针</h2><h3 id="Bug描述-2"><a href="#Bug描述-2" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很有趣的Bug，我在这里被困扰了一天的时间。</p>
+<p>现在有两个几乎一模一样的Excel文件，当我进行导入并解析的时候，一个Excel文件会报空指针，一个文件会正常解析并且导入。</p>
+<p>这里的业务逻辑是：</p>
+<ul>
+<li>业务方先下载Excel模板</li>
+<li>业务方根据模板输入自己想要导入的信息，其中有一列是图片信息</li>
+<li>图片信息是业务方自己粘贴进Excel的</li>
+<li>最后业务方点击导入，把Excel解析，把其中的信息导入数据库</li>
+</ul>
+<p>这个Bug就是业务方在这个流程中遇到的，业务方有两个几乎一模一样的Excel文件，它们的文本信息是完全一样的，唯一的区别就是图片不一样。</p>
+<p>而且，就算把可以正常解析导入的Excel文件中的图片粘贴到出问题的Excel文件，也还是会报空指针异常，很奇怪。</p>
+<h3 id="问题排查-2"><a href="#问题排查-2" class="headerlink" title="问题排查"></a>问题排查</h3><p>一开始我以为是图片可能覆盖了其他单元格，所以尝试拉伸了一下图片，发现没有作用。</p>
+<p>然后仔细研究后端代码，发现这一块是调用的EasyPoi API的 *<code>ExcelImportUtil</code><em>类的</em><code>importExcelMore</code>*方法进行解析的。于是我继续下钻，发现更准确的说，是在调用EasyPoi API的 *<code>PoiPublicUtil</code>*类的 <em><code>getSheetPictures07</code></em> 方法时出现的问题。</p>
+<p>更准确的说，是在执行这个放里面如下所示的代码的时候报的错：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">...<br>	pic.getPreferredSize()<br>...<br></code></pre></td></tr></tbody></table></figure>
+
+<p>打断点，这里需要一个anchor的cell1属性和cell2属性。</p>
+<p>然后这里的cell2属性是空，于是报了空指针。</p>
+<p>知道错误的起源了，现在回头去找为什么cell2属性是null呢？这个属性是在哪里构造的呢？</p>
+<p>经过漫长的寻找，最后发现是在Poi API的*<code>XSSFDrawing</code>*类里面的 <em><code>getAchorFromParent</code></em> 方法里面构造的。</p>
+<p>该方法如下所示：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> XSSFAnchor <span class="hljs-title function_">getAnchorFromParent</span><span class="hljs-params">(XmlObject obj)</span> {<br>  <span class="hljs-type">XSSFAnchor</span> <span class="hljs-variable">anchor</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlObject</span> <span class="hljs-variable">parentXbean</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>  <span class="hljs-type">XmlCursor</span> <span class="hljs-variable">cursor</span> <span class="hljs-operator">=</span> obj.newCursor();<br>  <span class="hljs-keyword">if</span> (cursor.toParent()) {<br>    parentXbean = cursor.getObject();<br>  }<br>  cursor.dispose();<br>  <span class="hljs-keyword">if</span> (parentXbean != <span class="hljs-literal">null</span>) {<br>    <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTTwoCellAnchor) {<br>      <span class="hljs-type">CTTwoCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTTwoCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(ct.getFrom(), ct.getTo());<br>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTOneCellAnchor) {<br>      <span class="hljs-type">CTOneCellAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTOneCellAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getFrom(), ct.getExt());<br>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parentXbean <span class="hljs-keyword">instanceof</span> CTAbsoluteAnchor) {<br>      <span class="hljs-type">CTAbsoluteAnchor</span> <span class="hljs-variable">ct</span> <span class="hljs-operator">=</span> (CTAbsoluteAnchor) parentXbean;<br>      anchor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XSSFClientAnchor</span>(getSheet(), ct.getPos(), ct.getExt());<br>    }<br>  }<br>  <span class="hljs-keyword">return</span> anchor;<br>}<br><br></code></pre></td></tr></tbody></table></figure>
+
+<p>不用完全理解代码，只需要看中间这里，<code>parentXbean</code> 将会在这里创造出anchor和它的cell2属性。</p>
+<p>当我们使用断点调试，会发现，如果导入有问题的Excel，会走向这个判断：*<code>parentXbean instanceof CTOneCellAnchor</code>*</p>
+<p>而正常的Excel会走向这个判断：*<code>parentXbean instanceof CTTwoCellAnchor</code>*</p>
+<p>那么，问题就在CTTwoCellAnchor 和 CTOneCellAnchor上面了。</p>
+<p>这两个类是什么呢？显然是和图片相关的东西——在这里感谢Greg Woolsey 的解释一下子点醒了我。参考：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://bz.apache.org/bugzilla/show_bug.cgi?id=61203">https://bz.apache.org/bugzilla/show_bug.cgi?id=61203</a></p>
+</blockquote>
+<p>所以，<strong>CTTwoCellAnchor是指图片的大小和位置随着单元格而变</strong>；<strong>CTOneCellAnchor是指大小固定，位置随着单元格而变</strong></p>
+<p>那么，这对应的就是Excel里面的图片属性：</p>
+<p><img src="/images/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5(1).png" alt="项目记录"></p>
+<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>至此，问题就解决了，只需要修改Excel里面的图片属性即可。至此问题就解决了，至于更底层的原因，由于项目排期的紧张没有时间深入钻研，欢迎了解的朋友评论区留言</li>
+</ul>
+<hr>
+<h2 id="Json默认解析方式"><a href="#Json默认解析方式" class="headerlink" title="Json默认解析方式"></a>Json默认解析方式</h2><h3 id="Bug描述-3"><a href="#Bug描述-3" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>一个很正常的操作：我在后端调用方法，向前端返回一个List的结果集。我们知道这个结果集在前端是用很多个json数据放在一个List里面的。</p>
+<p>我将要返回的数据有这几个列：</p>
+<ul>
+<li>DESCR - 部门名</li>
+<li>userId - ID</li>
+<li>name - 姓名</li>
+<li>jobType - 工作类型</li>
+</ul>
+<p>其中 userId,name,jobType在前端展示都是正常的，获取到了数据，但是DESCR这个列没有数据：</p>
+<table>
+<thead>
+<tr>
+<th align="center">DESCR</th>
+<th align="center">userId</th>
+<th align="center">name</th>
+<th align="center">jobType</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td align="center">1</td>
+<td align="center">a</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">2</td>
+<td align="center">b</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">3</td>
+<td align="center">c</td>
+<td align="center">C</td>
+</tr>
+</tbody></table>
+<p>看了下后端，打断点发现数据都是正常传过来的，DESCR这个列是有值的，但是不知道为什么在前端不显示</p>
+<h3 id="问题排查-3"><a href="#问题排查-3" class="headerlink" title="问题排查"></a>问题排查</h3><p>在前端打断点调试，发现传过来的Json数据长这个样子：</p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">{</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>'<span class="hljs-number">1</span>'<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>'a'<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>'A'<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span><br><span class="hljs-punctuation">{</span>dESCR<span class="hljs-punctuation">:</span>...<span class="hljs-punctuation">,</span>userId<span class="hljs-punctuation">:</span>'<span class="hljs-number">2</span>'<span class="hljs-punctuation">,</span>name<span class="hljs-punctuation">:</span>'b'<span class="hljs-punctuation">,</span>jobType<span class="hljs-punctuation">:</span>'B'<span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span><br>...<br></code></pre></td></tr></tbody></table></figure>
+
+<p>这就奇怪了，为啥DESCR这个列的首字母小写了呢？</p>
+<p>后来发现，不只是DESCR这个列首字母小写了，事实上每个首字母大写的列的首字母都会被小写，在这里因为它们在这里本来就是小写的所以看不出来。</p>
+<p>之所以会这样，探讨其背后原理是因为所有 JSON 的实现都离不开HttpMessageConverter，它是一个消息转换工具，主要实现两方面的功能：</p>
+<ul>
+<li>将服务端返回的对象序列化成 JSON 字符串</li>
+<li>将前端传来的 JSON 字符串反序列化成 Java 对象</li>
+</ul>
+<p>在SpringBoot生成的依赖包中已经自动为我们导入了相关依赖。SpringMVC 自动配置了 Jackson 和 Gson 的 HttpMessageConverter。</p>
+<p>我们公司项目默认使用的Jackson解析Json代码，jackson在序列化过程中会将大写开头的字段自动转成小写开头。</p>
+<h3 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>给需要保留大小写的不变的属性增加*<code>@JsonFormat</code><em>或者</em><code>@JsonProperty</code>*注解</li>
+<li>给类加上 <em><code>@JsonAutoDetect(getterVisibility=JsonAutoDetect.Visibility.NONE)</code></em> 注解</li>
+</ul>
+<hr>
+<h2 id="BatchUpdateException-ORA-12899"><a href="#BatchUpdateException-ORA-12899" class="headerlink" title="BatchUpdateException: ORA-12899"></a>BatchUpdateException: ORA-12899</h2><p>Oracle SQL表设计问题 </p>
+<h3 id="Bug描述-4"><a href="#Bug描述-4" class="headerlink" title="Bug描述"></a>Bug描述</h3><p>产品经理让我排查一下不知道什么环境下（没问是开发、测试还是正式环境）出现的一个Bug，前端上传excel更新数据失败，提示“数据库异常，请联系管理员”。</p>
+<h3 id="问题排查-4"><a href="#问题排查-4" class="headerlink" title="问题排查"></a>问题排查</h3><p>很明显，这通常都是后端报错了，所以我按照流程复现了下该报错，然后直接看idea结果，idea报错：</p>
+<blockquote>
+<p>Exception in thread “main” java.sql.BatchUpdateException: ORA-12899: value too large for column “xx” (actual: 208, maximum: 200)</p>
+</blockquote>
+<p>这样的报错根据字面意思，似乎是数据超了sql某个字段的字节限制，那么通过我们在 <a target="_blank" rel="noopener" href="https://thellu.com/2023/06/08/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/">项目记录——企业需求</a> 中的连接迁移提到的前端代码反推后端代码的方法，找到对应的后端代码，再找到对应的实体类，看它链接的是哪个数据表，这有助于我们在公司庞大的数据库中直接定位问题表。</p>
+<p>定位到问题表table之后，在Navicat点击“设计表”，我可以直接看到每个字段的字节限制，再对应报错的excel文件里面的内容，我可以很简单的找到对应的限制了200个字节的出问题的列。但是奇怪的是，如果一个中文编码占据2个字节，我个人感觉这个excel文件中这个列的数据的字节数并没有达到208这个标准。</p>
+<p>查询：</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> userenv(<span class="hljs-string">'language'</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>结果是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em></p>
+<p>这说明我们Oracle数据库采用的是 <em><code>AMERICAN_AMERICA.AL32UTF8</code></em> 作为字符编码集，这个UTF-8编码集一个中文占据三个字节，为了验证我们的猜想，查询：</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> lengthb(<span class="hljs-string">'xx'</span>) <span class="hljs-keyword">from</span> dual;<br></code></pre></td></tr></tbody></table></figure>
+
+<p>xx就是超过字节限制的数据内容，得到208个字节的答案，这证明我们的猜想没错。</p>
+<h3 id="解决方案-4"><a href="#解决方案-4" class="headerlink" title="解决方案"></a>解决方案</h3><ul>
+<li>更换oracle sql中字符编码集为 *<code>SIMPLIFIED CHINESE_CHINA.AL32UTF8</code>*，这样一个中文只占据两个字节。但是显然该方法可能影响到其他表</li>
+<li>要求上传excel的数据列对应内容不要太多</li>
+<li>针对该字段的字节上限进行扩容</li>
+</ul>
+<hr>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://lh728.github.io">hongjin lu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lh728.github.io/2023/06/10/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/">http://lh728.github.io/2023/06/10/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lh728.github.io" target="_blank">Hongjin's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SQL/">SQL</a><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/Vue/">Vue</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/2023/06/17/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/" title="构造器内部初始化实际过程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">构造器内部初始化实际过程</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/19/%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95%E2%80%94%E2%80%94%E4%BC%81%E4%B8%9A%E9%9C%80%E6%B1%82/" title="项目记录——企业需求"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-19</div><div class="title">项目记录——企业需求</div></div></a></div><div><a href="/2023/09/09/MySQL%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD/" title="MySQL数据备份"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-09</div><div class="title">MySQL数据备份</div></div></a></div><div><a href="/2023/07/24/Oracle%20SQL%E4%BC%98%E5%8C%96/" title="Oracle SQL优化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-24</div><div class="title">Oracle SQL优化</div></div></a></div><div><a href="/2024/04/08/%E9%9B%86%E5%90%88%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="集合使用注意事项"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-08</div><div class="title">集合使用注意事项</div></div></a></div><div><a href="/2023/08/10/%E6%96%B9%E6%B3%95%E9%9D%99%E6%80%81%E5%88%86%E6%B4%BE/" title="方法静态分派"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-10</div><div class="title">方法静态分派</div></div></a></div><div><a href="/2023/07/24/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" title="内网项目踩坑记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-24</div><div class="title">内网项目踩坑记录</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">hongjin lu</div><div class="author-info__description">Code Lover</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lh728"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/lh728" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:holu@tcd.ie" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/hongjinlu/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: ;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL-DML%E5%A0%B5%E5%A1%9E%E9%97%AE%E9%A2%98%EF%BC%88Oracle%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">SQL DML堵塞问题（Oracle）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">Bug描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">1.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%85%E8%A3%85%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">包装对象引用问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug%E6%8F%8F%E8%BF%B0-1"><span class="toc-number">2.1.</span> <span class="toc-text">Bug描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5-1"><span class="toc-number">2.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="toc-number">2.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EsayPoi%E8%A7%A3%E6%9E%90Excel%E5%9B%BE%E7%89%87%E7%A9%BA%E6%8C%87%E9%92%88"><span class="toc-number">3.</span> <span class="toc-text">EsayPoi解析Excel图片空指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug%E6%8F%8F%E8%BF%B0-2"><span class="toc-number">3.1.</span> <span class="toc-text">Bug描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5-2"><span class="toc-number">3.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2"><span class="toc-number">3.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Json%E9%BB%98%E8%AE%A4%E8%A7%A3%E6%9E%90%E6%96%B9%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">Json默认解析方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug%E6%8F%8F%E8%BF%B0-3"><span class="toc-number">4.1.</span> <span class="toc-text">Bug描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5-3"><span class="toc-number">4.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-3"><span class="toc-number">4.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BatchUpdateException-ORA-12899"><span class="toc-number">5.</span> <span class="toc-text">BatchUpdateException: ORA-12899</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bug%E6%8F%8F%E8%BF%B0-4"><span class="toc-number">5.1.</span> <span class="toc-text">Bug描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5-4"><span class="toc-number">5.2.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-4"><span class="toc-number">5.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/08/%E9%9B%86%E5%90%88%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" title="集合使用注意事项">集合使用注意事项</a><time datetime="2024-04-07T16:00:00.000Z" title="发表于 2024-04-08 00:00:00">2024-04-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/09/MySQL%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD/" title="MySQL数据备份">MySQL数据备份</a><time datetime="2023-09-08T16:00:00.000Z" title="发表于 2023-09-09 00:00:00">2023-09-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/10/%E6%96%B9%E6%B3%95%E9%9D%99%E6%80%81%E5%88%86%E6%B4%BE/" title="方法静态分派">方法静态分派</a><time datetime="2023-08-09T16:00:00.000Z" title="发表于 2023-08-10 00:00:00">2023-08-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/24/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" title="内网项目踩坑记录">内网项目踩坑记录</a><time datetime="2023-07-23T16:00:00.000Z" title="发表于 2023-07-24 00:00:00">2023-07-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/24/Oracle%20SQL%E4%BC%98%E5%8C%96/" title="Oracle SQL优化">Oracle SQL优化</a><time datetime="2023-07-23T16:00:00.000Z" title="发表于 2023-07-24 00:00:00">2023-07-24</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2023 - 2024 By hongjin lu</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="http://thellu.com/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '14434470b1b606fb600b',
+      clientSecret: 'ba10ef9f1658154646e0c5531ce5493a872e611b',
+      repo: 'blog',
+      owner: 'lh728',
+      admin: ['lh728'],
+      id: '22af9f909afe70b97c7929bd5a38cad2',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.textContent= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
