@@ -1,6 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>How to debug spring boot scheduling tasks</title>
+    <url>/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</url>
+    <content><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p>
+<h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p>
+<ul>
+<li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li>
+<li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li>
+<li>Another idea is to call the method in the test code, but it is also very tricky</li>
+</ul>
+<p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p>
+<p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo switch language, suitable for any theme</title>
+    <url>/en/2023/06/17/Hexo%20switch%20language,%20suitable%20for%20any%20theme/</url>
+    <content><![CDATA[<p>This article mainly discusses how Hexo achieves internationalization in the simplest way, and this method is highly applicable. I personally think that there is no requirement for which theme to use.</p>
+<h1 id="Ideal-Solution"><a href="#Ideal-Solution" class="headerlink" title="Ideal Solution"></a>Ideal Solution</h1><p>There is a button on the home page, by clicking this button, you can switch the language page with one click (the example of this blog will be Chinese and English). At the same time, the realization of this method does not need to buy a new domain name.</p>
+<p>It is worth noting that this method is not a direct translation, so you need to maintain N blog files of the post at the same time (N is the number of your languages), so if you need to update the blog, you need to update N files at the same time.</p>
+<p>The following implementation process will use Chinese and English as examples. For more languages, please refer to this tutorial:</p>
+<h2 id="Implementation-Process"><a href="#Implementation-Process" class="headerlink" title="Implementation Process"></a>Implementation Process</h2><p>（1）Divide the page folder, assuming that your original files are stored in a folder called hexo, which mainly stores Chinese files. Now create a new folder called hexo-en to store the English folder. Note: they are siblings!</p>
+<p>The built folder should be as follows:</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(1).png" alt="文件夹位置展示"></p>
+<p>(2) Copy all files except node_modules from hexo to hexoen, separate the site</p>
+<p>(3) Next, modify the contents of the <strong>_config.yml</strong> files of the two hexo files. The first one in the figure below is hexo, and the second one is hexo-en: (this step is to modify the main language of website)</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(2).png" alt="hexo"></p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(3).png" alt="hexo-en"></p>
+<p>(4) Continue to modify the root directory url and root of <strong>_config.yml</strong>, the first one in the figure below is hexo, and the second one is hexo-en:</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(4).png" alt="hexo"></p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(5).png" alt="hexo-en"></p>
+<p>(5) Modify the jump link of your own menu corresponding to the theme. Note that there is a hint here—**You can jump to the link of your own github.io&#x2F;en, and you can also jump to the link of your own domain name&#x2F;en . I don’t know why the jump to github.io failed here, and 404 was displayed, but the jump to the domain name thellu.com&#x2F;en succeeded. **You can choose the jump address according to your actual situation.</p>
+<p>In addition, note that if you have a Chinese homepage, the menu should be set to English; if you are an English homepage, the menu should be set to Chinese.</p>
+<p>The first picture below is hexo, and the second one is hexo-en:</p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(6).png" alt="hexo"></p>
+<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(7).png" alt="hexo-en"></p>
+<p>(6) Congratulations, the basic configuration is now complete! Now execute <strong>npm install</strong> in the hexoen folder to install the required plugins.</p>
+<p>(7) Finally, modify the command that you submit files to github every time, you need to use cp to merge and submit files every time. I am using an absolute path here, so it is convenient to modify the address when cd path:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">cd /d/Blog/hexo &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexoen &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexo &amp;&amp; cp -r /d/Blog/hexoen/public/. /d/Blog/hexo/public/en/ &amp;&amp; hexo d<br></code></pre></td></tr></table></figure>
+
+<p>(8) Congratulations, the configuration is now complete! You can check to see if your website has successfully redirected the page. The only downside is that clicking will jump to a new page instead of updating the old one.</p>
+<h2 id="Common-Error"><a href="#Common-Error" class="headerlink" title="Common Error"></a>Common Error</h2><p>When uploading with the above code after writing the md file normally, sometimes an error will be reported inexplicably:</p>
+<blockquote>
+<p>err : Error: Spawn Failed</p>
+</blockquote>
+<p>The problem usually occurs in the .deploy_git folder, which is a Git repository generated by the hexo framework rendering. The <em><code>hexo d</code></em> command is to push it to github. Most of the problems are caused by git changing the contents of some .deploy_git files when pushing or hexo d, resulting in an error.</p>
+<p>All in all, just delete this file.</p>
+<p>Then call the following command:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs hexo">git config --global core.autocrlf false<br></code></pre></td></tr></table></figure>
+
+<p>Then execute the clean g d command of hexo.</p>
+<p>But note that there are two other reasons for this error:</p>
+<ul>
+<li>Our submission to github code uses absolute path. If you open git bash in hexoen, the .deploy_git file may be saved in the hexoen folder. Remember to delete it at this time.</li>
+<li>Network fluctuations, delete .deploy_git and wait for a while for it to be fine</li>
+</ul>
+]]></content>
+      <categories>
+        <category>front-end</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Initialization of Java virtual machine class loading</title>
+    <url>/en/2023/06/17/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
+    <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
+<blockquote>
+<ul>
+<li>Encountered new (instantiated object), getstatic (read a class static field which is not modified by final or does not put the result into the constant pool at compile time), putstatic (set a class static field which is not modified by final or does not put the result into the constant pool at compile time) or invokestatic (calling a static method of a class) these four bytecode instructions, if the class has not been initialized, initialization needs to be triggered.</li>
+<li>Use the methods of the java.lang.reflect package to make reflective calls on types</li>
+<li>the parent class has not been initialized</li>
+<li>When the virtual machine starts, the user needs to specify a main class (main) to be executed</li>
+<li>When using the dynamic language support newly added by java7, if the final analysis result of a MthodHandle instance is REF_getStatic, REF_putstatic, REF_invokestatic, REF_newInvokeSpecial four types of method handles</li>
+<li>An interface defines the interface method modified by default, and the implementation class of the interface is initialized at the same time</li>
+</ul>
+</blockquote>
+<p>In addition, all reference types do not trigger initialization:</p>
+<h2 id="Subclass-references-parent-class"><a href="#Subclass-references-parent-class" class="headerlink" title="Subclass references parent class"></a>Subclass references parent class</h2><p>Referring to a static field of a superclass through a subclass does not cause the subclass to be initialized:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">package</span> com.example.demo;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sub</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span>&#123;System.out.println(<span class="hljs-string">&quot;Sub&quot;</span>);&#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Sub.value);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>What happens in the end? It will output “Super” first, and then the value of “value”.</p>
+<p>For static fields, only the class that directly defines this field will be initialized, so the static field of the parent class is referenced through the subclass, and only the parent class will be initialized.</p>
+<h2 id="Array-reference-class"><a href="#Array-reference-class" class="headerlink" title="Array reference class"></a>Array reference class</h2><p>Referencing a class through an array definition does not trigger initialization of this class</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        Sub[] sp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sub</span>[<span class="hljs-number">5</span>];<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>What happens in the end?</p>
+<p>nothing.</p>
+<p>It can be seen that the Sub class has not been initialized. But this code triggers the initialization phase of another class named “[Lcom.example.demo.Sub”. This thing is automatically generated by the virtual machine and a subclass directly inherited from Object , and the creation action is triggered by the bytecode instruction anewarray (that is, creating a new reference array).</p>
+<p>The one-dimensional array represented by this class, users can only directly use the length property modified as public and the clone method. Of course, the properties and methods used in the array are all implemented in this class. This is because Java wraps the access to the array elements (it is the movement of the array pointer in C), which is why Java detects that the array is out of bounds and throws an ArrayIndexOutOfBoundsException instead of an illegal memory access like C.</p>
+<p>To be precise, Java’s out-of-bounds check is not encapsulated in the class for array element access, but encapsulated in xaload (array elements pushed onto the stack) and xastore (array operations) bytecode instructions for array access.</p>
+<h2 id="Constant-pool-reference"><a href="#Constant-pool-reference" class="headerlink" title="Constant pool reference"></a>Constant pool reference</h2><p>Constants will be stored in the constant pool of the calling class during the compilation phase, and essentially there is no direct reference to the class that defines the constant</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">HELLO</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Hello&quot;</span>;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Super.HELLO);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>The code here also does not output “Super” after running.</p>
+<p>The constant value of hello has actually been converted into a reference of the SomeName class to its own constant pool during the compilation phase, so the two of them have nothing to do with each other.</p>
+<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>Interfaces are a little different than classes. In fact, the interface also has an initialization process, but the interface cannot use static code blocks to output initialization information like a class. The compiler will generate a “<clinit>“ class constructor for the interface to initialize the member variables defined in the interface. and:</p>
+<p>The interface does not require all parent interfaces to be initialized, only when it is used will it be initialized.</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Considerations for Using Collections</title>
     <url>/en/2024/04/08/Considerations%20for%20Using%20Collections/</url>
     <content><![CDATA[<h3 id="Collection-Empty-Check"><a href="#Collection-Empty-Check" class="headerlink" title="Collection Empty Check"></a>Collection Empty Check</h3><blockquote>
@@ -131,82 +252,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo switch language, suitable for any theme</title>
-    <url>/en/2023/06/17/Hexo%20switch%20language,%20suitable%20for%20any%20theme/</url>
-    <content><![CDATA[<p>This article mainly discusses how Hexo achieves internationalization in the simplest way, and this method is highly applicable. I personally think that there is no requirement for which theme to use.</p>
-<h1 id="Ideal-Solution"><a href="#Ideal-Solution" class="headerlink" title="Ideal Solution"></a>Ideal Solution</h1><p>There is a button on the home page, by clicking this button, you can switch the language page with one click (the example of this blog will be Chinese and English). At the same time, the realization of this method does not need to buy a new domain name.</p>
-<p>It is worth noting that this method is not a direct translation, so you need to maintain N blog files of the post at the same time (N is the number of your languages), so if you need to update the blog, you need to update N files at the same time.</p>
-<p>The following implementation process will use Chinese and English as examples. For more languages, please refer to this tutorial:</p>
-<h2 id="Implementation-Process"><a href="#Implementation-Process" class="headerlink" title="Implementation Process"></a>Implementation Process</h2><p>（1）Divide the page folder, assuming that your original files are stored in a folder called hexo, which mainly stores Chinese files. Now create a new folder called hexo-en to store the English folder. Note: they are siblings!</p>
-<p>The built folder should be as follows:</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(1).png" alt="文件夹位置展示"></p>
-<p>(2) Copy all files except node_modules from hexo to hexoen, separate the site</p>
-<p>(3) Next, modify the contents of the <strong>_config.yml</strong> files of the two hexo files. The first one in the figure below is hexo, and the second one is hexo-en: (this step is to modify the main language of website)</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(2).png" alt="hexo"></p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(3).png" alt="hexo-en"></p>
-<p>(4) Continue to modify the root directory url and root of <strong>_config.yml</strong>, the first one in the figure below is hexo, and the second one is hexo-en:</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(4).png" alt="hexo"></p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(5).png" alt="hexo-en"></p>
-<p>(5) Modify the jump link of your own menu corresponding to the theme. Note that there is a hint here—**You can jump to the link of your own github.io&#x2F;en, and you can also jump to the link of your own domain name&#x2F;en . I don’t know why the jump to github.io failed here, and 404 was displayed, but the jump to the domain name thellu.com&#x2F;en succeeded. **You can choose the jump address according to your actual situation.</p>
-<p>In addition, note that if you have a Chinese homepage, the menu should be set to English; if you are an English homepage, the menu should be set to Chinese.</p>
-<p>The first picture below is hexo, and the second one is hexo-en:</p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(6).png" alt="hexo"></p>
-<p><img src="/en/images/Hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98/hexo%E8%BD%AC%E6%8D%A2%E8%AF%AD%E8%A8%80%EF%BC%8C%E9%80%82%E7%94%A8%E4%BB%BB%E4%BD%95%E4%B8%BB%E9%A2%98(7).png" alt="hexo-en"></p>
-<p>(6) Congratulations, the basic configuration is now complete! Now execute <strong>npm install</strong> in the hexoen folder to install the required plugins.</p>
-<p>(7) Finally, modify the command that you submit files to github every time, you need to use cp to merge and submit files every time. I am using an absolute path here, so it is convenient to modify the address when cd path:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">cd /d/Blog/hexo &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexoen &amp;&amp; hexo clean &amp;&amp; hexo g &amp;&amp; cd /d/Blog/hexo &amp;&amp; cp -r /d/Blog/hexoen/public/. /d/Blog/hexo/public/en/ &amp;&amp; hexo d<br></code></pre></td></tr></table></figure>
-
-<p>(8) Congratulations, the configuration is now complete! You can check to see if your website has successfully redirected the page. The only downside is that clicking will jump to a new page instead of updating the old one.</p>
-<h2 id="Common-Error"><a href="#Common-Error" class="headerlink" title="Common Error"></a>Common Error</h2><p>When uploading with the above code after writing the md file normally, sometimes an error will be reported inexplicably:</p>
-<blockquote>
-<p>err : Error: Spawn Failed</p>
-</blockquote>
-<p>The problem usually occurs in the .deploy_git folder, which is a Git repository generated by the hexo framework rendering. The <em><code>hexo d</code></em> command is to push it to github. Most of the problems are caused by git changing the contents of some .deploy_git files when pushing or hexo d, resulting in an error.</p>
-<p>All in all, just delete this file.</p>
-<p>Then call the following command:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs hexo">git config --global core.autocrlf false<br></code></pre></td></tr></table></figure>
-
-<p>Then execute the clean g d command of hexo.</p>
-<p>But note that there are two other reasons for this error:</p>
-<ul>
-<li>Our submission to github code uses absolute path. If you open git bash in hexoen, the .deploy_git file may be saved in the hexoen folder. Remember to delete it at this time.</li>
-<li>Network fluctuations, delete .deploy_git and wait for a while for it to be fine</li>
-</ul>
-]]></content>
-      <categories>
-        <category>front-end</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>How to debug spring boot scheduling tasks</title>
-    <url>/en/2023/06/27/How%20to%20debug%20springboot%20scheduled%20scheduling%20tasks/</url>
-    <content><![CDATA[<p>When I was doing enterprise development recently, there was a requirement for me to adjust and optimize the scheduled  tasks for sending emails.</p>
-<h2 id="Scheduled-tasks"><a href="#Scheduled-tasks" class="headerlink" title="@Scheduled  tasks"></a>@Scheduled  tasks</h2><p>The scheduled task of sending emails that has been completed looks like this:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...       <br>        <br>    &#125;        <br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>The difficulty of optimization and adjustment lies in the trouble of debugging:</p>
-<ul>
-<li>The code of the current development environment does not set a unified interface to debug back-end timing tasks through the front-end</li>
-<li>If you debug by modifying cron, you need to restart the project, and more importantly, you will send a lot of harassing emails</li>
-<li>Another idea is to call the method in the test code, but it is also very tricky</li>
-</ul>
-<p>In fact, there is a relatively simple idea, rewriting the <em><code>afterPropertiesSet</code></em> method of the <em><code>InitialzingBean</code></em> class.</p>
-<p>When spring initializes a bean, if the bean implements the <em><code>InitializingBean</code></em> interface, it will automatically call the <em><code>afterPropertiesSet</code></em> method, so it is conceivable that in this way, you can debug by restarting idea:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmailScheduled</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>&#123;<br>    <br>    <span class="hljs-meta">@Scheduled(cron = &quot;0 0 23 * * * ?&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">emailSend</span><span class="hljs-params">()</span>&#123;<br>        ...             <br>    &#125; <br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        emailSend();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>Is not it simple? Of course, this may not be the optimal solution, but if it is only used briefly in the project, it is not a big problem.</p>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Intranet projects avoid pitfall</title>
     <url>/en/2023/07/24/Intranet%20projects%20avoid%20pitfall/</url>
     <content><![CDATA[<p>As we all know, some projects are completely established in the offline mode of the intranet. The first time I came into contact with this offline mode project recently, record the problems encountered:</p>
@@ -242,46 +287,6 @@
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>IDEA quickly adds JavaDoc comments</title>
-    <url>/en/2023/06/22/IDEA%20quickly%20adds%20JavaDoc%20comments/</url>
-    <content><![CDATA[<p>As a programmer, adding Javadoc comments can be considered an essential step. However, manually adding extensive content each time can undoubtedly become a cumbersome task.</p>
-<p>This article serves as a record, aiming to facilitate the process of reconfiguration when changing environments in the future:</p>
-<p>(The method described here is auto-generated by IntelliJ IDEA and does not require installing additional plugins.)</p>
-<h2 id="Class、Interface-Comments"><a href="#Class、Interface-Comments" class="headerlink" title="Class、Interface Comments"></a>Class、Interface Comments</h2><ol>
-<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
-<li>Add documentation comment templates to the template:</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>Once completed, every time a class or interface is created, the comments will be automatically generated.</p>
-<h2 id="Method-Comments"><a href="#Method-Comments" class="headerlink" title="Method Comments"></a>Method Comments</h2><ol>
-<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
-<li>Click on the right-hand side <code>+</code> icon, select &#96;Template Group…, and create a new custom template group. You can name it with your desired name.</li>
-<li>Select the created template group, click on the right-hand side <code>+</code> icon, choose <code>Live Template</code>, and set the value of <code>abbreviation</code> to <code>*</code>.</li>
-<li>Set the template content: Choose <code>Template Text</code> and enter the following code below:</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>Configure where this template should be effective: Select <code>Define</code>“ below, then choose <code>Everywhere</code> and <code>Java</code> to ensure it only takes effect in Java files.</li>
-<li>Select the <code>Edit variables</code> button on the right-hand side and configure as follows:</li>
-</ol>
-<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
-<ol start="7">
-<li>Use <code>/* </code>+ the template name we just set (in this case, it’s the asterisk <code>*</code>) + <code>tab</code> (this is the default template expansion shortcut, as set in <code>By default expand with</code> above). So now, when you use <code>/**</code> + <code>tab</code>, it will auto-complete, and the effect will be as follows:</li>
-</ol>
-<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
-<p>With this, the configuration is complete.</p>
-<hr>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -357,48 +362,43 @@
       </tags>
   </entry>
   <entry>
-    <title>Initialization of Java virtual machine class loading</title>
-    <url>/en/2023/06/17/Initialization%20of%20Java%20virtual%20machine%20class%20loading/</url>
-    <content><![CDATA[<p>We know that “Java Virtual Machine Specification” chapter 5.5 Initialization ^(1)^ strictly stipulates that there are only six situations where the class must be initialized immediately:</p>
-<blockquote>
-<ul>
-<li>Encountered new (instantiated object), getstatic (read a class static field which is not modified by final or does not put the result into the constant pool at compile time), putstatic (set a class static field which is not modified by final or does not put the result into the constant pool at compile time) or invokestatic (calling a static method of a class) these four bytecode instructions, if the class has not been initialized, initialization needs to be triggered.</li>
-<li>Use the methods of the java.lang.reflect package to make reflective calls on types</li>
-<li>the parent class has not been initialized</li>
-<li>When the virtual machine starts, the user needs to specify a main class (main) to be executed</li>
-<li>When using the dynamic language support newly added by java7, if the final analysis result of a MthodHandle instance is REF_getStatic, REF_putstatic, REF_invokestatic, REF_newInvokeSpecial four types of method handles</li>
-<li>An interface defines the interface method modified by default, and the implementation class of the interface is initialized at the same time</li>
-</ul>
-</blockquote>
-<p>In addition, all reference types do not trigger initialization:</p>
-<h2 id="Subclass-references-parent-class"><a href="#Subclass-references-parent-class" class="headerlink" title="Subclass references parent class"></a>Subclass references parent class</h2><p>Referring to a static field of a superclass through a subclass does not cause the subclass to be initialized:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">package</span> com.example.demo;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Sub</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span>&#123;System.out.println(<span class="hljs-string">&quot;Sub&quot;</span>);&#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Sub.value);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+    <title>IDEA quickly adds JavaDoc comments</title>
+    <url>/en/2023/06/22/IDEA%20quickly%20adds%20JavaDoc%20comments/</url>
+    <content><![CDATA[<p>As a programmer, adding Javadoc comments can be considered an essential step. However, manually adding extensive content each time can undoubtedly become a cumbersome task.</p>
+<p>This article serves as a record, aiming to facilitate the process of reconfiguration when changing environments in the future:</p>
+<p>(The method described here is auto-generated by IntelliJ IDEA and does not require installing additional plugins.)</p>
+<h2 id="Class、Interface-Comments"><a href="#Class、Interface-Comments" class="headerlink" title="Class、Interface Comments"></a>Class、Interface Comments</h2><ol>
+<li>File–&gt;settings–&gt;Editor–&gt;File and Code Templates–&gt;Files–&gt;Class</li>
+<li>Add documentation comment templates to the template:</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@ClassName</span> $&#123;NAME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Description</span> TODO</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Author</span> $&#123;USER&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@DATE</span> $&#123;DATE&#125; $&#123;TIME&#125;</span><br><span class="hljs-comment">  *<span class="hljs-doctag">@Version</span> 1.0 </span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">$</span>&#123;Name&#125;&#123;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>What happens in the end? It will output “Super” first, and then the value of “value”.</p>
-<p>For static fields, only the class that directly defines this field will be initialized, so the static field of the parent class is referenced through the subclass, and only the parent class will be initialized.</p>
-<h2 id="Array-reference-class"><a href="#Array-reference-class" class="headerlink" title="Array reference class"></a>Array reference class</h2><p>Referencing a class through an array definition does not trigger initialization of this class</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        Sub[] sp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sub</span>[<span class="hljs-number">5</span>];<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>Once completed, every time a class or interface is created, the comments will be automatically generated.</p>
+<h2 id="Method-Comments"><a href="#Method-Comments" class="headerlink" title="Method Comments"></a>Method Comments</h2><ol>
+<li>File–&gt;Settings–&gt;Editor–&gt;Live Templates</li>
+<li>Click on the right-hand side <code>+</code> icon, select &#96;Template Group…, and create a new custom template group. You can name it with your desired name.</li>
+<li>Select the created template group, click on the right-hand side <code>+</code> icon, choose <code>Live Template</code>, and set the value of <code>abbreviation</code> to <code>*</code>.</li>
+<li>Set the template content: Choose <code>Template Text</code> and enter the following code below:</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">*<br> * <span class="hljs-meta">@Author</span> $user$<br> * <span class="hljs-meta">@Description</span> <span class="hljs-comment">//TODO</span><br> * <span class="hljs-meta">@Date</span> $time$ $date$<br> * <span class="hljs-meta">@Param</span> $param$<br> * <span class="hljs-meta">@return</span> $<span class="hljs-keyword">return</span>$<br> **/<br></code></pre></td></tr></table></figure>
 
-<p>What happens in the end?</p>
-<p>nothing.</p>
-<p>It can be seen that the Sub class has not been initialized. But this code triggers the initialization phase of another class named “[Lcom.example.demo.Sub”. This thing is automatically generated by the virtual machine and a subclass directly inherited from Object , and the creation action is triggered by the bytecode instruction anewarray (that is, creating a new reference array).</p>
-<p>The one-dimensional array represented by this class, users can only directly use the length property modified as public and the clone method. Of course, the properties and methods used in the array are all implemented in this class. This is because Java wraps the access to the array elements (it is the movement of the array pointer in C), which is why Java detects that the array is out of bounds and throws an ArrayIndexOutOfBoundsException instead of an illegal memory access like C.</p>
-<p>To be precise, Java’s out-of-bounds check is not encapsulated in the class for array element access, but encapsulated in xaload (array elements pushed onto the stack) and xastore (array operations) bytecode instructions for array access.</p>
-<h2 id="Constant-pool-reference"><a href="#Constant-pool-reference" class="headerlink" title="Constant pool reference"></a>Constant pool reference</h2><p>Constants will be stored in the constant pool of the calling class during the compilation phase, and essentially there is no direct reference to the class that defines the constant</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;System.out.println(<span class="hljs-string">&quot;Super&quot;</span>);&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">HELLO</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;Hello&quot;</span>;<br>&#125;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeName</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        System.out.println(Super.HELLO);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>The code here also does not output “Super” after running.</p>
-<p>The constant value of hello has actually been converted into a reference of the SomeName class to its own constant pool during the compilation phase, so the two of them have nothing to do with each other.</p>
-<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>Interfaces are a little different than classes. In fact, the interface also has an initialization process, but the interface cannot use static code blocks to output initialization information like a class. The compiler will generate a “<clinit>“ class constructor for the interface to initialize the member variables defined in the interface. and:</p>
-<p>The interface does not require all parent interfaces to be initialized, only when it is used will it be initialized.</p>
+<ol start="5">
+<li>Configure where this template should be effective: Select <code>Define</code>“ below, then choose <code>Everywhere</code> and <code>Java</code> to ensure it only takes effect in Java files.</li>
+<li>Select the <code>Edit variables</code> button on the right-hand side and configure as follows:</li>
+</ol>
+<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%881%EF%BC%89.png" alt="注释图片"></p>
+<ol start="7">
+<li>Use <code>/* </code>+ the template name we just set (in this case, it’s the asterisk <code>*</code>) + <code>tab</code> (this is the default template expansion shortcut, as set in <code>By default expand with</code> above). So now, when you use <code>/**</code> + <code>tab</code>, it will auto-complete, and the effect will be as follows:</li>
+</ol>
+<p><img src="/en/images/IDEA%E5%BF%AB%E9%80%9F%E6%B7%BB%E5%8A%A0JavaDoc%E6%96%87%E6%A1%A3%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%EF%BC%882%EF%BC%89.png" alt="注释图片2"></p>
+<p>With this, the configuration is complete.</p>
 <hr>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>(1) Yellin, F. and Lindholm, T., 1996. The java virtual machine specification.</p>
 ]]></content>
       <categories>
         <category>back-end</category>
       </categories>
       <tags>
-        <tag>Java</tag>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -466,6 +466,26 @@
       </tags>
   </entry>
   <entry>
+    <title>The actual process of class initialization</title>
+    <url>/en/2023/06/17/The%20actual%20process%20of%20class%20initialization/</url>
+    <content><![CDATA[<h2 id="Class-initialization-order"><a href="#Class-initialization-order" class="headerlink" title="Class initialization order"></a>Class initialization order</h2><p>Many people know that the order of class initialization is as follows:<br>(1) Call the base class constructor and repeat this process until the bottom layer<br>(2) Then call the initialization methods of the members in the order of declaration<br>(3) Call the body of the class constructor</p>
+<h2 id="The-actual-process-of-class-initialization"><a href="#The-actual-process-of-class-initialization" class="headerlink" title="The actual process of class initialization"></a>The actual process of class initialization</h2><p>However, consider this example:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
+
+<p>The walk method of the Animal class is designed to be overridden in the Cat class, but Animal’s constructor calls the walk method, which results in a call to Cat.walk().<br>The generated result of the above code is:</p>
+<blockquote>
+<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+</blockquote>
+<p>We will find that when the Animal constructor calls the walk() method, the step is not the default initial value of 100, but 0.<br>Therefore, the order of class initialization mentioned earlier is not complete. In fact, the order of class initialization should be like this:<br>(1) <strong>Allocate space before everything happens, and initialize the storage space allocated to the object to binary zero (or a value equivalent to zero in some special data types)</strong><br>(2) Call the base class constructor as mentioned above. At this time, the walk method must be called before calling the cat constructor, so the step value at this time is 0<br>(3) Call the initialization methods of the members in the order of declaration<br>(4) Call the body of the class constructor<br>Of course, this kind of error is not easy to find, so it is recommended that you try to avoid calling other methods in the constructor if possible. The only methods that can be safely called in the constructor are the final methods of the base class (because they will not be overrided, there will be no above-mentioned problems)。</p>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Why anonymous inner class parameters must be final</title>
     <url>/en/2023/06/17/Why%20anonymous%20inner%20class%20parameters%20must%20be%20final/</url>
     <content><![CDATA[<p>Recently, when I wrote some anonymous inner classes, I felt a little difficult to understand, so I reviewed this part again. I found some points that I didn’t notice before - the formal parameters of the anonymous inner class must be prefixed with final (unless the anonymous inner class does not use it)</p>
@@ -488,26 +508,6 @@
 <p>Look, here the parameter of the getInner method is final, the reason is the same as the reason for adding final to the inner class part before. </p>
 <h2 id="Sometimes-you-can-also-not-add-final"><a href="#Sometimes-you-can-also-not-add-final" class="headerlink" title="Sometimes you can also not add final"></a>Sometimes you can also not add final</h2><p>When can you not add final? If the inner class does not use it, you can not add final, which is easy to understand:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>The actual process of class initialization</title>
-    <url>/en/2023/06/17/The%20actual%20process%20of%20class%20initialization/</url>
-    <content><![CDATA[<h2 id="Class-initialization-order"><a href="#Class-initialization-order" class="headerlink" title="Class initialization order"></a>Class initialization order</h2><p>Many people know that the order of class initialization is as follows:<br>(1) Call the base class constructor and repeat this process until the bottom layer<br>(2) Then call the initialization methods of the members in the order of declaration<br>(3) Call the body of the class constructor</p>
-<h2 id="The-actual-process-of-class-initialization"><a href="#The-actual-process-of-class-initialization" class="headerlink" title="The actual process of class initialization"></a>The actual process of class initialization</h2><p>However, consider this example:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
-
-<p>The walk method of the Animal class is designed to be overridden in the Cat class, but Animal’s constructor calls the walk method, which results in a call to Cat.walk().<br>The generated result of the above code is:</p>
-<blockquote>
-<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
-</blockquote>
-<p>We will find that when the Animal constructor calls the walk() method, the step is not the default initial value of 100, but 0.<br>Therefore, the order of class initialization mentioned earlier is not complete. In fact, the order of class initialization should be like this:<br>(1) <strong>Allocate space before everything happens, and initialize the storage space allocated to the object to binary zero (or a value equivalent to zero in some special data types)</strong><br>(2) Call the base class constructor as mentioned above. At this time, the walk method must be called before calling the cat constructor, so the step value at this time is 0<br>(3) Call the initialization methods of the members in the order of declaration<br>(4) Call the body of the class constructor<br>Of course, this kind of error is not easy to find, so it is recommended that you try to avoid calling other methods in the constructor if possible. The only methods that can be safely called in the constructor are the final methods of the base class (because they will not be overrided, there will be no above-mentioned problems)。</p>
-]]></content>
       <categories>
         <category>back-end</category>
       </categories>
@@ -1430,7 +1430,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#97;&#x61;&#x61;&#x61;&#x40;&#x62;&#98;&#x62;&#98;&#x62;&#x2e;&#99;&#x6f;&#109;">&#97;&#97;&#x61;&#x61;&#x61;&#x40;&#x62;&#98;&#x62;&#98;&#x62;&#x2e;&#99;&#x6f;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#97;&#97;&#97;&#x40;&#x62;&#x62;&#98;&#x62;&#x62;&#x2e;&#x63;&#x6f;&#109;">&#97;&#x61;&#97;&#97;&#97;&#x40;&#x62;&#x62;&#98;&#x62;&#x62;&#x2e;&#x63;&#x6f;&#109;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
