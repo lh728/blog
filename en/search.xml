@@ -622,7 +622,7 @@
 <p>What if I still want to change the recipient email address in the configuration file?</p>
 <p>Very simple, set key-value pairs in application.properties:</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#97;&#97;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#46;&#x63;&#111;&#109;">&#x61;&#x61;&#x61;&#97;&#97;&#64;&#x62;&#x62;&#98;&#98;&#x62;&#46;&#x63;&#111;&#109;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#97;&#x61;&#97;&#64;&#x62;&#x62;&#98;&#x62;&#98;&#x2e;&#99;&#111;&#109;">&#97;&#x61;&#97;&#x61;&#97;&#64;&#x62;&#x62;&#98;&#x62;&#98;&#x2e;&#99;&#111;&#109;</a>“</p>
 </blockquote>
 <p>Inject in Java Bean:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -1425,40 +1425,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Oracle SQL optimization</title>
-    <url>/en/2023/07/24/Oracle%20SQL%20optimization/</url>
-    <content><![CDATA[<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Recently, I encountered a problem when writing a SQL, and the execution time of SQL was too long:</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
-
-<p>The above code is a SQL code used in combination with <code>Union</code>. The other parts of the code are very similar to this part of the code, except that the department id in the <code>inner join</code> statement and <code>type</code> in the <code>select</code> statement. The total running time of the code reaches about 110s, and the running time of a single SQL code is about 18s, which can be said runtime is too long.</p>
-<p>In addition, <code>#&#123;begin_date&#125;</code> and <code>#&#123;end_date&#125;</code> are the parameters that will be passed in by the backend respectively, and are used for dynamic query.</p>
-<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><p>First analyze the most immediate question - why is the running time so long?</p>
-<p>In fact, the problem here is not very complicated. There are more than 13 million pieces of data in the <code>attendance</code> table. The huge amount of data takes about 20 seconds for even the most basic and simple query.</p>
-<p>In addition, the department table that needs to be associated is a recursive <code>join</code>, which will query all the small departments under the given <code>deptId</code>, and the query here is also time-consuming.</p>
-<p>So, how to solve the problem?</p>
-<p><strong>Solution 1</strong>: First of all, the problem of data volume is unsolvable. It is impossible for us to say that a certain piece of data is directly discarded. Moreover, our <code>where</code> condition has already limited the time, so there is actually a certain limit on the data volume. Therefore, the first idea of optimization is on <code>Join</code>:</p>
-<blockquote>
-<p>Recursive <code>Join</code> is a very time-consuming operation, so we can directly think of building an index on <code>deptId</code>-in fact, this is the correct idea, and the running time of indexing is directly optimized from 18S to 2S.</p>
-</blockquote>
-<p>Solution 2: Here can also optimize the query condition of <code>where</code>:</p>
-<blockquote>
-<p>The <code>to_date</code> function is used when the date is limited. In fact, when only comparing the year, month, and day, we can directly not use this function for string comparison. This is because Oracle SQL’s <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">Data Priority</a> will implicitly convert low-priority strings to date formats. Here, through implicit conversion, the running time can be continuously optimized, from 2S to 1S.</p>
-</blockquote>
-<p><strong>But note, this is risky - first, implicit data type conversion may have a negative impact on performance (of course here is a positive); also, implicit conversion may produce strange results. Depending on the value of the <code>NLS_DATE_FORMAT</code> parameter.</strong> </p>
-<p>When converting a datetime value to text via an implicit conversion or an explicit conversion that does not specify a format model, the format model is defined by one of the globalization session parameters, namely <code>NLS_DATE_FORMAT</code>, <code>NLS_TIMESTAMP_FORMAT</code>, or <code>NLS_TIMESTAMP_TZ_FORMAT</code>.</p>
-<p>For example, the default value of the <code>NLS_DATE_FORMAT</code> setting is <code>&#39;DD-MON-RR&#39;</code> two-digit year, so the century time may be lost when the date is converted to a string, and replaced by 1900 or 2000 when converted back to a date based on the decade value; and assuming that the original time has some minutes and seconds, this data will also be lost.</p>
-<p>In conclusion, different parameters may have different results.</p>
-<p>So, considering that the optimization of Solution 2 is not necessary, I still keep the date function.</p>
-<hr>
-]]></content>
-      <categories>
-        <category>back-end</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Intranet projects avoid pitfall</title>
     <url>/en/2023/07/24/Intranet%20projects%20avoid%20pitfall/</url>
     <content><![CDATA[<p>As we all know, some projects are completely established in the offline mode of the intranet. The first time I came into contact with this offline mode project recently, record the problems encountered:</p>
@@ -1494,6 +1460,40 @@
       </categories>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Oracle SQL optimization</title>
+    <url>/en/2023/07/24/Oracle%20SQL%20optimization/</url>
+    <content><![CDATA[<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Recently, I encountered a problem when writing a SQL, and the execution time of SQL was too long:</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
+
+<p>The above code is a SQL code used in combination with <code>Union</code>. The other parts of the code are very similar to this part of the code, except that the department id in the <code>inner join</code> statement and <code>type</code> in the <code>select</code> statement. The total running time of the code reaches about 110s, and the running time of a single SQL code is about 18s, which can be said runtime is too long.</p>
+<p>In addition, <code>#&#123;begin_date&#125;</code> and <code>#&#123;end_date&#125;</code> are the parameters that will be passed in by the backend respectively, and are used for dynamic query.</p>
+<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><p>First analyze the most immediate question - why is the running time so long?</p>
+<p>In fact, the problem here is not very complicated. There are more than 13 million pieces of data in the <code>attendance</code> table. The huge amount of data takes about 20 seconds for even the most basic and simple query.</p>
+<p>In addition, the department table that needs to be associated is a recursive <code>join</code>, which will query all the small departments under the given <code>deptId</code>, and the query here is also time-consuming.</p>
+<p>So, how to solve the problem?</p>
+<p><strong>Solution 1</strong>: First of all, the problem of data volume is unsolvable. It is impossible for us to say that a certain piece of data is directly discarded. Moreover, our <code>where</code> condition has already limited the time, so there is actually a certain limit on the data volume. Therefore, the first idea of optimization is on <code>Join</code>:</p>
+<blockquote>
+<p>Recursive <code>Join</code> is a very time-consuming operation, so we can directly think of building an index on <code>deptId</code>-in fact, this is the correct idea, and the running time of indexing is directly optimized from 18S to 2S.</p>
+</blockquote>
+<p>Solution 2: Here can also optimize the query condition of <code>where</code>:</p>
+<blockquote>
+<p>The <code>to_date</code> function is used when the date is limited. In fact, when only comparing the year, month, and day, we can directly not use this function for string comparison. This is because Oracle SQL’s <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">Data Priority</a> will implicitly convert low-priority strings to date formats. Here, through implicit conversion, the running time can be continuously optimized, from 2S to 1S.</p>
+</blockquote>
+<p><strong>But note, this is risky - first, implicit data type conversion may have a negative impact on performance (of course here is a positive); also, implicit conversion may produce strange results. Depending on the value of the <code>NLS_DATE_FORMAT</code> parameter.</strong> </p>
+<p>When converting a datetime value to text via an implicit conversion or an explicit conversion that does not specify a format model, the format model is defined by one of the globalization session parameters, namely <code>NLS_DATE_FORMAT</code>, <code>NLS_TIMESTAMP_FORMAT</code>, or <code>NLS_TIMESTAMP_TZ_FORMAT</code>.</p>
+<p>For example, the default value of the <code>NLS_DATE_FORMAT</code> setting is <code>&#39;DD-MON-RR&#39;</code> two-digit year, so the century time may be lost when the date is converted to a string, and replaced by 1900 or 2000 when converted back to a date based on the decade value; and assuming that the original time has some minutes and seconds, this data will also be lost.</p>
+<p>In conclusion, different parameters may have different results.</p>
+<p>So, considering that the optimization of Solution 2 is not necessary, I still keep the date function.</p>
+<hr>
+]]></content>
+      <categories>
+        <category>back-end</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
