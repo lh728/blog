@@ -628,7 +628,7 @@
 <p>如果我还希望在配置文件里面更改这个收件人邮箱怎么办呢？</p>
 <p>很简单，在 application.properties 里面设置键值对：</p>
 <blockquote>
-<p>auto.email&#x3D;”<a href="mailto:&#97;&#x61;&#x61;&#97;&#97;&#x40;&#98;&#x62;&#98;&#x62;&#98;&#x2e;&#x63;&#111;&#x6d;">&#97;&#x61;&#x61;&#97;&#97;&#x40;&#98;&#x62;&#98;&#x62;&#98;&#x2e;&#x63;&#111;&#x6d;</a>“</p>
+<p>auto.email&#x3D;”<a href="mailto:&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#x62;&#98;&#98;&#x62;&#98;&#x2e;&#x63;&#111;&#x6d;">&#x61;&#x61;&#x61;&#x61;&#97;&#64;&#x62;&#98;&#98;&#x62;&#98;&#x2e;&#x63;&#111;&#x6d;</a>“</p>
 </blockquote>
 <p>在Java Bean注入：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Value(&quot;$&#123;auto.email&#125;&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
@@ -1433,6 +1433,40 @@
       </tags>
   </entry>
   <entry>
+    <title>Oracle SQL优化</title>
+    <url>/2023/07/24/Oracle%20SQL%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>最近在写一个项目SQL的时候遇到了问题，SQL的执行时间过长：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
+
+<p>上面的代码是一个配合Union组合使用的SQL代码，其他部分的代码和这一部分的代码很相似，仅仅是修改了<code>select</code>中的<code>type</code>和<code>inner join</code> 的部门id。代码的总运行时间达到了110s左右，单段SQL代码运行时间在18S左右，可以说是非常长的运行时间了。</p>
+<p>另外， <code>#&#123;begin_date&#125;</code>，<code>#&#123;end_date&#125;</code>分别是后端将会传入的参数，做动态查询使用。</p>
+<h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><p>首先分析最直接的问题——为什么运行时间这么长？</p>
+<p>其实这里的问题并没有很复杂，<code>attendance</code>表的数据有一千三百多万条，庞大的数据量光是最基础的简单的查询都需要花费20S左右。</p>
+<p>另外，需要关联的部门表是一个递归<code>join</code>，这里会查询出给出的<code>deptId</code>下面的所有小部门，这里的查询也很耗时间。</p>
+<p>那么，怎么解决问题呢？</p>
+<p>方案一：首先数据量的问题是无解的，我们不可能说某一段数据直接舍弃了，而且注意，我们的where 条件是限制了时间的，因此对数据量实际上是有一定限制的。因此首先优化的思路就是在<code>Join</code>上：</p>
+<blockquote>
+<p>递归<code>Join</code>是很耗时的一个操作，因此我们可以直接想到在<code>deptId</code>上建立一个索引——事实上这是个正确的思路，通过建立索引运行时间直接从18S优化到了2S。</p>
+</blockquote>
+<p>方案二：这里还可以优化<code>where</code>的查询条件：</p>
+<blockquote>
+<p>在日期限制的时候使用了<code>to_date</code>函数，事实上仅仅做年月日对比的时候，可以直接不使用这个函数做字符串比较。这是因为Oracle SQL的<a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">数据优先级</a>，会将低优先级的字符串隐式转换转为日期格式。这里通过隐式转换，运行时间可以继续优化，从2S提升至1S。</p>
+</blockquote>
+<p><strong>但是注意，这是有风险的——首先，隐式数据类型转换可能会对性能产生负面影响（当然这里是正面的）；而且，隐式转换可能会产生奇怪的结果。具体取决于<code>NLS_DATE_FORMAT</code>参数的值。</strong></p>
+<p>当通过隐式转换或不指定格式模型的显式转换将日期时间值转换为文本时，格式模型由全球化会话参数之一定义，即<code>NLS_DATE_FORMAT</code>、<code>NLS_TIMESTAMP_FORMAT</code>或者<code>NLS_TIMESTAMP_TZ_FORMAT</code>。</p>
+<p>举个例子，<code>NLS_DATE_FORMAT</code>设置的默认值是<code>&#39;DD-MON-RR&#39;</code>两位数年份，因此当日期转换为字符串时，世纪时间可能会丢失，并在根据十年的值转换回日期时被 1900 或 2000 替换掉；并且假设原始时间有时分秒，这些数据也会丢失掉。</p>
+<p>总之，不同的参数可能有不同的结果。</p>
+<p>所以，考虑到方案2的优化并不是必要的，我还是保留了日期函数。</p>
+<hr>
+]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>内网项目踩坑记录</title>
     <url>/2023/07/24/%E5%86%85%E7%BD%91%E9%A1%B9%E7%9B%AE%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<p>众所周知，有的项目是完全建立在内网的离线模式的。最近第一次接触这种离线模式的项目，记录一下遇到的问题：</p>
@@ -1470,40 +1504,6 @@
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Oracle SQL优化</title>
-    <url>/2023/07/24/Oracle%20SQL%E4%BC%98%E5%8C%96/</url>
-    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>最近在写一个项目SQL的时候遇到了问题，SQL的执行时间过长：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br><span class="hljs-string">&#x27;A&#x27;</span> <span class="hljs-keyword">as</span> type,<br><span class="hljs-built_in">count</span>(adl.is_attend) <span class="hljs-keyword">as</span> count,<br>round(<span class="hljs-built_in">sum</span>(<span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> adl.is_attend <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span> <span class="hljs-keyword">end</span>)<span class="hljs-operator">/</span> <span class="hljs-built_in">count</span>(adl.is_attend),<span class="hljs-number">2</span>) <span class="hljs-operator">*</span> <span class="hljs-number">100</span> <span class="hljs-keyword">as</span> rate<br><span class="hljs-keyword">from</span><br>attendance adl<br><span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> deptId <span class="hljs-keyword">from</span> department <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> deptId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;...&#x27;</span><br>            <span class="hljs-keyword">connect</span> <span class="hljs-keyword">by</span> up_daptId <span class="hljs-operator">=</span> prior deptId) <span class="hljs-keyword">as</span> nbd <span class="hljs-keyword">on</span> adl.deptId <span class="hljs-operator">=</span> nbd.deptId<br><span class="hljs-keyword">where</span> <br>to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&gt;=</span> to_date( #&#123;begin_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br><span class="hljs-keyword">and</span> to_date(adl.date,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="hljs-operator">&lt;=</span> to_date( #&#123;end_date&#125;<br>    ,<span class="hljs-string">&#x27;yyyy-MM-dd&#x27;</span>)<br>    <br><span class="hljs-keyword">union</span> <span class="hljs-keyword">all</span><br><br>......<br></code></pre></td></tr></table></figure>
-
-<p>上面的代码是一个配合Union组合使用的SQL代码，其他部分的代码和这一部分的代码很相似，仅仅是修改了<code>select</code>中的<code>type</code>和<code>inner join</code> 的部门id。代码的总运行时间达到了110s左右，单段SQL代码运行时间在18S左右，可以说是非常长的运行时间了。</p>
-<p>另外， <code>#&#123;begin_date&#125;</code>，<code>#&#123;end_date&#125;</code>分别是后端将会传入的参数，做动态查询使用。</p>
-<h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><p>首先分析最直接的问题——为什么运行时间这么长？</p>
-<p>其实这里的问题并没有很复杂，<code>attendance</code>表的数据有一千三百多万条，庞大的数据量光是最基础的简单的查询都需要花费20S左右。</p>
-<p>另外，需要关联的部门表是一个递归<code>join</code>，这里会查询出给出的<code>deptId</code>下面的所有小部门，这里的查询也很耗时间。</p>
-<p>那么，怎么解决问题呢？</p>
-<p>方案一：首先数据量的问题是无解的，我们不可能说某一段数据直接舍弃了，而且注意，我们的where 条件是限制了时间的，因此对数据量实际上是有一定限制的。因此首先优化的思路就是在<code>Join</code>上：</p>
-<blockquote>
-<p>递归<code>Join</code>是很耗时的一个操作，因此我们可以直接想到在<code>deptId</code>上建立一个索引——事实上这是个正确的思路，通过建立索引运行时间直接从18S优化到了2S。</p>
-</blockquote>
-<p>方案二：这里还可以优化<code>where</code>的查询条件：</p>
-<blockquote>
-<p>在日期限制的时候使用了<code>to_date</code>函数，事实上仅仅做年月日对比的时候，可以直接不使用这个函数做字符串比较。这是因为Oracle SQL的<a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Data-Type-Comparison-Rules.html#GUID-6A02902A-1EF1-41E4-9494-381488BD272F">数据优先级</a>，会将低优先级的字符串隐式转换转为日期格式。这里通过隐式转换，运行时间可以继续优化，从2S提升至1S。</p>
-</blockquote>
-<p><strong>但是注意，这是有风险的——首先，隐式数据类型转换可能会对性能产生负面影响（当然这里是正面的）；而且，隐式转换可能会产生奇怪的结果。具体取决于<code>NLS_DATE_FORMAT</code>参数的值。</strong></p>
-<p>当通过隐式转换或不指定格式模型的显式转换将日期时间值转换为文本时，格式模型由全球化会话参数之一定义，即<code>NLS_DATE_FORMAT</code>、<code>NLS_TIMESTAMP_FORMAT</code>或者<code>NLS_TIMESTAMP_TZ_FORMAT</code>。</p>
-<p>举个例子，<code>NLS_DATE_FORMAT</code>设置的默认值是<code>&#39;DD-MON-RR&#39;</code>两位数年份，因此当日期转换为字符串时，世纪时间可能会丢失，并在根据十年的值转换回日期时被 1900 或 2000 替换掉；并且假设原始时间有时分秒，这些数据也会丢失掉。</p>
-<p>总之，不同的参数可能有不同的结果。</p>
-<p>所以，考虑到方案2的优化并不是必要的，我还是保留了日期函数。</p>
-<hr>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
       </tags>
   </entry>
   <entry>
@@ -1621,26 +1621,6 @@
       </tags>
   </entry>
   <entry>
-    <title>构造器内部初始化实际过程</title>
-    <url>/2023/06/17/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="类初始化顺序"><a href="#类初始化顺序" class="headerlink" title="类初始化顺序"></a>类初始化顺序</h2><p>类的初始化遵循的顺序很多人都知道是这样：<br>（1）调用基类构造器，不断重复这个过程直到最底层<br>（2）再按照声明的顺序调用成员的初始化方法<br>（3）调用类构造器的主体  </p>
-<h2 id="类初始化的实际过程"><a href="#类初始化的实际过程" class="headerlink" title="类初始化的实际过程"></a>类初始化的实际过程</h2><p>但是，考虑这样一个例子： </p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
-
-<p>Animal类的walk方法被设计为在Cat类中被重写，但是Animal的构造器会调用这个walk方法，这导致了对Cat.walk()的调用。<br>上述代码的生成结果是：</p>
-<blockquote>
-<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
-</blockquote>
-<p>我们会发现当Animal的构造器调用walk()方法的时候，step不是默认的初始值100，而是0。<br>因此前面讲的类初始化的顺序并不完整，实际上类的初始化顺序应该是这样的：<br>（1）<strong>在所有事情发生之前先分配空间，将分配给对象的存储空间初始化成二进制的零（或者某些特殊数据类型中与零等价的值）</strong><br>（2）如前所述的调用基类构造器，这个时候在调用cat构造器之前就要调用walk方法，因此此时的step值是0<br>（3）按照声明的顺序调用成员的初始化方法<br>（4）调用类构造器的主体<br>当然，这种错误并不容易发现，因此推荐大家如果可以的话，构造器中尽可能避免调用其他方法，在构造器内唯一能够安全调用的那些方法是基类的final方法（因为他们不会被重写，也就不会有上述的问题）。</p>
-]]></content>
-      <categories>
-        <category>后端</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>匿名内部类形参为什么一定要final</title>
     <url>/2023/06/17/%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%BD%A2%E5%8F%82%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%80%E5%AE%9A%E8%A6%81final/</url>
     <content><![CDATA[<p>最近在写一些匿名内部类的时候会感觉有些难以理解，所以重新复习了一下这部分内容。  发现了一些之前没注意到的点——匿名内部类的形参必须加final前缀（除非匿名内部类没使用它）</p>
@@ -1661,6 +1641,26 @@
 <p>看，这里getInner方法的参数加了final，理由和之前内部类部分加final的理由是一样的。如果内部类的改变不能影响到外部，那就干脆别动它！</p>
 <h2 id="有时候也可以不加final"><a href="#有时候也可以不加final" class="headerlink" title="有时候也可以不加final"></a>有时候也可以不加final</h2><p>什么时候可以不加final呢？如果内部类没有使用它就可以不加final了，这很好理解：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Outer</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123; <br>        <span class="hljs-type">Outer</span> <span class="hljs-variable">outer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Outer</span>(); <br>        <span class="hljs-type">Inner</span> <span class="hljs-variable">inner</span> <span class="hljs-operator">=</span> outer.getInner(<span class="hljs-number">1</span>); <br>        System.out.println(inner.f()); <br>    &#125; <br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Inner <span class="hljs-title function_">getInner</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123; <br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Inner</span>(i) &#123; <br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>&#123;<br>                System.out.println(<span class="hljs-string">&quot;f()&quot;</span>);<br>            &#125;<br>        &#125;; <br>    &#125; <br>&#125; <br> <br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Inner</span> &#123; <br>    Inner(<span class="hljs-type">int</span> i) &#123; <br>        System.out.println(i); <br>    &#125; <br> <br>    <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">f</span><span class="hljs-params">()</span>; <br>&#125; <br></code></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>构造器内部初始化实际过程</title>
+    <url>/2023/06/17/%E7%B1%BB%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E5%AE%9E%E9%99%85%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="类初始化顺序"><a href="#类初始化顺序" class="headerlink" title="类初始化顺序"></a>类初始化顺序</h2><p>类的初始化遵循的顺序很多人都知道是这样：<br>（1）调用基类构造器，不断重复这个过程直到最底层<br>（2）再按照声明的顺序调用成员的初始化方法<br>（3）调用类构造器的主体  </p>
+<h2 id="类初始化的实际过程"><a href="#类初始化的实际过程" class="headerlink" title="类初始化的实际过程"></a>类初始化的实际过程</h2><p>但是，考虑这样一个例子： </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span>&#123;<br><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span>&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal.walk()&quot;</span>);<br>	&#125;<br>	Animal()&#123;<br>		System.out.println(<span class="hljs-string">&quot;Animal() before walk()&quot;</span>);<br>		walk();<br>		System.out.println(<span class="hljs-string">&quot;Animal() after walk()&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span>&#123;<br>	<span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">step</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>	<br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">walk</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;Cat.walk(), step = &quot;</span> + step);<br>	&#125;<br>	<br>	Cat(<span class="hljs-type">int</span> step)&#123;<br>		<span class="hljs-built_in">this</span>.step = step;<br>		System.out.println(<span class="hljs-string">&quot;Cat.Cat(), step = &quot;</span> + step);<br>	&#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>	<br>	<span class="hljs-keyword">new</span> <span class="hljs-title class_">Cat</span>(<span class="hljs-number">500</span>);<br>	<br>&#125;  <br><br></code></pre></td></tr></table></figure>
+
+<p>Animal类的walk方法被设计为在Cat类中被重写，但是Animal的构造器会调用这个walk方法，这导致了对Cat.walk()的调用。<br>上述代码的生成结果是：</p>
+<blockquote>
+<p>Animal() before walk()<br>Cat.walk(), step &#x3D; 0<br>Animal() after walk()<br>Cat.Cat(), step &#x3D; 500</p>
+</blockquote>
+<p>我们会发现当Animal的构造器调用walk()方法的时候，step不是默认的初始值100，而是0。<br>因此前面讲的类初始化的顺序并不完整，实际上类的初始化顺序应该是这样的：<br>（1）<strong>在所有事情发生之前先分配空间，将分配给对象的存储空间初始化成二进制的零（或者某些特殊数据类型中与零等价的值）</strong><br>（2）如前所述的调用基类构造器，这个时候在调用cat构造器之前就要调用walk方法，因此此时的step值是0<br>（3）按照声明的顺序调用成员的初始化方法<br>（4）调用类构造器的主体<br>当然，这种错误并不容易发现，因此推荐大家如果可以的话，构造器中尽可能避免调用其他方法，在构造器内唯一能够安全调用的那些方法是基类的final方法（因为他们不会被重写，也就不会有上述的问题）。</p>
+]]></content>
       <categories>
         <category>后端</category>
       </categories>
